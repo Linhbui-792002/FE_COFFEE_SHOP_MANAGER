@@ -1,24 +1,29 @@
 import '@src/styles/globals.css'
 import { store } from '@src/redux/store'
 import { Provider } from 'react-redux'
-
-
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import AdminLayout from '&common/layout/admin/adminLayout'
-
-function adminLayout(page) {
-  return <AdminLayout>{page}</AdminLayout>
-}
+import DefaultLayout from '&common/layout/home/defaultLayout'
 
 export default function App({ Component, pageProps }) {
   const router = useRouter()
-  const getLayout = Component.getLayout || adminLayout
+  const { asPath, pathname } = router
   const [loading, setLoading] = useState(false)
-
   const loadingRef = useRef(undefined)
+
+  const getLayout = page => {
+    const isEmployee = asPath?.split('/').includes('coffee-shop')
+    const isAdminPage = asPath?.split('/').includes('admin')
+    if (isEmployee) {
+      return <DefaultLayout>{page}</DefaultLayout>
+    } else if (isAdminPage) {
+      return <AdminLayout>{page}</AdminLayout>
+    }
+    return Component.getLayout ? Component.getLayout(page) : page
+  }
 
   useEffect(() => {
     const start = () => {
@@ -47,7 +52,8 @@ export default function App({ Component, pageProps }) {
       window.removeEventListener('showLoading', start)
       window.removeEventListener('hideLoading', end)
     }
-  }, [])
+  }, [router.events])
+
   return (
     <Provider store={store}>
       <Spin

@@ -4,7 +4,7 @@ import { Button, Dropdown, Layout } from 'antd'
 import Link from 'next/link'
 const { Header } = Layout
 
-const Navbar = ({ collapsed, setCollapsed }) => {
+const Navbar = () => {
   const MENU_ITEMS = [
     {
       key: '1',
@@ -16,13 +16,16 @@ const Navbar = ({ collapsed, setCollapsed }) => {
     }
   ]
   return (
-    <Header className="p-0 !bg-b-primary-from flex justify-between items-center px-4">
+    <Header className="p-0 !bg-b-primary-from flex justify-end items-center px-4">
       <Dropdown
         menu={{
           items: MENU_ITEMS
         }}
       >
-        <Button shape="circle" icon={<UserOutlined />}></Button>
+        <Button type="text" icon={<UserOutlined />}>
+          {' '}
+          Linhbui
+        </Button>
       </Dropdown>
     </Header>
   )

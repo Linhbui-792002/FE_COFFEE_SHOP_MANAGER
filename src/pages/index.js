@@ -1,9 +1,10 @@
-const Homepage = () => {
+import LoginPage from './login'
 
+const Homepage = () => {
   return (
-    <div>
-      Homepage
-    </div>
+    <>
+      <LoginPage />
+    </>
   )
 }
 
