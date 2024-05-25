@@ -1,0 +1,90 @@
+{
+  "extends": [
+    "next",
+    "next/core-web-vitals",
+    "prettier",
+    "next/babel"
+  ],
+  "settings": {
+    "next": {
+      "rootDir": "src"
+    }
+  },
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.jsx",
+        "*.tsx"
+      ],
+      "env": {
+        "browser": true,
+        "es2021": true
+      },
+      "parserOptions": {
+        "ecmaVersion": 2021,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        }
+      },
+      "plugins": [
+        "next",
+        "prettier"
+      ],
+      "rules": {
+        "prettier/prettier": [
+          "warn",
+          {
+            "endOfLine": "auto"
+          }
+        ]
+        // ,
+        // "react/jsx-max-props-per-line": [
+        //   2,
+        //   {
+        //     "maximum": 1
+        //   }
+        // ],
+        // "react/jsx-first-prop-new-line": [
+        //   2,
+        //   "multiline"
+        // ]
+      }
+    }
+  ],
+  "rules": {
+    "prettier/prettier": [
+      "warn",
+      {
+        "arrowParens": "avoid",
+        "bracketSameLine": false,
+        "bracketSpacing": true,
+        "endOfLine": "lf",
+        "embeddedLanguageFormatting": "auto",
+        "htmlWhitespaceSensitivity": "css",
+        "insertPragma": false,
+        "jsxBracketSameLine": false,
+        "jsxSingleQuote": false,
+        "printWidth": 120,
+        "proseWrap": "preserve",
+        "quoteProps": "as-needed",
+        "requirePragma": false,
+        "semi": false,
+        "singleQuote": true,
+        "tabWidth": 2,
+        "trailingComma": "none",
+        "useTabs": false,
+        "vueIndentScriptAndStyle": false
+      }
+    ]
+  },
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    "src/redux/endPoint"
+  ]
+}
