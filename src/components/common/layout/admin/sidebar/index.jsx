@@ -1,12 +1,14 @@
 import React from 'react'
 import {
-  CalendarOutlined,
+  ProductOutlined,
   AreaChartOutlined,
+  UsergroupAddOutlined,
+  IdcardOutlined,
+  UnorderedListOutlined,
   ContainerOutlined,
-  CheckSquareOutlined,
-  UserOutlined,
-  SolutionOutlined,
-  CommentOutlined
+  CreditCardOutlined,
+  BookOutlined,
+  SettingOutlined
 } from '@ant-design/icons'
 import { ConfigProvider, Layout, Menu } from 'antd'
 import Logo from '~public/images/logo.png'
@@ -28,43 +30,64 @@ const items = [
   getItem(
     'Dashboard',
     '1',
-    <Link href={'/'}>
+    <Link href={'/admin'}>
       <AreaChartOutlined />
     </Link>
   ),
   getItem(
-    'Tickets',
-    '/tickets',
-    <Link href={'/order'}>
+    'Products',
+    '/admin/product',
+    <Link href={'/admin/product'}>
+      <ProductOutlined />
+    </Link>
+  ),
+  getItem(
+    'Account',
+    '/admin/account',
+    <Link href={'/admin/account'}>
+      <UsergroupAddOutlined />
+    </Link>
+  ),
+  getItem(
+    'Employee',
+    '/admin/employee',
+    <Link href={'/admin/employee'}>
+      <IdcardOutlined />
+    </Link>
+  ),
+  getItem(
+    'Menu',
+    '/admin/menu',
+    <Link href={'/admin/menu'}>
+      <UnorderedListOutlined />
+    </Link>
+  ),
+  getItem(
+    'Product category',
+    '/admin/product-category',
+    <Link href={'/admin/product-category'}>
       <ContainerOutlined />
     </Link>
   ),
   getItem(
-    'Booking',
-    '/booking',
-    <Link href={'/booking'}>
-      <CheckSquareOutlined />
+    'Salary',
+    '/admin/salary',
+    <Link href={'/admin/salary'}>
+      <CreditCardOutlined />
     </Link>
   ),
   getItem(
-    'Reporting and Analysis',
-    '/report',
-    <Link href={'/report'}>
-      <AreaChartOutlined />
+    'Vouchers',
+    '/admin/voucher',
+    <Link href={'/admin/voucher'}>
+      <BookOutlined />
     </Link>
   ),
   getItem(
-    'Promotion ',
-    '/promotion',
-    <Link href={'/promotion'}>
-      <SolutionOutlined />
-    </Link>
-  ),
-  getItem(
-    'Feedback',
-    '/feedback',
-    <Link href={'/feedback'}>
-      <CommentOutlined />
+    'General',
+    '/admin/general',
+    <Link href={'/admin/general'}>
+      <SettingOutlined />
     </Link>
   )
 ]

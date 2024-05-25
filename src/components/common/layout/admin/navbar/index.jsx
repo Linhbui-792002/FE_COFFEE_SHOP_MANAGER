@@ -22,14 +22,18 @@ const Navbar = ({ collapsed, setCollapsed }) => {
         shape="circle"
         icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         onClick={() => setCollapsed(!collapsed)}
-        className="text-lg cursor-pointer mr-5"
+        className="text-lg cursor-pointer mr-5 bg-b-button text-b-white shadow-lg"
       />
+
       <Dropdown
         menu={{
           items: MENU_ITEMS
         }}
       >
-        <Button shape="circle" icon={<UserOutlined />}></Button>
+        <Button type="text" icon={<UserOutlined />}>
+          {' '}
+          Linhbui
+        </Button>
       </Dropdown>
     </Header>
   )

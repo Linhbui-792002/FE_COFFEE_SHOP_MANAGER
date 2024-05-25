@@ -1,9 +1,7 @@
 import React from 'react'
 
 const GeneralPage = () => {
-  return (
-    <div>GeneralPage</div>
-  )
+  return <div>GeneralPage</div>
 }
 
 export default GeneralPage
