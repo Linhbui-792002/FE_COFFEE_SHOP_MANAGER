@@ -1,0 +1,7 @@
+.ant-layout-sider {
+  background: none !important;
+}
+
+.custom-bg-submenu .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  background: #aa715b;
+}
