@@ -4,7 +4,7 @@ const { Content } = Layout
 import Sidebar from './sidebar'
 import Navbar from './navbar'
 
-const DefaultLayout = ({ children }) => {
+const AdminLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false)
   return (
     <Layout className="!bg-gradient-sidebar">
@@ -17,4 +17,4 @@ const DefaultLayout = ({ children }) => {
   )
 }
 
-export default DefaultLayout
+export default AdminLayout

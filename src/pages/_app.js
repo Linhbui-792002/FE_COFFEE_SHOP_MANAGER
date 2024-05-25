@@ -2,14 +2,15 @@ import '@src/styles/globals.css'
 import { store } from '@src/redux/store'
 import { Provider } from 'react-redux'
 
-import DefaultLayout from '@src/components/common/layout/defaultLayout'
+
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
+import AdminLayout from '&common/layout/admin/adminLayout'
 
 function adminLayout(page) {
-  return <DefaultLayout>{page}</DefaultLayout>
+  return <AdminLayout>{page}</AdminLayout>
 }
 
 export default function App({ Component, pageProps }) {

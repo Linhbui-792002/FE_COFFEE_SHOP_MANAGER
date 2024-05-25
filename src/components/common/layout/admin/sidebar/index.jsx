@@ -11,7 +11,7 @@ import {
 import { ConfigProvider, Layout, Menu } from 'antd'
 import Logo from '~public/images/logo.png'
 import Link from 'next/link'
-import CustomImage from '../../CustomImage'
+import CustomImage from '&common/CustomImage'
 const { Sider } = Layout
 
 function getItem(label, key, icon, children, type) {
