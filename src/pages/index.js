@@ -1,9 +1,11 @@
-const Home = () => {
-  return (
-    <div>
+import LoginPage from './login'
 
-    </div>
+const Homepage = () => {
+  return (
+    <>
+      <LoginPage />
+    </>
   )
 }
 
-export default Home
+export default Homepage

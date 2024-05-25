@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .bg-gradient-sidebar {
+    @apply bg-gradient-to-br from-b-primary-to via-b-primary-mid to-b-primary-from;
+  }
+  .bg-gradient-navbar {
+    @apply bg-gradient-to-br from-b-second-to to-b-second-from;
+  }
+}
