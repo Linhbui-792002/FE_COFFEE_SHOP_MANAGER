@@ -22,8 +22,9 @@ module.exports = {
         'b-black': '#363636',
         'b-green': '#3CA31B',
         'b-orange': '#f68b1f',
-        'b-white': '#f8f8f8',
+        'b-white': '#ffffff',
         'b-blue': '#044da2',
+        'b-red': '#E53E3E',
         'b-gray': '#9F9F9F',
         'b-primary-to': '#D0A797',
         'b-primary-mid': '#F6F0EF',
@@ -33,7 +34,7 @@ module.exports = {
         'b-tab-to': "#FDF7F4",
         'b-tab-from': "#FFFDFE",
         'b-button': '#AA715B',
-        'b-success-opcity': '#cdf7ec',
+        'b-success-opacity': '#cdf7ec',
         'b-success': '#71be44',
 
         // border

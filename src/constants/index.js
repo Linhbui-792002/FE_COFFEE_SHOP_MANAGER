@@ -1,4 +1,4 @@
-const ROLES = {
-  ADMIN: 'ADMIN' || 'admin',
-  EMPLOYEE: 'EMPLOYEE' || 'employee'
+export const ROLES = {
+  ADMIN: 'admin',
+  EMPLOYEE: 'employee'
 }
