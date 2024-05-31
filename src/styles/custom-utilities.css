@@ -9,4 +9,16 @@
   .bg-gradient-navbar {
     @apply bg-gradient-to-br from-b-second-to to-b-second-from;
   }
+  .bg-gradient {
+    @apply bg-gradient-to-br from-b-second-to to-b-second-from;
+  }
+
+  /*Card custom*/
+  .card-statistic{
+    @apply relative
+  }
+  .card-statistic::before {
+    content: '';
+    @apply block absolute top-0 left-0 w-1 h-full; 
+  }
 }

@@ -1,10 +1,29 @@
 import React from 'react'
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Layout } from 'antd'
+import { useSelector } from 'react-redux'
 import Link from 'next/link'
+import { useLogoutMutation } from '@src/redux/endPoint/auth'
+import { useRouter } from 'next/router'
+import Notification from '@src/components/common/notification'
 const { Header } = Layout
 
 const Navbar = ({ collapsed, setCollapsed }) => {
+  const account = useSelector(state => state.auth.account)
+  const router = useRouter()
+  const [logout, { isLoading, isError, error }] = useLogoutMutation()
+
+  const handleLogout = async () => {
+    try {
+      const res = await logout()
+      if (res?.data?.status === 200) {
+        router.replace('/')
+      }
+    } catch (error) {
+      Notification('error', 'Logout', 'Failed call api')
+    }
+  }
+
   const MENU_ITEMS = [
     {
       key: '1',
@@ -12,9 +31,14 @@ const Navbar = ({ collapsed, setCollapsed }) => {
     },
     {
       key: '2',
-      label: <p className="font-medium text-rose-600">Logout</p>
+      label: (
+        <p className="font-medium text-rose-600" onClick={handleLogout}>
+          Logout
+        </p>
+      )
     }
   ]
+
   return (
     <Header className="p-0 !bg-b-primary-from flex justify-between items-center px-4">
       <Button
@@ -31,8 +55,7 @@ const Navbar = ({ collapsed, setCollapsed }) => {
         }}
       >
         <Button type="text" icon={<UserOutlined />}>
-          {' '}
-          Linhbui
+          {account?.username}
         </Button>
       </Dropdown>
     </Header>

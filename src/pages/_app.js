@@ -5,11 +5,18 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import AdminLayout from '&common/layout/admin/adminLayout'
-import DefaultLayout from '&common/layout/home/defaultLayout'
+import AdminLayout from '@src/components/common/layout/admin/admin-layout'
+import DefaultLayout from '@src/components/common/layout/home/default-layout'
+import dynamic from 'next/dynamic'
+import Cookies from 'js-cookie'
 
-export default function App({ Component, pageProps }) {
+function App({ Component, pageProps }) {
   const router = useRouter()
+  const cookies = Cookies.get('accessToken')
+  console.log(cookies, 'cookies')
+  useEffect(() => {
+    router.replace(router.pathname)
+  }, [cookies])
   const { asPath, pathname } = router
   const [loading, setLoading] = useState(false)
   const loadingRef = useRef(undefined)
@@ -73,3 +80,6 @@ export default function App({ Component, pageProps }) {
     </Provider>
   )
 }
+export default dynamic(() => Promise.resolve(App), {
+  ssr: false
+})
