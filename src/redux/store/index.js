@@ -35,4 +35,4 @@ const makeStore = () => {
 }
 
 export const store = makeStore()
-export const persistor = typeof window !== 'undefined' ? persistStore(store) : null;
+export const persistor = typeof window !== 'undefined' ? persistStore(store) : null

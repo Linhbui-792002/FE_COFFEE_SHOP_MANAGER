@@ -12,6 +12,7 @@ const baseQuery = fetchBaseQuery({
     console.log(getState(), 'getState()')
     console.log('Token:', token)
     console.log('Client ID:', clientId)
+    headers.set('Origin', process.env.NEXT_PUBLIC_BASE_URL)
     if (token && clientId) {
       headers.set('authorization', `Bearer ${token}`)
       headers.set('x-client-id', clientId)

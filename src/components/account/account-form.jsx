@@ -1,42 +1,40 @@
-import { ROLES } from '@src/constants';
+import { ROLES } from '@src/constants'
 import { Button, Form, Input, Modal, Select, Spin } from 'antd'
 import { Pencil, UserPlus } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react'
 
 const AccountForm = ({ label, accountId, title }) => {
+  const formRef = useRef(null)
+  const [form] = Form.useForm()
 
-  const formRef = useRef(null);
-  const [form] = Form.useForm();
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
   useEffect(() => {
     if (isModalOpen) {
       // reload();
     }
-  }, [isModalOpen]);
+  }, [isModalOpen])
 
   const showModal = () => {
-    form.resetFields();
-    setIsModalOpen(true);
-  };
+    form.resetFields()
+    setIsModalOpen(true)
+  }
 
   const handleOk = () => {
-    formRef.current?.submit();
-  };
+    formRef.current?.submit()
+  }
 
   const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
-
-  const onFinish = (values) => {
+  const onFinish = values => {
     console.log(values, 'values')
     // if (ticketId) {
     //     trigger('PUT', `eventTikets/${ticketId}`, { ...values, event_id });
     // } else {
     //     trigger('POST', 'eventTikets', { ...values, event_id });
     // }
-  };
+  }
 
   return (
     <>
@@ -44,7 +42,7 @@ const AccountForm = ({ label, accountId, title }) => {
         icon={accountId ? <Pencil size={18} /> : <UserPlus size={18} />}
         shape={accountId ? 'circle' : 'default'}
         onClick={showModal}
-        className='flex items-center w-max'
+        className="flex items-center w-max"
       >
         {label}
       </Button>
@@ -72,8 +70,8 @@ const AccountForm = ({ label, accountId, title }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your username!',
-                },
+                  message: 'Please input your username!'
+                }
               ]}
             >
               <Input />
@@ -84,8 +82,8 @@ const AccountForm = ({ label, accountId, title }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input password!',
-                },
+                  message: 'Please input password!'
+                }
               ]}
             >
               <Input.Password placeholder="Input password" />
@@ -98,23 +96,16 @@ const AccountForm = ({ label, accountId, title }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please confirm your password!',
+                  message: 'Please confirm your password!'
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (
-                      !value ||
-                      getFieldValue('password') === value
-                    ) {
-                      return Promise.resolve();
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve()
                     }
-                    return Promise.reject(
-                      new Error(
-                        'The two passwords that you entered do not match!'
-                      )
-                    );
-                  },
-                }),
+                    return Promise.reject(new Error('The two passwords that you entered do not match!'))
+                  }
+                })
               ]}
             >
               <Input.Password placeholder="Confirm password" />
@@ -126,16 +117,13 @@ const AccountForm = ({ label, accountId, title }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please choose role!',
-                },
+                  message: 'Please choose role!'
+                }
               ]}
             >
               <Select>
-                {Object.keys(ROLES)?.map((item) => (
-                  <Select.Option
-                    key={item?.key}
-                    value={item?.value}
-                  >
+                {Object.keys(ROLES)?.map(item => (
+                  <Select.Option key={item?.key} value={item?.value}>
                     {item?.key}
                   </Select.Option>
                 ))}
