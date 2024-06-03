@@ -20,7 +20,6 @@ const AccountForm = ({ label, accountId, title, type }) => {
     isLoading: isLoadingListEmployee,
     refetch: refetchListEmployee
   } = useGetEmployeesHasNotAccountQuery(accountId)
-  console.log(listEmployee, 'listEmployee')
   const [addAccount, { isLoading }] = useAddAccountMutation()
   const [editAccount, { isLoading: isEditLoading }] = useEditAccountMutation()
   const formRef = useRef(null)
@@ -47,7 +46,6 @@ const AccountForm = ({ label, accountId, title, type }) => {
       `${employee?.firstName} ${employee?.lastName}`.toLowerCase().includes(searchEmployee.toLowerCase())
     )
   }, [searchEmployee, listEmployee, isLoadingListEmployee])
-  console.log(filteredEmployee, 'filteredEmployee')
   const showModal = () => {
     setIsModalOpen(true)
   }

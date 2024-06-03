@@ -13,7 +13,6 @@ import Cookies from 'js-cookie'
 function App({ Component, pageProps }) {
   const router = useRouter()
   const cookies = Cookies.get('accessToken')
-  console.log(cookies, 'cookies')
   useEffect(() => {
     router.replace(router.pathname)
   }, [cookies])
