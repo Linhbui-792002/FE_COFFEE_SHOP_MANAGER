@@ -12,20 +12,16 @@ const Login = () => {
 
   const onFinish = async payload => {
     try {
-      const res = await login(payload)
-
-      if (res?.data?.status === 200) {
-        Notification('success', 'Login', 'Login successfully')
-        router.replace('/')
-      } else if (res?.error?.status === 409) {
-        Notification('error', 'Login', res?.error?.data?.message)
-      } else if (isError) {
-        console.log(error, 'error')
-        Notification('error', 'Login', 'Failed call api')
-      }
+      await login(payload).unwrap()
+      Notification('success', 'Login', 'Login successfully')
+      router.replace('/')
     } catch (error) {
-      console.log(error, 'error')
-      Notification('error', 'Login', 'Failed call api')
+      switch (error?.status) {
+        case 409:
+          return Notification('error', 'Login', error?.data?.message)
+        default:
+          return Notification('error', 'Login', 'Failed call api')
+      }
     }
   }
 

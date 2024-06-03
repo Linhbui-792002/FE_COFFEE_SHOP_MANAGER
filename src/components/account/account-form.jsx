@@ -1,50 +1,111 @@
-import { ROLES } from '@src/constants';
-import { Button, Form, Input, Modal, Select, Spin } from 'antd'
+import { ROLES } from '@src/constants'
+import { useAddAccountMutation, useEditAccountMutation, useGetInfoAccountQuery } from '@src/redux/endPoint/account'
+import { useGetEmployeesHasNotAccountQuery } from '@src/redux/endPoint/employee'
+import { Button, Divider, Form, Input, Modal, Select, Spin, Switch, Tooltip } from 'antd'
 import { Pencil, UserPlus } from 'lucide-react'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
+import Notification from '../common/notification'
+import TooltipCustom from '../common/tooltip'
 
-const AccountForm = ({ label, accountId, title }) => {
+const AccountForm = ({ label, accountId, title, type }) => {
+  const [searchEmployee, setSearchEmployee] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const {
+    data: accountData,
+    isLoading: isLoadingAccountData,
+    refetch
+  } = useGetInfoAccountQuery(accountId, { skip: !accountId })
+  const {
+    data: listEmployee,
+    isLoading: isLoadingListEmployee,
+    refetch: refetchListEmployee
+  } = useGetEmployeesHasNotAccountQuery(accountId)
+  console.log(listEmployee, 'listEmployee')
+  const [addAccount, { isLoading }] = useAddAccountMutation()
+  const [editAccount, { isLoading: isEditLoading }] = useEditAccountMutation()
+  const formRef = useRef(null)
+  const [form] = Form.useForm()
 
-  const formRef = useRef(null);
-  const [form] = Form.useForm();
+  useEffect(() => {
+    if (accountId) {
+      refetch()
+      refetchListEmployee()
+    }
+  }, [accountId])
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   useEffect(() => {
     if (isModalOpen) {
-      // reload();
+      refetchListEmployee()
     }
-  }, [isModalOpen]);
+  }, [isModalOpen])
+  useEffect(() => {
+    form.setFieldsValue(accountData)
+  }, [accountData])
 
+  const filteredEmployee = useMemo(() => {
+    return listEmployee?.filter(employee =>
+      `${employee?.firstName} ${employee?.lastName}`.toLowerCase().includes(searchEmployee.toLowerCase())
+    )
+  }, [searchEmployee, listEmployee, isLoadingListEmployee])
+  console.log(filteredEmployee, 'filteredEmployee')
   const showModal = () => {
-    form.resetFields();
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const handleOk = () => {
-    formRef.current?.submit();
-  };
+    formRef.current?.submit()
+  }
 
   const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
+  const handleAddAccount = async body => {
+    try {
+      await addAccount(body).unwrap()
+      Notification('success', 'Account Manager', 'Create account successfully')
+      handleCancel()
+    } catch (error) {
+      switch (error?.status) {
+        case 409:
+          return Notification('error', 'Account Manager', error?.data?.message)
+        default:
+          return Notification('error', 'Account Manager', 'Failed call api')
+      }
+    }
+  }
 
-  const onFinish = (values) => {
-    console.log(values, 'values')
-    // if (ticketId) {
-    //     trigger('PUT', `eventTikets/${ticketId}`, { ...values, event_id });
-    // } else {
-    //     trigger('POST', 'eventTikets', { ...values, event_id });
-    // }
-  };
+  const handleEditAccount = async body => {
+    try {
+      await editAccount({ ...body, accountId }).unwrap()
+      Notification('success', 'Account Manager', 'Edit account successfully')
+      handleCancel()
+    } catch (error) {
+      switch (error?.status) {
+        case 409:
+          return Notification('error', 'Account Manager', error?.data?.message)
+        default:
+          return Notification('error', 'Account Manager', 'Failed call api')
+      }
+    }
+  }
+
+  const onFinish = values => {
+    if (accountId) {
+      handleEditAccount(values)
+    } else {
+      handleAddAccount(values)
+    }
+  }
 
   return (
-    <>
+    <Spin spinning={isLoadingListEmployee || isLoadingAccountData}>
       <Button
-        icon={accountId ? <Pencil size={18} /> : <UserPlus size={18} />}
+        type={type}
+        icon={accountId ? <Pencil className="m-auto text-t-blue" /> : <UserPlus size={18} />}
         shape={accountId ? 'circle' : 'default'}
         onClick={showModal}
-        className='flex items-center w-max'
+        className="flex items-center w-max"
       >
         {label}
       </Button>
@@ -52,12 +113,13 @@ const AccountForm = ({ label, accountId, title }) => {
         title={title}
         open={isModalOpen}
         onOk={handleOk}
+        okText="Submit"
         onCancel={handleCancel}
-        // okButtonProps={{ loading: isLoading || getLoading }}
-        // cancelButtonProps={{ disabled: isLoading || getLoading }}
+        okButtonProps={{ loading: isLoading || isLoadingAccountData }}
+        cancelButtonProps={{ disabled: isLoading || isLoadingAccountData }}
         centered
       >
-        <Spin spinning={false}>
+        <Spin spinning={isLoadingListEmployee}>
           <Form
             layout="vertical"
             ref={formRef}
@@ -72,84 +134,118 @@ const AccountForm = ({ label, accountId, title }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your username!',
-                },
+                  message: 'Please input your username!'
+                }
               ]}
             >
-              <Input />
+              <Input disabled={accountId} />
             </Form.Item>
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input password!',
-                },
-              ]}
-            >
-              <Input.Password placeholder="Input password" />
-            </Form.Item>
-
-            <Form.Item
-              label="Confirm Password"
-              name="confirmPassword"
-              dependencies={['password']}
-              rules={[
-                {
-                  required: true,
-                  message: 'Please confirm your password!',
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (
-                      !value ||
-                      getFieldValue('password') === value
-                    ) {
-                      return Promise.resolve();
+            {!accountId && (
+              <>
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input password!'
                     }
-                    return Promise.reject(
-                      new Error(
-                        'The two passwords that you entered do not match!'
-                      )
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password placeholder="Confirm password" />
-            </Form.Item>
-            <Form.Item
-              className="w-40"
-              label="Choose Role"
-              name="type"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please choose role!',
-                },
-              ]}
-            >
-              <Select>
-                {Object.keys(ROLES)?.map((item) => (
-                  <Select.Option
-                    key={item?.key}
-                    value={item?.value}
-                  >
-                    {item?.key}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
+                  ]}
+                >
+                  <Input.Password placeholder="Input password" />
+                </Form.Item>
+                <Form.Item
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  dependencies={['password']}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please confirm your password!'
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                          return Promise.resolve()
+                        }
+                        return Promise.reject(new Error('The two passwords that you entered do not match!'))
+                      }
+                    })
+                  ]}
+                >
+                  <Input.Password placeholder="Confirm password" />
+                </Form.Item>
+              </>
+            )}
+            <div className="flex gap-5">
+              <Form.Item
+                className="w-full"
+                label="Choose Role"
+                name="role"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please choose role!'
+                  }
+                ]}
+                initialValue={ROLES.EMPLOYEE}
+              >
+                <Select defaultValue={ROLES.EMPLOYEE}>
+                  {Object.keys(ROLES)?.map(key => (
+                    <Select.Option key={key} value={ROLES[key]}>
+                      {key}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              {!accountId && (
+                <Form.Item label="Block" name="status" initialValue={false}>
+                  <Switch defaultValue={false} />
+                </Form.Item>
+              )}
+              <Form.Item className="w-full" label="Choose Employee" name="employeeId">
+                <Select
+                  loading={isLoadingListEmployee}
+                  showSearch
+                  filterOption={false}
+                  onSearch={setSearchEmployee}
+                  mode="single"
+                  allowClear
+                  dropdownRender={menu => (
+                    <>
+                      <div className="flex flex-col items-end">
+                        <div className="flex items-center justify-between gap-2">
+                          Add new employee
+                          <TooltipCustom title="Add new employee" color="blue">
+                            <AccountForm />
+                          </TooltipCustom>
+                        </div>
+                        <Divider
+                          style={{
+                            margin: '8px 0'
+                          }}
+                        />
+                      </div>
+                      {menu}
+                    </>
+                  )}
+                >
+                  {filteredEmployee?.map(item => (
+                    <Select.Option key={item?._id} value={item?._id}>
+                      {`${item?.firstName} ${item?.lastName}`}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+
             <Form.Item hidden>
-              <Button type="primary" htmlType="submit">
-                Add New
-              </Button>
+              <Button type="primary" htmlType="submit" />
             </Form.Item>
           </Form>
         </Spin>
       </Modal>
-    </>
+    </Spin>
   )
 }
 

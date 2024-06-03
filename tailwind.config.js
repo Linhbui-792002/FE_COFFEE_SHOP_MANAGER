@@ -12,11 +12,12 @@ module.exports = {
         't-brown': '#B58673',
         't-black': '#1a202c',
         't-text': '#363A3D',
-        't-green': '#00757b',
-        't-orange': '#DB7248',
+        't-green': '#3CA31B',
+        't-orange': '#f68b1f',
         't-white': '#ffffff',
         't-gray': '#d1cfcf',
-
+        't-blue': '#1777FF',
+        't-red': '#E53E3E',
         // background
 
         'b-black': '#363636',
