@@ -13,7 +13,6 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, { payload }) => {
       const { accessToken, refreshToken, account } = payload
-      console.log(account, refreshToken, accessToken, 'account payload')
       Cookies.set('accessToken', accessToken)
       state.accessToken = accessToken
       state.refreshToken = refreshToken

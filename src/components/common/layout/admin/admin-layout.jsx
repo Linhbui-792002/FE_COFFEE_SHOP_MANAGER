@@ -11,7 +11,7 @@ const AdminLayout = ({ children }) => {
       <Sidebar collapsed={collapsed} />
       <Layout className="!bg-b-primary-from">
         <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
-        <Content className="mx-4 p-6 min-h-[100vh] rounded-md">{children}</Content>
+        <Content className="mx-2 p-4 min-h-[100vh] rounded-md">{children}</Content>
       </Layout>
     </Layout>
   )

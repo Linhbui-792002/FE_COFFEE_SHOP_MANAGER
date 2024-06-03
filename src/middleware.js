@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { jwtDecode } from 'jwt-decode'
 import { ROLES } from './constants'
+import Cookies from 'js-cookie'
 
 const hasRole = (userRole, role) => {
   return userRole?.toLowerCase() === role?.toLowerCase()
@@ -16,6 +17,10 @@ export async function middleware(request) {
     account = (await jwtDecode(accessToken.value)) || null
   }
 
+  if (account?.status) {
+    Cookies.remove('accessToken')
+    return NextResponse.redirect(new URL('/login', request.nextUrl))
+  }
   if (isPublicPath && account) {
     if (account?.role === 'Admin') {
       return NextResponse.redirect(new URL('/admin', request.nextUrl))

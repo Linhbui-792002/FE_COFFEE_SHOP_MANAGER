@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Button, Modal, Tooltip } from 'antd'
+import { Button, Modal } from 'antd'
+import TooltipCustom from '../tooltip'
 
-const Confirm = ({ children, type, icon, colorTooltip, message, shape, danger, modalTitle, onConfirm, onCancel }) => {
+const Confirm = ({ children, type, icon, color, message, shape, danger, title, onConfirm, onCancel }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
     setIsModalOpen(true)
@@ -17,22 +18,14 @@ const Confirm = ({ children, type, icon, colorTooltip, message, shape, danger, m
     setIsModalOpen(false)
   }
   return (
-    <Tooltip title={modalTitle} arrow={false} color={colorTooltip}>
+    <TooltipCustom title={title} color={color}>
       <Button type={type} danger={danger ? true : false} shape={shape} onClick={showModal} icon={icon}>
         {children}
       </Button>
-      <Modal
-        title={modalTitle}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        closable={false}
-        okText="Confirm"
-        centered
-      >
+      <Modal title={title} open={isModalOpen} onOk={handleOk} onCancel={handleCancel} closable={false} okText="Confirm">
         <p className="text-center">{message}</p>
       </Modal>
-    </Tooltip>
+    </TooltipCustom>
   )
 }
 
