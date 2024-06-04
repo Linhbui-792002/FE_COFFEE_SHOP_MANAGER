@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Upload, message } from 'antd'
+import { Button, Col, Form, Input, Row, Upload, message } from 'antd'
 
 const normFile = e => {
   if (Array.isArray(e)) {
@@ -26,68 +26,88 @@ const FormDisabledDemo = () => {
     <Form
       form={form}
       labelCol={{ span: 4 }}
-      wrapperCol={{ span: 14 }}
+      wrapperCol={{ span: 16 }}
       layout="horizontal"
-      style={{ maxWidth: 600 }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
+      style={{ maxWidth: '100%' }}
     >
-      <div>
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: 'Please input your email!' },
-            { type: 'email', message: 'Please enter a valid email!' }
-          ]}
-        >
-          <Input />
-        </Form.Item>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: 'Please input your email!' },
+              { type: 'email', message: 'Please enter a valid email!' }
+            ]}
+            wrapperCol={{ span: 24 }}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your name of web!' }]}>
-          <Input />
-        </Form.Item>
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: 'Please input your name of web!' }]}
+            wrapperCol={{ span: 24 }}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          label="Logo"
-          name="logo"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-          extra="Upload your company logo"
-        >
-          <Upload action="/upload.do" listType="picture-card">
-            <Button style={{ border: 0, background: 'none' }} icon={<PlusOutlined />}>
-              Upload
-            </Button>
-          </Upload>
-        </Form.Item>
-      </div>
+          <Form.Item
+            label="Logo"
+            name="logo"
+            valuePropName="fileList"
+            getValueFromEvent={normFile}
+            extra="Upload your company logo"
+            wrapperCol={{ span: 24 }}
+          >
+            <Upload action="/upload.do" listType="picture-card">
+              <Button style={{ border: 0, background: 'none' }} icon={<PlusOutlined />}>
+                Upload
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
 
-      <div>
-        <Form.Item label="Phone" name="phone" rules={[{ required: true, message: 'Please input your phone number!' }]}>
-          <Input />
-        </Form.Item>
+        <Col span={12}>
+          <Form.Item
+            label="Phone"
+            name="phone"
+            rules={[{ required: true, message: 'Please input your phone number!' }]}
+            wrapperCol={{ span: 24 }}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item label="Address" name="address" rules={[{ required: true, message: 'Please input your address!' }]}>
-          <Input />
-        </Form.Item>
+          <Form.Item
+            label="Address"
+            name="address"
+            rules={[{ required: true, message: 'Please input your address!' }]}
+            wrapperCol={{ span: 24 }}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          label="Favico"
-          name="logo"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-          extra="Upload your company logo"
-        >
-          <Upload action="/upload.do" listType="picture-card">
-            <Button style={{ border: 0, background: 'none' }} icon={<PlusOutlined />}>
-              Upload
-            </Button>
-          </Upload>
-        </Form.Item>
-      </div>
+          <Form.Item
+            label="Favico"
+            name="favico"
+            valuePropName="fileList"
+            getValueFromEvent={normFile}
+            extra="Upload your company logo"
+            wrapperCol={{ span: 24 }}
+          >
+            <Upload action="/upload.do" listType="picture-card">
+              <Button style={{ border: 0, background: 'none' }} icon={<PlusOutlined />}>
+                Upload
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+      </Row>
 
-      <Form.Item>
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Button type="primary" htmlType="submit">
           Submit
         </Button>
