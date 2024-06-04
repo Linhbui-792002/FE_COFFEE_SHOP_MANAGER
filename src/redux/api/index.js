@@ -9,9 +9,6 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth?.accessToken
     const clientId = getState().auth?.account?._id
-    console.log(getState(), 'getState()')
-    console.log('Token:', token)
-    console.log('Client ID:', clientId)
     headers.set('Origin', process.env.NEXT_PUBLIC_BASE_URL)
     if (token && clientId) {
       headers.set('authorization', `Bearer ${token}`)
@@ -21,9 +18,8 @@ const baseQuery = fetchBaseQuery({
   }
 })
 
-const baseQueryWithInterceptor = async (args, api, extraOptions) => {
+export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions)
-  console.log(result, 'result')
   if (result?.error?.status === 403) {
     console.log('sending refresh token')
     const auth = api.getState().auth
@@ -38,7 +34,6 @@ const baseQueryWithInterceptor = async (args, api, extraOptions) => {
       extraOptions
     )
 
-    console.log(refreshResult?.error?.status, 'refreshResult')
     if (refreshResult?.error?.status === 500) {
       Cookies.remove('accessToken')
       window.location.replace(window.location.pathname)
@@ -61,6 +56,11 @@ const baseQueryWithInterceptor = async (args, api, extraOptions) => {
       return refreshResult
     }
   }
+  if (result?.error?.status === 401) {
+    Cookies.remove('accessToken')
+    api.dispatch(logout())
+    window.location.reload()
+  }
 
   return result
 }
@@ -68,7 +68,7 @@ const baseQueryWithInterceptor = async (args, api, extraOptions) => {
 export const api = createApi({
   baseQuery: baseQueryWithInterceptor,
   reducerPath: 'api',
-  tagTypes: ['FAVORITE', 'STATUS'],
+  tagTypes: ['FAVORITE', 'STATUS', 'EmployeesTag', 'AccountsTag', 'AccountOptionsTag'],
   extractRehydrationInfo(action, { reducerPath }) {
     if (action.type === REHYDRATE) {
       return action.payload?.[reducerPath]

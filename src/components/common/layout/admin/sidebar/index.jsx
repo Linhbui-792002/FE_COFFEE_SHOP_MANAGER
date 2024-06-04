@@ -125,7 +125,6 @@ const Sidebar = ({ collapsed = false }) => {
       return 'general'
     }
   }, [router])
-  console.log(activeKey, 'activeKey')
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
       <Link className="w-full flex justify-center items-center mt-5" href="/admin">

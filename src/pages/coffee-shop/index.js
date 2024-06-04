@@ -1,6 +1,6 @@
 import React from 'react'
-import ProductLeft from './components/productLeft'
-import OrderRight from './components/orderRight'
+import ProductLeft from '../../components/order/productLeft'
+import OrderRight from '../../components/order/orderRight'
 
 const OrderPage = () => {
   return (
