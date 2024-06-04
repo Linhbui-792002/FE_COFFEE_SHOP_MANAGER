@@ -14,7 +14,7 @@ const OrderRight = () => {
   const [activeKey, setActiveKey] = useState(initialItems[0].key)
   const [items, setItems] = useState(initialItems)
   const [prefix, setPrefix] = useState(1)
-  const [count, setCount] = useState(2) // Start with 2 since the initial tab is 1
+  const [count, setCount] = useState(2)
 
   const onChange = newActiveKey => {
     setActiveKey(newActiveKey)
@@ -24,7 +24,6 @@ const OrderRight = () => {
     let newPrefix = prefix
     let newCount = count
 
-    // Check if we need to reset count and increment prefix
     if (newCount > 20) {
       newPrefix += 1
       newCount = 1
@@ -40,7 +39,6 @@ const OrderRight = () => {
     setItems(newPanes)
     setActiveKey(newActiveKey)
 
-    // Update the count for next tab
     setPrefix(newPrefix)
     setCount(newCount + 1)
   }

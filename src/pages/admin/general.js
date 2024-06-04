@@ -1,7 +1,8 @@
+import General from '@src/components/general'
 import React from 'react'
 
 const GeneralPage = () => {
-  return <div>GeneralPage</div>
+  return <General />
 }
 
 export default GeneralPage
