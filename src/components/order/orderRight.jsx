@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Tabs } from 'antd'
-import OrderList from './components/orderList'
+import OrderList from './orderList'
 
-const OrderRight = () => {
+const OrderRight = ({ className }) => {
   const initialItems = [
     {
       label: '1-1',
@@ -74,7 +74,7 @@ const OrderRight = () => {
   }
 
   return (
-    <div className="flex w-[40%] space-x-4">
+    <div className={className + ' flex space-x-4'}>
       <Tabs
         className="w-full"
         type="editable-card"

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Tabs, Input } from 'antd'
-import ProductList from './components/ProductList'
+import ProductList from './productList'
 
 const initialItems = [
   {
@@ -11,7 +11,7 @@ const initialItems = [
   }
 ]
 
-const ProductLeft = () => {
+const ProductLeft = ({ className }) => {
   const [activeKey, setActiveKey] = useState(initialItems[0].key)
   const [items, setItems] = useState(initialItems)
   const [openModalSearch, setOpenModalSearch] = useState(false)
@@ -62,7 +62,7 @@ const ProductLeft = () => {
   }, [searchInputRef])
 
   return (
-    <div className="flex w-[58%] space-x-4 items-center">
+    <div className={className + ' flex space-x-4'}>
       <Tabs
         className="!w-full flex-grow"
         type="card"
@@ -76,7 +76,7 @@ const ProductLeft = () => {
           <div className="flex flex-col relative">
             <Input
               placeholder="Enter to search..."
-              style={{ width: '500px', height: 36 }}
+              style={{ width: '500px', height: 33 }}
               onChange={onSearchChange}
               size="middle"
               allowClear
