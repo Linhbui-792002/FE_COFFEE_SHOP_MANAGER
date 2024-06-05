@@ -38,19 +38,19 @@ const Account = () => {
 
     const filteredData = hasFilter
       ? data.filter(account => {
-          const usernameMatch =
-            !formFilterData.username ||
-            account.username
-              .replace(/\s/g, '')
-              .toLowerCase()
-              .includes(formFilterData.username.replace(/\s/g, '').toLowerCase())
-          const onlineStatusMatch =
-            formFilterData.onlineStatus === '' || account.onlineStatus === formFilterData.onlineStatus
-          const statusMatch = formFilterData.status === '' || account.status === formFilterData.status
-          const roleMatch = formFilterData.role === '' || account.role === formFilterData.role
+        const usernameMatch =
+          !formFilterData.username ||
+          account.username
+            .replace(/\s/g, '')
+            .toLowerCase()
+            .includes(formFilterData.username.replace(/\s/g, '').toLowerCase())
+        const onlineStatusMatch =
+          formFilterData.onlineStatus === '' || account.onlineStatus === formFilterData.onlineStatus
+        const statusMatch = formFilterData.status === '' || account.status === formFilterData.status
+        const roleMatch = formFilterData.role === '' || account.role === formFilterData.role
 
-          return usernameMatch && onlineStatusMatch && statusMatch && roleMatch
-        })
+        return usernameMatch && onlineStatusMatch && statusMatch && roleMatch
+      })
       : data
 
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
