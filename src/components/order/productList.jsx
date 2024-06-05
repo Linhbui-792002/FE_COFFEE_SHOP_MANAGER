@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ProductCard from './productCard'
+import { useSelector } from 'react-redux'
 
 const MOCK_PRODUCT = [
   {

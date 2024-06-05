@@ -1,68 +1,49 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Tabs } from 'antd'
 import OrderList from './orderList'
+import { useDispatch, useSelector } from 'react-redux'
+import { addOrder, removeOrder, setKeyOrderActive } from '@src/redux/slices/orderSlice'
 
 const OrderRight = ({ className }) => {
-  const initialItems = [
-    {
-      label: '1-1',
-      children: <OrderList />,
-      key: '1-1'
-    }
-  ]
+  const initialItems = useSelector(state => state.order.listOrder)
+  const activeKey = useSelector(state => state.order.keyOrderActive)
+  const dispatch = useDispatch()
+  const keyOrderActive = useSelector(state => state.order.keyOrderActive)
+  const [items, setItems] = useState([])
 
-  const [activeKey, setActiveKey] = useState(initialItems[0].key)
-  const [items, setItems] = useState(initialItems)
-  const [prefix, setPrefix] = useState(1)
-  const [count, setCount] = useState(2) // Start with 2 since the initial tab is 1
+  useEffect(() => {
+    if (initialItems.length !== 0) {
+      let order = initialItems.find(order => order.key === keyOrderActive)
+      order = { ...order, children: <OrderList /> }
+      const listOrder = initialItems.filter(item => item.key !== order.key)
+      const index = initialItems.findIndex(item => item?.key == order.key)
+      listOrder.splice(index, 0, order)
+      setItems([...listOrder])
+    } else {
+      setItems([])
+    }
+  }, [keyOrderActive, initialItems])
 
   const onChange = newActiveKey => {
-    setActiveKey(newActiveKey)
+    dispatch(setKeyOrderActive(newActiveKey))
   }
 
   const add = () => {
-    let newPrefix = prefix
-    let newCount = count
+    const newKey = initialItems.length == 0 ? 1 : initialItems[initialItems.length - 1]?.key + 1
 
-    // Check if we need to reset count and increment prefix
-    if (newCount > 20) {
-      newPrefix += 1
-      newCount = 1
-    }
-
-    const newActiveKey = `${newPrefix}-${newCount}`
-    const newPanes = [...items]
-    newPanes.push({
-      label: newActiveKey,
-      children: <OrderList />,
-      key: newActiveKey
-    })
-    setItems(newPanes)
-    setActiveKey(newActiveKey)
-
-    // Update the count for next tab
-    setPrefix(newPrefix)
-    setCount(newCount + 1)
+    const newActiveKey = `Order-${newKey}`
+    dispatch(
+      addOrder({
+        key: newKey,
+        label: newActiveKey,
+        children: null,
+        orderDetail: []
+      })
+    )
   }
 
   const remove = targetKey => {
-    let newActiveKey = activeKey
-    let lastIndex = -1
-    items.forEach((item, i) => {
-      if (item.key === targetKey) {
-        lastIndex = i - 1
-      }
-    })
-    const newPanes = items.filter(item => item.key !== targetKey)
-    if (newPanes.length && newActiveKey === targetKey) {
-      if (lastIndex >= 0) {
-        newActiveKey = newPanes[lastIndex].key
-      } else {
-        newActiveKey = newPanes[0].key
-      }
-    }
-    setItems(newPanes)
-    setActiveKey(newActiveKey)
+    dispatch(removeOrder(targetKey))
   }
 
   const onEdit = (targetKey, action) => {

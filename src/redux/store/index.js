@@ -6,17 +6,19 @@ import { root } from 'postcss'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { employeeApi } from '../endPoint/employee'
+import orderSlice from '../slices/orderSlice'
 
 const persistConfig = {
   key: root,
   storage,
-  whitelist: ['auth']
+  whitelist: ['auth', 'order']
 }
 
 const makeStore = () => {
   //add reducers
   const rootReducer = combineReducers({
     auth: authSlice,
+    order: orderSlice,
     [authApi.reducerPath]: authApi.reducer,
     [employeeApi.reducerPath]: employeeApi.reducer
   })
