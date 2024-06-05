@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
-import { Button, Col, Form, Input, Row, Upload, message } from 'antd'
+import { Button, Col, Form, Input, Row, Upload, message, Image } from 'antd'
+const getBase64 = file =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+  })
 
 const normFile = e => {
   if (Array.isArray(e)) {
@@ -9,7 +16,7 @@ const normFile = e => {
   return e?.fileList
 }
 
-const FormDisabledDemo = () => {
+const GeneralForm = () => {
   const [form] = Form.useForm()
 
   const onFinish = values => {
@@ -21,6 +28,43 @@ const FormDisabledDemo = () => {
     console.log('Failed:', errorInfo)
     message.error('Form submission failed')
   }
+
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewImage, setPreviewImage] = useState('')
+  const [fileList, setFileList] = useState([
+    {
+      uid: '-1',
+      name: 'image.png',
+      status: 'done',
+      url: '/images/background-1.png'
+    }
+  ])
+  const handlePreview = async file => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj)
+    }
+    setPreviewImage(file.url || file.preview)
+    setPreviewOpen(true)
+  }
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList)
+  const uploadButton = (
+    <button
+      style={{
+        border: 0,
+        background: 'none'
+      }}
+      type="button"
+    >
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8
+        }}
+      >
+        Upload
+      </div>
+    </button>
+  )
 
   return (
     <Form
@@ -55,6 +99,7 @@ const FormDisabledDemo = () => {
             <Input />
           </Form.Item>
 
+          {/* set default or value for uplodad with public/images/background-1.png */}
           <Form.Item
             label="Logo"
             name="logo"
@@ -63,11 +108,28 @@ const FormDisabledDemo = () => {
             extra="Upload your company logo"
             wrapperCol={{ span: 24 }}
           >
-            <Upload action="/upload.do" listType="picture-card">
-              <Button style={{ border: 0, background: 'none' }} icon={<PlusOutlined />}>
-                Upload
-              </Button>
+            <Upload
+              // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+            >
+              {fileList.length >= 8 ? null : uploadButton}
             </Upload>
+            {previewImage && (
+              <Image
+                wrapperStyle={{
+                  display: 'none'
+                }}
+                preview={{
+                  visible: previewOpen,
+                  onVisibleChange: visible => setPreviewOpen(visible),
+                  afterOpenChange: visible => !visible && setPreviewImage('')
+                }}
+                src={previewImage}
+              />
+            )}
           </Form.Item>
         </Col>
 
@@ -98,7 +160,7 @@ const FormDisabledDemo = () => {
             extra="Upload your company logo"
             wrapperCol={{ span: 24 }}
           >
-            <Upload action="/upload.do" listType="picture-card">
+            <Upload action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload" listType="picture-card">
               <Button style={{ border: 0, background: 'none' }} icon={<PlusOutlined />}>
                 Upload
               </Button>
@@ -116,4 +178,4 @@ const FormDisabledDemo = () => {
   )
 }
 
-export default FormDisabledDemo
+export default GeneralForm
