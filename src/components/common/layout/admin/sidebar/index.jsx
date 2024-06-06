@@ -114,7 +114,6 @@ const Sidebar = ({ collapsed = false }) => {
     if (router.asPath.startsWith('/admin/voucher')) {
       return 'voucher'
     }
-
     if (router.asPath.startsWith('/admin/employee')) {
       return 'employee'
     }

@@ -3,7 +3,7 @@
     "next",
     "next/core-web-vitals",
     "prettier",
-    "next/babel"
+    "next/babel",
   ],
   "settings": {
     "next": {
@@ -85,6 +85,7 @@
   "ignorePatterns": [
     "dist",
     "node_modules",
-    "src/redux/endPoint"
+    "src/redux/endPoint",
+    "jsconfig.json"
   ]
 }
