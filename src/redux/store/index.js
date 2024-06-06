@@ -9,6 +9,7 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 import { uploadApi } from '../endPoint/upload'
 import { generalApi } from '../endPoint/general'
 import { productCategoryApi } from '../endPoint/productCategory'
+import { menuInfoApi } from '../endPoint/menuInfo'
 
 const createNoopStorage = () => {
   return {
@@ -40,7 +41,8 @@ const makeStore = () => {
     [employeeApi.reducerPath]: employeeApi.reducer,
     [uploadApi.reducerPath]: uploadApi.reducer,
     [generalApi.reducerPath]: generalApi.reducer,
-    [productCategoryApi.reducerPath]: productCategoryApi.reducer
+    [productCategoryApi.reducerPath]: productCategoryApi.reducer,
+    [menuInfoApi.reducerPath]: menuInfoApi.reducer
   })
 
   const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -53,7 +55,8 @@ const makeStore = () => {
         authApi.middleware,
         employeeApi.middleware,
         uploadApi.middleware,
-        generalApi.middleware
+        generalApi.middleware,
+        menuInfoApi.middleware
       ])
   })
 

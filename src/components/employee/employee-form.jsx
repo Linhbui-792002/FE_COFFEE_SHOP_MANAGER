@@ -16,7 +16,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
     data: employeeData,
     isLoading: isLoadingEmployeeData,
     refetch
-  } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId })
+  } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId || !isModalOpen })
   const {
     data: listAccount,
     isLoading: isLoadingListAccount,
@@ -31,7 +31,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
   const [form] = Form.useForm()
   useEffect(() => {
     if (employeeId) {
-      refetch()
+      // refetch()
       refetchListAccount()
     }
   }, [employeeId])

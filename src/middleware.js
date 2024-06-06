@@ -17,7 +17,7 @@ export async function middleware(request) {
     account = (await jwtDecode(accessToken.value)) || null
   }
 
-  if (account?.status) {
+  if (account && account?.status) {
     Cookies.remove('accessToken')
     return NextResponse.redirect(new URL('/login', request.nextUrl))
   }
