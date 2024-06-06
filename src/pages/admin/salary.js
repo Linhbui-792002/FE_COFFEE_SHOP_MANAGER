@@ -1,7 +1,8 @@
+import Salary from '@src/components/salary'
 import React from 'react'
 
 const SalaryPage = () => {
-  return <div>SalaryPage</div>
+  return <Salary />
 }
 
 export default SalaryPage

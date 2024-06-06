@@ -5,6 +5,7 @@ import { authApi } from '../endPoint/auth'
 import { root } from 'postcss'
 import { persistReducer, persistStore } from 'redux-persist'
 import { employeeApi } from '../endPoint/employee'
+import { salaryApi } from '../endPoint/salary'
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 import { uploadApi } from '../endPoint/upload'
 import { generalApi } from '../endPoint/general'
@@ -41,8 +42,9 @@ const makeStore = () => {
     [employeeApi.reducerPath]: employeeApi.reducer,
     [uploadApi.reducerPath]: uploadApi.reducer,
     [generalApi.reducerPath]: generalApi.reducer,
-    [productCategoryApi.reducerPath]: productCategoryApi.reducer,
-    [menuInfoApi.reducerPath]: menuInfoApi.reducer
+    [menuInfoApi.reducerPath]: menuInfoApi.reducer,
+    [salaryApi.reducerPath]: salaryApi.reducer,
+    [productCategoryApi.reducerPath]: productCategoryApi.reducer
   })
 
   const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -56,7 +58,8 @@ const makeStore = () => {
         employeeApi.middleware,
         uploadApi.middleware,
         generalApi.middleware,
-        menuInfoApi.middleware
+        menuInfoApi.middleware,
+        salaryApi.middleware
       ])
   })
 
