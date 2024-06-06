@@ -7,7 +7,7 @@ import { Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import AdminLayout from '@src/components/common/layout/admin/admin-layout'
 import DefaultLayout from '@src/components/common/layout/home/default-layout'
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 import Cookies from 'js-cookie'
 import { PersistGate } from 'redux-persist/integration/react'
 
@@ -82,6 +82,7 @@ function App({ Component, pageProps }) {
     </Provider>
   )
 }
-export default dynamic(() => Promise.resolve(App), {
-  ssr: false
-})
+export default App
+// export default dynamic(() => Promise.resolve(App), {
+//   ssr: false,
+// })
