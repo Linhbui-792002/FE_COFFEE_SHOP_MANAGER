@@ -25,11 +25,12 @@ const ProductCategoryTable = ({ className, categories }) => {
         return (currentPage - 1) * PAGESIZE + index + 1
       }
     },
+
     {
       title: 'Product Category Name',
       dataIndex: 'name',
       key: 'name',
-      width: '60%',
+      width: '40%',
       ...getColumnSearchProps('name'),
       sorter: (a, b) => a.name.length - b.name.length
     },
@@ -37,12 +38,14 @@ const ProductCategoryTable = ({ className, categories }) => {
       title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      width: '20%',
       render: (_, { createdAt }) => convertDate(createdAt)
     },
     {
       title: 'Updated At',
       dataIndex: 'updatedAt',
       key: 'updatedAt',
+      width: '20%',
       render: (_, { updatedAt }) => convertDate(updatedAt)
     },
     {
