@@ -68,7 +68,15 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
 export const api = createApi({
   baseQuery: baseQueryWithInterceptor,
   reducerPath: 'api',
-  tagTypes: ['FAVORITE', 'STATUS', 'EmployeesTag', 'AccountsTag', 'AccountOptionsTag'],
+  tagTypes: [
+    'FAVORITE',
+    'STATUS',
+    'EmployeesTag',
+    'AccountsTag',
+    'AccountOptionsTag',
+    'GeneralsTag',
+    'ProductCategoryTag'
+  ],
   extractRehydrationInfo(action, { reducerPath }) {
     if (action.type === REHYDRATE) {
       return action.payload?.[reducerPath]

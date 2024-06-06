@@ -52,7 +52,6 @@ const ChangeStatusEmployee = ({ employee }) => {
 
 const Employee = () => {
   const { data: listEmployee, isLoading } = useGetAllEmployeeQuery()
-  console.log(listEmployee, 'listEmployee')
   const { getColumnSearchProps } = useColumnSearch()
   const columns = [
     {

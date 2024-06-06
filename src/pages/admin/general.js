@@ -1,9 +1,8 @@
-import UploadImage from '@src/components/common/uploadImage'
-import { Button, Form } from 'antd'
-import React, { useEffect, useState } from 'react'
+import General from '@src/components/general'
+import React from 'react'
 
 const GeneralPage = () => {
-  return <div></div>
+  return <General />
 }
 
 export default GeneralPage

@@ -7,6 +7,8 @@ import { persistReducer, persistStore } from 'redux-persist'
 import { employeeApi } from '../endPoint/employee'
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 import { uploadApi } from '../endPoint/upload'
+import { generalApi } from '../endPoint/general'
+import { productCategoryApi } from '../endPoint/productCategory'
 
 const createNoopStorage = () => {
   return {
@@ -36,7 +38,9 @@ const makeStore = () => {
     auth: authSlice,
     [authApi.reducerPath]: authApi.reducer,
     [employeeApi.reducerPath]: employeeApi.reducer,
-    [uploadApi.reducerPath]: uploadApi.reducer
+    [uploadApi.reducerPath]: uploadApi.reducer,
+    [generalApi.reducerPath]: generalApi.reducer,
+    [productCategoryApi.reducerPath]: productCategoryApi.reducer
   })
 
   const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -48,7 +52,8 @@ const makeStore = () => {
         //add middleware
         authApi.middleware,
         employeeApi.middleware,
-        uploadApi.middleware
+        uploadApi.middleware,
+        generalApi.middleware
       ])
   })
 

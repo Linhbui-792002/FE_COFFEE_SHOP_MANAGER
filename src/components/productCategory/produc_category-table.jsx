@@ -1,122 +1,29 @@
 import React, { useRef, useState } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Input, Space, Table } from 'antd'
+import { Highlighter } from 'lucide-react'
+import { useColumnSearch } from '../common/column-search-props'
+import TooltipCustom from '../common/tooltip'
+import ProductCategoryForm from './product_category_form'
+import { convertDate } from '@src/utils'
+
+const PAGESIZE = 5
 
 const ProductCategoryTable = ({ className, categories }) => {
-  const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchedColumn] = useState('')
-  const searchInput = useRef(null)
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm()
-    setSearchText(selectedKeys[0])
-    setSearchedColumn(dataIndex)
+  const [currentPage, setCurrentPage] = useState(1)
+  const { getColumnSearchProps } = useColumnSearch()
+  const handleTableChange = pagination => {
+    setCurrentPage(pagination.current)
   }
-  const handleReset = clearFilters => {
-    clearFilters()
-    setSearchText('')
-  }
-  const getColumnSearchProps = dataIndex => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-      <div
-        style={{
-          padding: 8
-        }}
-        onKeyDown={e => e.stopPropagation()}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: 'block'
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90
-            }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90
-            }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false
-              })
-              setSearchText(selectedKeys[0])
-              setSearchedColumn(dataIndex)
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: filtered => (
-      <SearchOutlined
-        style={{
-          color: filtered ? '#1677ff' : undefined
-        }}
-      />
-    ),
-    onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100)
-      }
-    },
-    render: text =>
-      searchedColumn === dataIndex ? (
-        <></>
-      ) : (
-        // <Highlighter
-        //   highlightStyle={{
-        //     backgroundColor: '#ffc069',
-        //     padding: 0
-        //   }}
-        //   searchWords={[searchText]}
-        //   autoEscape
-        //   textToHighlight={text ? text.toString() : ''}
-        // />
-        text
-      )
-  })
   const columns = [
     {
       title: '#',
       dataIndex: 'id',
       key: 'id',
       width: '5%',
-      render: text => <b>{text}</b>,
-      sorter: (a, b) => a.id - b.id
+      render: (text, record, index) => {
+        return (currentPage - 1) * PAGESIZE + index + 1
+      }
     },
     {
       title: 'Product Category Name',
@@ -127,17 +34,39 @@ const ProductCategoryTable = ({ className, categories }) => {
       sorter: (a, b) => a.name.length - b.name.length
     },
     {
+      title: 'Created At',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (_, { createdAt }) => convertDate(createdAt)
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      render: (_, { updatedAt }) => convertDate(updatedAt)
+    },
+    {
       title: 'Action',
       key: 'action',
       align: 'right',
       render: (text, record) => (
         <Space size="middle">
-          <a>Edit</a>
-          <a>Delete</a>
+          <TooltipCustom title="Edit Product Category" key="edit" color="blue">
+            <ProductCategoryForm productCategoryId={record?._id} type="text" title="Edit Product Category" />
+          </TooltipCustom>
         </Space>
       )
     }
   ]
-  return <Table bordered className={className} columns={columns} dataSource={categories} />
+  return (
+    <Table
+      pagination={{ pageSize: PAGESIZE }}
+      bordered
+      className={className}
+      columns={columns}
+      dataSource={categories}
+      onChange={handleTableChange}
+    />
+  )
 }
 export default ProductCategoryTable

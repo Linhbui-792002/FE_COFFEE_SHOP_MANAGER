@@ -1,5 +1,5 @@
-import { useGetListAccountNotEmployeeQuery } from '@src/redux/endPoint/account'
-import { Button, Form, Input, Modal, Spin, Select, Switch, DatePicker, Radio, InputNumber, Divider } from 'antd'
+import { useEditAccountMutation, useGetListAccountNotEmployeeQuery } from '@src/redux/endPoint/account'
+import { Button, Form, Input, Modal, Spin, Select, Switch, DatePicker, Radio, InputNumber, Divider, Tag } from 'antd'
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import Notification from '../common/notification'
 import { Pencil, UserRoundPlus } from 'lucide-react'
@@ -8,10 +8,10 @@ import AccountForm from '../account/account-form'
 import { useAddEmployeeMutation, useEditEmployeeMutation, useGetInfoEmployeeQuery } from '@src/redux/endPoint/employee'
 import dayjs from 'dayjs'
 
-const EmployeeForm = ({ label, employeeId, title, type }) => {
+const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmployeeIdFn }) => {
   const [searchAccount, setSearchAccount] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
-
+  const [accountIdAddNew, setAccountIdAddNew] = useState()
   const {
     data: employeeData,
     isLoading: isLoadingEmployeeData,
@@ -25,10 +25,10 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
 
   const [addEmployee, { isLoading }] = useAddEmployeeMutation()
   const [editEmployee, { isLoading: isLoadingUpdate }] = useEditEmployeeMutation()
+  const [editAccount, { isLoading: isLoadingEditAccount, isSuccess: isSuccessEditAccount }] = useEditAccountMutation()
 
   const formRef = useRef(null)
   const [form] = Form.useForm()
-
   useEffect(() => {
     if (employeeId) {
       refetch()
@@ -37,20 +37,26 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
   }, [employeeId])
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen || employeeId) {
       refetchListAccount()
     }
-  }, [isModalOpen])
+  }, [isModalOpen, employeeId])
+  useEffect(() => {
+    const accountId =
+      listAccount?.length != 0 && listAccount?.find(account => account?.employeeId === employeeData?._id)?._id
+    form.setFieldsValue({ ...employeeData, dob: dayjs(employeeData?.dob), accountId: accountId })
+  }, [employeeData, listAccount])
 
   useEffect(() => {
-    form.setFieldsValue({ ...employeeData, dob: dayjs(employeeData?.dob) })
-  }, [employeeData])
+    if (accountIdAddNew) {
+      form.setFieldValue('accountId', accountIdAddNew)
+    }
+  }, [accountIdAddNew, listAccount])
 
   const filteredAccount = useMemo(() => {
     return listAccount?.filter(account => account?.username?.toLowerCase().includes(searchAccount?.toLowerCase()))
   }, [searchAccount, listAccount, isLoadingListAccount])
 
-  console.log(listAccount, 'listAccount')
   const showModal = () => {
     setIsModalOpen(true)
   }
@@ -63,11 +69,37 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
     setIsModalOpen(false)
   }
 
+  const getAccountIdAddNew = accountId => {
+    setAccountIdAddNew(accountId)
+  }
+
+  const handleEditAccount = async body => {
+    try {
+      await editAccount(body).unwrap()
+    } catch (error) {
+      switch (error?.status) {
+        case 409:
+          return Notification('error', 'Account Manager', error?.data?.message)
+        default:
+          return Notification('error', 'Account Manager', 'Failed call api')
+      }
+    }
+  }
+
   const handleAddEmployee = async body => {
     try {
-      await addEmployee(body).unwrap()
+      const res = await addEmployee(body).unwrap()
+      const payloadUpdateAccount = {
+        accountId: body?.accountId,
+        employeeId: res?.metadata?._id
+      }
+      if (useSubComponent) {
+        getEmployeeIdFn(res?.metadata?._id)
+      }
+      body?.accountId && (await handleEditAccount(payloadUpdateAccount))
       Notification('success', 'Employee Manager', 'Create employee successfully')
       form.resetFields()
+      setAccountIdAddNew('')
       handleCancel()
     } catch (error) {
       switch (error?.status) {
@@ -81,7 +113,19 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
 
   const handleEditEmployee = async body => {
     try {
+      const payloadUpdateAccount = {
+        accountId: body?.accountId,
+        employeeId: employeeId
+      }
+      const accountId =
+        listAccount.length != 0 && listAccount.find(account => account?.employeeId === employeeData?._id)?._id
+      if (!body?.accountId || (accountId && accountId != body?.accountId)) {
+        await handleEditAccount({ accountId, employeeId: null })
+      } else if (body?.accountId) {
+        await handleEditAccount(payloadUpdateAccount)
+      }
       await editEmployee({ ...body, employeeId }).unwrap()
+      setAccountIdAddNew('')
       Notification('success', 'Account Manager', 'Edit account successfully')
       handleCancel()
     } catch (error) {
@@ -229,43 +273,47 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                     <Radio value={true}> Female </Radio>
                   </Radio.Group>
                 </Form.Item>
-                <Form.Item className="w-full" label="Choose Account" name="accountId">
-                  <Select
-                    loading={isLoadingListAccount}
-                    showSearch
-                    filterOption={false}
-                    onSearch={setSearchAccount}
-                    mode="single"
-                    allowClear
-                    dropdownRender={menu => (
-                      <>
-                        <div className="flex flex-col items-end">
-                          <div className="flex items-center justify-between gap-2">
-                            Add new account
-                            <TooltipCustom title="Add new account" color="blue">
-                              <AccountForm />
-                            </TooltipCustom>
+                {!useSubComponent && (
+                  <Form.Item className="w-full" label="Choose Account" name="accountId">
+                    <Select
+                      loading={isLoadingListAccount}
+                      showSearch
+                      filterOption={false}
+                      onSearch={setSearchAccount}
+                      mode="single"
+                      allowClear
+                      dropdownRender={menu => (
+                        <>
+                          <div className="flex flex-col items-end">
+                            <div className="flex items-center justify-between gap-2">
+                              Add new account
+                              <TooltipCustom title="Add new account" color="blue">
+                                <AccountForm getAccountIdFn={getAccountIdAddNew} useSubComponent={true} />
+                              </TooltipCustom>
+                            </div>
+                            <Divider
+                              style={{
+                                margin: '8px 0'
+                              }}
+                            />
                           </div>
-                          <Divider
-                            style={{
-                              margin: '8px 0'
-                            }}
-                          />
-                        </div>
-                        {menu}
-                      </>
-                    )}
-                  >
-                    {filteredAccount?.map(item => (
-                      <Select.Option key={item?._id} value={item?._id}>
-                        {item?.username}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-
-                <Form.Item label="Status doing" name="status" initialValue={false}>
-                  <Switch defaultValue={false} />
+                          {menu}
+                        </>
+                      )}
+                    >
+                      {filteredAccount?.map(item => (
+                        <Select.Option key={item?._id} value={item?._id}>
+                          {item?.username}
+                          <Tag color={item?.role == 'Employee' ? 'blue' : 'gold'} className="w-max !m-0 !ml-3">
+                            {item.role}
+                          </Tag>
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                )}
+                <Form.Item label="Status doing" name="status" initialValue={useSubComponent ?? false}>
+                  <Switch defaultValue={useSubComponent ?? false} disabled={useSubComponent} />
                 </Form.Item>
               </div>
             </div>
