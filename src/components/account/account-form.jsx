@@ -55,7 +55,6 @@ const AccountForm = ({ label, accountId, title, type }) => {
   }
 
   const handleCancel = () => {
-    form.resetFields()
     setIsModalOpen(false)
   }
 
@@ -63,6 +62,7 @@ const AccountForm = ({ label, accountId, title, type }) => {
     try {
       await addAccount(body).unwrap()
       Notification('success', 'Account Manager', 'Create account successfully')
+      form.resetFields()
       handleCancel()
     } catch (error) {
       switch (error?.status) {
