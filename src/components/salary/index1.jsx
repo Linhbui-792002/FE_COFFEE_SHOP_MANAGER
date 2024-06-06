@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Space, Spin, Table } from 'antd'
-import SalaryForm from './salary-form'
+import { Breadcrumb, Space, Spin, Table, Tag } from 'antd'
+import Link from 'next/link'
+import { Home, Receipt } from 'lucide-react'
+import TooltipCustom from '../common/tooltip'
 import { useGetAllSalariesQuery } from '@src/redux/endPoint/salary'
+import SalaryForm from './salary-form'
 
 const Salary = () => {
-  const [sortedInfo, setSortedInfo] = useState({})
-
   //declare useGetAllSalariesQuery:
-  const { data, isSuccess, isError, error } = useGetAllSalariesQuery()
+  const { data, isLoading } = useGetAllSalariesQuery()
 
   //filter Employee:
   const [employeeSet, setEmployeeSet] = useState(new Set())
@@ -98,29 +99,48 @@ const Salary = () => {
     {
       title: 'Action',
       key: 'action',
-      render: record => <SalaryForm title="Edit" salaryId={record._id} />
+      render: (_, record) => (
+        <Space size="middle">
+          <TooltipCustom title="Edit salary" key="edit" color="blue">
+            <SalaryForm title="Edit" salaryId={record._id} />
+          </TooltipCustom>
+        </Space>
+      )
     }
   ]
+
   return (
-    <>
-      <Card
-        className="relative custom-card-salary"
-        style={{ maxHeight: '53rem', overflow: 'auto', paddingTop: '0px', overflowY: 'hidden' }}
-      >
-        <div className="sticky bg-white h-16 top-0 border-b mb-2 grid grid-cols-12 items-center z-10">
-          <h2 className="col-span-6 pt-0 col-start-4 font-bold text-lg text-center">Salary of Employee</h2>
-          <SalaryForm title="Create new Salary" />
+    <Spin spinning={isLoading}>
+      <Breadcrumb
+        items={[
+          {
+            title: (
+              <Link href="/" className="!flex gap-1 items-center w-max">
+                {' '}
+                <Home size={18} /> Home
+              </Link>
+            )
+          },
+          {
+            title: (
+              <span className="!flex gap-1 items-center w-max">
+                <Receipt size={18} /> Salary
+              </span>
+            )
+          }
+        ]}
+      />
+      <div className="bg-b-white rounded-md mt-4">
+        <div className="flex justify-between items-center py-4 px-4">
+          <h1 className="text-2xl font-normal">Salary Manager</h1>
+          <SalaryForm title="Add new salary" label="New Salary" />
         </div>
-        <Spin spinning={!isSuccess}>
-          <Table
-            style={{ maxHeight: '46rem' }}
-            columns={columns}
-            dataSource={data}
-            pagination={{ total: data?.length }}
-          />
-        </Spin>
-      </Card>
-    </>
+        <div className="px-4 py-5 mt-12">
+          <Table pagination={{ pageSize: 5 }} dataSource={data} columns={columns} />
+        </div>
+      </div>
+    </Spin>
   )
 }
+
 export default Salary
