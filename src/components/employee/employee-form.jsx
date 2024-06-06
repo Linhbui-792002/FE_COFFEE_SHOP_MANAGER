@@ -16,7 +16,8 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
     data: employeeData,
     isLoading: isLoadingEmployeeData,
     refetch
-  } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId })
+  } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId || !isModalOpen })
+  console.log(employeeId, 'employeeId')
   const {
     data: listAccount,
     isLoading: isLoadingListAccount,
@@ -31,7 +32,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
   const [form] = Form.useForm()
   useEffect(() => {
     if (employeeId) {
-      refetch()
+      // refetch()
       refetchListAccount()
     }
   }, [employeeId])
@@ -273,44 +274,45 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
                     <Radio value={true}> Female </Radio>
                   </Radio.Group>
                 </Form.Item>
-                {!useSubComponent && <Form.Item className="w-full" label="Choose Account" name="accountId">
-                  <Select
-                    loading={isLoadingListAccount}
-                    showSearch
-                    filterOption={false}
-                    onSearch={setSearchAccount}
-                    mode="single"
-                    allowClear
-                    dropdownRender={menu => (
-                      <>
-                        <div className="flex flex-col items-end">
-                          <div className="flex items-center justify-between gap-2">
-                            Add new account
-                            <TooltipCustom title="Add new account" color="blue">
-                              <AccountForm getAccountIdFn={getAccountIdAddNew} useSubComponent={true} />
-                            </TooltipCustom>
+                {!useSubComponent && (
+                  <Form.Item className="w-full" label="Choose Account" name="accountId">
+                    <Select
+                      loading={isLoadingListAccount}
+                      showSearch
+                      filterOption={false}
+                      onSearch={setSearchAccount}
+                      mode="single"
+                      allowClear
+                      dropdownRender={menu => (
+                        <>
+                          <div className="flex flex-col items-end">
+                            <div className="flex items-center justify-between gap-2">
+                              Add new account
+                              <TooltipCustom title="Add new account" color="blue">
+                                <AccountForm getAccountIdFn={getAccountIdAddNew} useSubComponent={true} />
+                              </TooltipCustom>
+                            </div>
+                            <Divider
+                              style={{
+                                margin: '8px 0'
+                              }}
+                            />
                           </div>
-                          <Divider
-                            style={{
-                              margin: '8px 0'
-                            }}
-                          />
-                        </div>
-                        {menu}
-                      </>
-                    )}
-                  >
-                    {filteredAccount?.map(item => (
-                      <Select.Option key={item?._id} value={item?._id}>
-                        {item?.username}
-                        <Tag color={item?.role == 'Employee' ? 'blue' : 'gold'} className="w-max !m-0 !ml-3">
-                          {item.role}
-                        </Tag>
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                }
+                          {menu}
+                        </>
+                      )}
+                    >
+                      {filteredAccount?.map(item => (
+                        <Select.Option key={item?._id} value={item?._id}>
+                          {item?.username}
+                          <Tag color={item?.role == 'Employee' ? 'blue' : 'gold'} className="w-max !m-0 !ml-3">
+                            {item.role}
+                          </Tag>
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                )}
                 <Form.Item label="Status doing" name="status" initialValue={useSubComponent ?? false}>
                   <Switch defaultValue={useSubComponent ?? false} disabled={useSubComponent} />
                 </Form.Item>
