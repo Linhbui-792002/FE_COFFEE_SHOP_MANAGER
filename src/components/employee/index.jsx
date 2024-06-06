@@ -1,17 +1,16 @@
 import React from 'react'
-import { Breadcrumb, Space, Spin, Table, Tag } from 'antd';
-import Link from 'next/link';
-import { Home, UserRoundCog, UserRoundX, Users } from 'lucide-react';
-import EmployeeForm from './employee-form';
-import { useGetAllEmployeeQuery } from '@src/redux/endPoint/employee';
-import Confirm from '../common/confirm';
-import TooltipCustom from '../common/tooltip';
+import { Breadcrumb, Space, Spin, Table, Tag } from 'antd'
+import Link from 'next/link'
+import { Home, UserRoundCog, UserRoundX, Users } from 'lucide-react'
+import EmployeeForm from './employee-form'
+import { useGetAllEmployeeQuery } from '@src/redux/endPoint/employee'
+import Confirm from '../common/confirm'
+import TooltipCustom from '../common/tooltip'
 import { STATUS_EMPLOYEE } from '@src/constants'
-import { convertDate } from '@src/utils';
+import { convertDate } from '@src/utils'
 import { useColumnSearch } from '&common/column-search-props'
-import { useEditEmployeeMutation  } from '@src/redux/endPoint/employee'
+import { useEditEmployeeMutation } from '@src/redux/endPoint/employee'
 import Notification from '../common/notification'
-
 
 const ChangeStatusEmployee = ({ employee }) => {
   // const [changeStatus] = useBlockAccountMutation()
@@ -24,7 +23,11 @@ const ChangeStatusEmployee = ({ employee }) => {
         status: !employee.status
       }
       await editEmployee(body).unwrap()
-      Notification('success', 'Employee Manager', `${employee?.status ? 'Set status doing' : 'Set status retire'} successfully`)
+      Notification(
+        'success',
+        'Employee Manager',
+        `${employee?.status ? 'Set status doing' : 'Set status retire'} successfully`
+      )
     } catch (error) {
       Notification('error', 'Account Manager', 'Failed call api')
     }
@@ -47,48 +50,44 @@ const ChangeStatusEmployee = ({ employee }) => {
   )
 }
 
-
 const Employee = () => {
   const { data: listEmployee, isLoading } = useGetAllEmployeeQuery()
-  console.log(listEmployee, 'listEmployee');
-  const { getColumnSearchProps } = useColumnSearch();
+  console.log(listEmployee, 'listEmployee')
+  const { getColumnSearchProps } = useColumnSearch()
   const columns = [
     {
       title: 'First Name',
       dataIndex: 'firstName',
       key: 'firstName',
-      ...getColumnSearchProps('firstName', 'First Name'),
+      ...getColumnSearchProps('firstName', 'First Name')
     },
     {
       title: 'Last Name',
       dataIndex: 'lastName',
       key: 'lastName',
-      ...getColumnSearchProps('lastName', 'Last Name'),
+      ...getColumnSearchProps('lastName', 'Last Name')
     },
     {
       title: 'Phone Number',
       dataIndex: 'phoneNumber',
       key: 'phoneNumber',
-      ...getColumnSearchProps('phoneNumber', 'Phone Number'),
+      ...getColumnSearchProps('phoneNumber', 'Phone Number')
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      filters: STATUS_EMPLOYEE?.map((item) => ({ text: item?.label, value: item?.value })),
+      filters: STATUS_EMPLOYEE?.map(item => ({ text: item?.label, value: item?.value })),
       onFilter: (value, record) => {
-        return record?.status == value;
+        return record?.status == value
       },
       render: (_, { status }) => (
         <>
-          <Tag
-            color={status ? 'green' : 'red'}
-            key={status}
-          >
+          <Tag color={status ? 'green' : 'red'} key={status}>
             {status ? 'Doing' : 'Retired'}
           </Tag>
         </>
-      ),
+      )
     },
     {
       title: 'Gender',
@@ -96,26 +95,23 @@ const Employee = () => {
       key: 'gender',
       render: (_, { gender }) => (
         <>
-          <Tag
-            color={gender ? 'pink' : 'gray'}
-            key={gender}
-          >
+          <Tag color={gender ? 'pink' : 'gray'} key={gender}>
             {gender ? 'Female' : 'Male'}
           </Tag>
         </>
-      ),
+      )
     },
     {
       title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (_, { createdAt }) => (convertDate(createdAt))
+      render: (_, { createdAt }) => convertDate(createdAt)
     },
     {
       title: 'Updated At',
       dataIndex: 'updatedAt',
       key: 'updatedAt',
-      render: (_, { updatedAt }) => (convertDate(updatedAt))
+      render: (_, { updatedAt }) => convertDate(updatedAt)
     },
     {
       title: 'Action',
@@ -127,9 +123,9 @@ const Employee = () => {
             <EmployeeForm employeeId={record?._id} type="text" title="Edit employee" />
           </TooltipCustom>
         </Space>
-      ),
-    },
-  ];
+      )
+    }
+  ]
 
   return (
     <Spin spinning={isLoading}>
@@ -158,11 +154,7 @@ const Employee = () => {
           <EmployeeForm title="Add new employee" label="New Employee" />
         </div>
         <div className="px-4 py-5 mt-12">
-          <Table
-            pagination={{ pageSize: 5 }}
-            dataSource={listEmployee}
-            columns={columns}
-          />
+          <Table pagination={{ pageSize: 5 }} dataSource={listEmployee} columns={columns} />
         </div>
       </div>
     </Spin>

@@ -1,7 +1,8 @@
+import ProductCategory from '@src/components/productCategory'
 import React from 'react'
 
 const ProductCategoryPage = () => {
-  return <div>ProductCategoryPage</div>
+  return <ProductCategory />
 }
 
 export default ProductCategoryPage

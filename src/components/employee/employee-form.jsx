@@ -6,16 +6,17 @@ import { Pencil, UserRoundPlus } from 'lucide-react'
 import TooltipCustom from '../common/tooltip'
 import AccountForm from '../account/account-form'
 import { useAddEmployeeMutation, useEditEmployeeMutation, useGetInfoEmployeeQuery } from '@src/redux/endPoint/employee'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 
 const EmployeeForm = ({ label, employeeId, title, type }) => {
-
   const [searchAccount, setSearchAccount] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { data: employeeData,
+  const {
+    data: employeeData,
     isLoading: isLoadingEmployeeData,
-    refetch } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId })
+    refetch
+  } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId })
   const {
     data: listAccount,
     isLoading: isLoadingListAccount,
@@ -46,12 +47,10 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
   }, [employeeData])
 
   const filteredAccount = useMemo(() => {
-    return listAccount?.filter(account =>
-      account?.username?.toLowerCase().includes(searchAccount?.toLowerCase())
-    )
+    return listAccount?.filter(account => account?.username?.toLowerCase().includes(searchAccount?.toLowerCase()))
   }, [searchAccount, listAccount, isLoadingListAccount])
 
-  console.log(listAccount, 'listAccount');
+  console.log(listAccount, 'listAccount')
   const showModal = () => {
     setIsModalOpen(true)
   }
@@ -68,7 +67,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
     try {
       await addEmployee(body).unwrap()
       Notification('success', 'Employee Manager', 'Create employee successfully')
-    form.resetFields()
+      form.resetFields()
       handleCancel()
     } catch (error) {
       switch (error?.status) {
@@ -127,14 +126,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
         centered
       >
         <Spin spinning={false}>
-          <Form
-            layout="vertical"
-            ref={formRef}
-            onFinish={onFinish}
-            autoComplete="off"
-            disabled={isLoading}
-            form={form}
-          >
+          <Form layout="vertical" ref={formRef} onFinish={onFinish} autoComplete="off" disabled={isLoading} form={form}>
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-6">
                 <Form.Item
@@ -169,17 +161,17 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your phone number!',
+                      message: 'Please input your phone number!'
                     },
                     {
                       validator: (_, value) => {
-                        const phoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/;
+                        const phoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/
                         if (value && !phoneRegex.test(value)) {
-                          return Promise.reject('Please input a valid phone number!');
+                          return Promise.reject('Please input a valid phone number!')
                         }
-                        return Promise.resolve();
-                      },
-                    },
+                        return Promise.resolve()
+                      }
+                    }
                   ]}
                 >
                   <Input />
@@ -190,8 +182,8 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your address!',
-                    },
+                      message: 'Please input your address!'
+                    }
                   ]}
                 >
                   <Input />
@@ -202,17 +194,14 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your phone number!',
-                    },
+                      message: 'Please input your phone number!'
+                    }
                   ]}
                 >
                   <InputNumber className="w-full" suffix="VNĐ" />
                 </Form.Item>
-
-
               </div>
               <div className="col-span-6">
-
                 <Form.Item
                   label="Day of birth"
                   name="dob"
@@ -223,7 +212,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                     }
                   ]}
                 >
-                  <DatePicker format={'DD/MM/YYYY'}/>
+                  <DatePicker format={'DD/MM/YYYY'} />
                 </Form.Item>
                 <Form.Item
                   label="Gender"
@@ -240,11 +229,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                     <Radio value={true}> Female </Radio>
                   </Radio.Group>
                 </Form.Item>
-                <Form.Item
-                  className="w-full"
-                  label="Choose Account"
-                  name="accountId"
-                >
+                <Form.Item className="w-full" label="Choose Account" name="accountId">
                   <Select
                     loading={isLoadingListAccount}
                     showSearch
@@ -295,4 +280,3 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
 }
 
 export default EmployeeForm
-

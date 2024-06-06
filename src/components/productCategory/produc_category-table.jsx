@@ -1,25 +1,21 @@
-import { useState, useRef } from 'react'
-import { Button, Input, Space } from 'antd'
+import React, { useRef, useState } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
-import Highlighter from 'react-highlight-words'
+import { Button, Input, Space, Table } from 'antd'
 
-export const useColumnSearch = () => {
+const ProductCategoryTable = ({ className, categories }) => {
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
   const searchInput = useRef(null)
-
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm()
     setSearchText(selectedKeys[0])
     setSearchedColumn(dataIndex)
   }
-
   const handleReset = clearFilters => {
     clearFilters()
     setSearchText('')
   }
-
-  const getColumnSearchProps = (dataIndex, columnName) => ({
+  const getColumnSearchProps = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
       <div
         style={{
@@ -29,7 +25,7 @@ export const useColumnSearch = () => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${columnName}`}
+          placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -63,10 +59,23 @@ export const useColumnSearch = () => {
             type="link"
             size="small"
             onClick={() => {
+              confirm({
+                closeDropdown: false
+              })
+              setSearchText(selectedKeys[0])
+              setSearchedColumn(dataIndex)
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
               close()
             }}
           >
-            Close
+            close
           </Button>
         </Space>
       </div>
@@ -78,22 +87,57 @@ export const useColumnSearch = () => {
         }}
       />
     ),
-    onFilter: (value, record) => record[dataIndex].toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: visible => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100)
+      }
+    },
     render: text =>
       searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{
-            backgroundColor: '#ffc069',
-            padding: 0
-          }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
+        <></>
       ) : (
+        // <Highlighter
+        //   highlightStyle={{
+        //     backgroundColor: '#ffc069',
+        //     padding: 0
+        //   }}
+        //   searchWords={[searchText]}
+        //   autoEscape
+        //   textToHighlight={text ? text.toString() : ''}
+        // />
         text
       )
   })
-
-  return { getColumnSearchProps }
+  const columns = [
+    {
+      title: '#',
+      dataIndex: 'id',
+      key: 'id',
+      width: '5%',
+      render: text => <b>{text}</b>,
+      sorter: (a, b) => a.id - b.id
+    },
+    {
+      title: 'Product Category Name',
+      dataIndex: 'name',
+      key: 'name',
+      width: '60%',
+      ...getColumnSearchProps('name'),
+      sorter: (a, b) => a.name.length - b.name.length
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      align: 'right',
+      render: (text, record) => (
+        <Space size="middle">
+          <a>Edit</a>
+          <a>Delete</a>
+        </Space>
+      )
+    }
+  ]
+  return <Table bordered className={className} columns={columns} dataSource={categories} />
 }
+export default ProductCategoryTable

@@ -46,7 +46,6 @@ export async function middleware(request) {
   if (protectedRouter && !hasRole(account?.role, protectedRouters[protectedRouter])) {
     return NextResponse.redirect(new URL('/404', request.nextUrl.origin))
   }
-
 }
 
 export const config = {
