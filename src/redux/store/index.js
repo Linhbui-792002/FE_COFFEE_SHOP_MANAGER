@@ -8,6 +8,7 @@ import { employeeApi } from '../endPoint/employee'
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 import { uploadApi } from '../endPoint/upload'
 import { generalApi } from '../endPoint/general'
+import { productCategoryApi } from '../endPoint/productCategory'
 import { menuInfoApi } from '../endPoint/menuInfo'
 
 const createNoopStorage = () => {
@@ -40,6 +41,7 @@ const makeStore = () => {
     [employeeApi.reducerPath]: employeeApi.reducer,
     [uploadApi.reducerPath]: uploadApi.reducer,
     [generalApi.reducerPath]: generalApi.reducer,
+    [productCategoryApi.reducerPath]: productCategoryApi.reducer,
     [menuInfoApi.reducerPath]: menuInfoApi.reducer
   })
 
