@@ -6,6 +6,7 @@ import { root } from 'postcss'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { employeeApi } from '../endPoint/employee'
+import { salaryApi } from '../endPoint/salary'
 
 const persistConfig = {
   key: root,
@@ -18,7 +19,8 @@ const makeStore = () => {
   const rootReducer = combineReducers({
     auth: authSlice,
     [authApi.reducerPath]: authApi.reducer,
-    [employeeApi.reducerPath]: employeeApi.reducer
+    [employeeApi.reducerPath]: employeeApi.reducer,
+    [salaryApi.reducerPath]: salaryApi.reducer
   })
 
   const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -29,7 +31,8 @@ const makeStore = () => {
       getDefaultMiddleware({ serializableCheck: false }).concat([
         //add middleware
         authApi.middleware,
-        employeeApi.middleware
+        employeeApi.middleware,
+        salaryApi.middleware
       ])
   })
 
