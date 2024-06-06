@@ -27,7 +27,7 @@ export const employeeApi = api.injectEndpoints({
     }),
 
     getInfoEmployee: builder.query({
-      query: (employeeId) => ({
+      query: employeeId => ({
         url: `/employee/${employeeId}`
       }),
       transformResponse: res => res?.metadata,
@@ -44,12 +44,18 @@ export const employeeApi = api.injectEndpoints({
     editEmployee: builder.mutation({
       query: body => ({
         url: '/employee',
-        method: "PATCH",
+        method: 'PATCH',
         body
       }),
       invalidatesTags: ['EmployeesTag']
-
-    }),
+    })
   })
 })
-export const { useGetAllEmployeeDoingQuery, useGetEmployeesHasNotAccountQuery, useGetAllEmployeeQuery, useAddEmployeeMutation, useEditEmployeeMutation, useGetInfoEmployeeQuery } = employeeApi
+export const {
+  useGetAllEmployeeDoingQuery,
+  useGetEmployeesHasNotAccountQuery,
+  useGetAllEmployeeQuery,
+  useAddEmployeeMutation,
+  useEditEmployeeMutation,
+  useGetInfoEmployeeQuery
+} = employeeApi

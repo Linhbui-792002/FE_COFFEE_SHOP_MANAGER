@@ -1,21 +1,22 @@
-import { useGetListAccountNotEmployeeQuery } from '@src/redux/endPoint/account'
-import { Button, Form, Input, Modal, Spin, Select, Switch, DatePicker, Radio, InputNumber, Divider } from 'antd'
+import { useEditAccountMutation, useGetListAccountNotEmployeeQuery } from '@src/redux/endPoint/account'
+import { Button, Form, Input, Modal, Spin, Select, Switch, DatePicker, Radio, InputNumber, Divider, Tag } from 'antd'
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import Notification from '../common/notification'
 import { Pencil, UserRoundPlus } from 'lucide-react'
 import TooltipCustom from '../common/tooltip'
 import AccountForm from '../account/account-form'
 import { useAddEmployeeMutation, useEditEmployeeMutation, useGetInfoEmployeeQuery } from '@src/redux/endPoint/employee'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 
-const EmployeeForm = ({ label, employeeId, title, type }) => {
-
+const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmployeeIdFn }) => {
   const [searchAccount, setSearchAccount] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const { data: employeeData,
+  const [accountIdAddNew, setAccountIdAddNew] = useState()
+  const {
+    data: employeeData,
     isLoading: isLoadingEmployeeData,
-    refetch } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId })
+    refetch
+  } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId })
   const {
     data: listAccount,
     isLoading: isLoadingListAccount,
@@ -24,10 +25,10 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
 
   const [addEmployee, { isLoading }] = useAddEmployeeMutation()
   const [editEmployee, { isLoading: isLoadingUpdate }] = useEditEmployeeMutation()
+  const [editAccount, { isLoading: isLoadingEditAccount, isSuccess: isSuccessEditAccount }] = useEditAccountMutation()
 
   const formRef = useRef(null)
   const [form] = Form.useForm()
-
   useEffect(() => {
     if (employeeId) {
       refetch()
@@ -36,22 +37,26 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
   }, [employeeId])
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen || employeeId) {
       refetchListAccount()
     }
-  }, [isModalOpen])
+  }, [isModalOpen, employeeId])
+  useEffect(() => {
+    const accountId =
+      listAccount?.length != 0 && listAccount?.find(account => account?.employeeId === employeeData?._id)?._id
+    form.setFieldsValue({ ...employeeData, dob: dayjs(employeeData?.dob), accountId: accountId })
+  }, [employeeData, listAccount])
 
   useEffect(() => {
-    form.setFieldsValue({ ...employeeData, dob: dayjs(employeeData?.dob) })
-  }, [employeeData])
+    if (accountIdAddNew) {
+      form.setFieldValue('accountId', accountIdAddNew)
+    }
+  }, [accountIdAddNew, listAccount])
 
   const filteredAccount = useMemo(() => {
-    return listAccount?.filter(account =>
-      account?.username?.toLowerCase().includes(searchAccount?.toLowerCase())
-    )
+    return listAccount?.filter(account => account?.username?.toLowerCase().includes(searchAccount?.toLowerCase()))
   }, [searchAccount, listAccount, isLoadingListAccount])
 
-  console.log(listAccount, 'listAccount');
   const showModal = () => {
     setIsModalOpen(true)
   }
@@ -64,11 +69,37 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
     setIsModalOpen(false)
   }
 
+  const getAccountIdAddNew = accountId => {
+    setAccountIdAddNew(accountId)
+  }
+
+  const handleEditAccount = async body => {
+    try {
+      await editAccount(body).unwrap()
+    } catch (error) {
+      switch (error?.status) {
+        case 409:
+          return Notification('error', 'Account Manager', error?.data?.message)
+        default:
+          return Notification('error', 'Account Manager', 'Failed call api')
+      }
+    }
+  }
+
   const handleAddEmployee = async body => {
     try {
-      await addEmployee(body).unwrap()
+      const res = await addEmployee(body).unwrap()
+      const payloadUpdateAccount = {
+        accountId: body?.accountId,
+        employeeId: res?.metadata?._id
+      }
+      if (useSubComponent) {
+        getEmployeeIdFn(res?.metadata?._id)
+      }
+      body?.accountId && (await handleEditAccount(payloadUpdateAccount))
       Notification('success', 'Employee Manager', 'Create employee successfully')
-    form.resetFields()
+      form.resetFields()
+      setAccountIdAddNew('')
       handleCancel()
     } catch (error) {
       switch (error?.status) {
@@ -82,7 +113,19 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
 
   const handleEditEmployee = async body => {
     try {
+      const payloadUpdateAccount = {
+        accountId: body?.accountId,
+        employeeId: employeeId
+      }
+      const accountId =
+        listAccount.length != 0 && listAccount.find(account => account?.employeeId === employeeData?._id)?._id
+      if (!body?.accountId || (accountId && accountId != body?.accountId)) {
+        await handleEditAccount({ accountId, employeeId: null })
+      } else if (body?.accountId) {
+        await handleEditAccount(payloadUpdateAccount)
+      }
       await editEmployee({ ...body, employeeId }).unwrap()
+      setAccountIdAddNew('')
       Notification('success', 'Account Manager', 'Edit account successfully')
       handleCancel()
     } catch (error) {
@@ -127,14 +170,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
         centered
       >
         <Spin spinning={false}>
-          <Form
-            layout="vertical"
-            ref={formRef}
-            onFinish={onFinish}
-            autoComplete="off"
-            disabled={isLoading}
-            form={form}
-          >
+          <Form layout="vertical" ref={formRef} onFinish={onFinish} autoComplete="off" disabled={isLoading} form={form}>
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-6">
                 <Form.Item
@@ -169,17 +205,17 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your phone number!',
+                      message: 'Please input your phone number!'
                     },
                     {
                       validator: (_, value) => {
-                        const phoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/;
+                        const phoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/
                         if (value && !phoneRegex.test(value)) {
-                          return Promise.reject('Please input a valid phone number!');
+                          return Promise.reject('Please input a valid phone number!')
                         }
-                        return Promise.resolve();
-                      },
-                    },
+                        return Promise.resolve()
+                      }
+                    }
                   ]}
                 >
                   <Input />
@@ -190,8 +226,8 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your address!',
-                    },
+                      message: 'Please input your address!'
+                    }
                   ]}
                 >
                   <Input />
@@ -202,17 +238,14 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your phone number!',
-                    },
+                      message: 'Please input your phone number!'
+                    }
                   ]}
                 >
                   <InputNumber className="w-full" suffix="VNĐ" />
                 </Form.Item>
-
-
               </div>
               <div className="col-span-6">
-
                 <Form.Item
                   label="Day of birth"
                   name="dob"
@@ -223,7 +256,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                     }
                   ]}
                 >
-                  <DatePicker format={'DD/MM/YYYY'}/>
+                  <DatePicker format={'DD/MM/YYYY'} />
                 </Form.Item>
                 <Form.Item
                   label="Gender"
@@ -240,11 +273,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                     <Radio value={true}> Female </Radio>
                   </Radio.Group>
                 </Form.Item>
-                <Form.Item
-                  className="w-full"
-                  label="Choose Account"
-                  name="accountId"
-                >
+                {!useSubComponent && <Form.Item className="w-full" label="Choose Account" name="accountId">
                   <Select
                     loading={isLoadingListAccount}
                     showSearch
@@ -258,7 +287,7 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                           <div className="flex items-center justify-between gap-2">
                             Add new account
                             <TooltipCustom title="Add new account" color="blue">
-                              <AccountForm />
+                              <AccountForm getAccountIdFn={getAccountIdAddNew} useSubComponent={true} />
                             </TooltipCustom>
                           </div>
                           <Divider
@@ -274,13 +303,16 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
                     {filteredAccount?.map(item => (
                       <Select.Option key={item?._id} value={item?._id}>
                         {item?.username}
+                        <Tag color={item?.role == 'Employee' ? 'blue' : 'gold'} className="w-max !m-0 !ml-3">
+                          {item.role}
+                        </Tag>
                       </Select.Option>
                     ))}
                   </Select>
                 </Form.Item>
-
-                <Form.Item label="Status doing" name="status" initialValue={false}>
-                  <Switch defaultValue={false} />
+                }
+                <Form.Item label="Status doing" name="status" initialValue={useSubComponent ?? false}>
+                  <Switch defaultValue={useSubComponent ?? false} disabled={useSubComponent} />
                 </Form.Item>
               </div>
             </div>
@@ -295,4 +327,3 @@ const EmployeeForm = ({ label, employeeId, title, type }) => {
 }
 
 export default EmployeeForm
-
