@@ -17,7 +17,6 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
     isLoading: isLoadingEmployeeData,
     refetch
   } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId || !isModalOpen })
-  console.log(employeeId, 'employeeId')
   const {
     data: listAccount,
     isLoading: isLoadingListAccount,

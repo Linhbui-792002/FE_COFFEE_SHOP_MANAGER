@@ -23,7 +23,6 @@ const UploadImage = ({ setData, getDataFn, onChange, value }) => {
     }
   }, [setData])
 
-  console.log(process.env.PUBLIC_IMAGE_API_BASE_URL, 'process.env.PUBLIC_IMAGE_API_BASE_URL')
   const handlePreview = async file => {
     if (file.url) {
       setPreviewImage(file.url)
