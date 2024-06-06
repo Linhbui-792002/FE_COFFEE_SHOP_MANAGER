@@ -15,12 +15,11 @@ export const STATUS_ONLINE = {
 
 export const STATUS_EMPLOYEE = [
   {
-    label: "Doing",
-    value: true,
-
+    label: 'Doing',
+    value: true
   },
   {
-    label: "Retire",
-    value: false,
+    label: 'Retire',
+    value: false
   }
 ]

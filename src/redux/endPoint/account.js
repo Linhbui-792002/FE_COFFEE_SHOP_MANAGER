@@ -16,7 +16,7 @@ export const employeeApi = api.injectEndpoints({
       }
     }),
     getListAccountNotEmployee: builder.query({
-      query: (employeeId) => ({
+      query: employeeId => ({
         url: `/account/list/accountNotExistEmployee/${employeeId && employeeId}`
       }),
       transformResponse: res => res?.metadata,

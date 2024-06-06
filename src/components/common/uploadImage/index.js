@@ -25,17 +25,15 @@ const UploadImage = ({ setData, getDataFn, onChange, value }) => {
 
   const handlePreview = async file => {
     if (file.url) {
-
-      setPreviewImage(file.url);
+      setPreviewImage(file.url)
     } else {
-
       if (!file.preview) {
-        file.preview = await getBase64(file.originFileObj);
+        file.preview = await getBase64(file.originFileObj)
       }
-      setPreviewImage(file.preview);
+      setPreviewImage(file.preview)
     }
-    setPreviewOpen(true);
-  };
+    setPreviewOpen(true)
+  }
 
   const handleChange = ({ fileList: newFileList }) => {
     setFileList(newFileList)
@@ -72,7 +70,6 @@ const UploadImage = ({ setData, getDataFn, onChange, value }) => {
         return Notification('error', 'Upload image', 'Failed call api')
     }
   }
-
 
   return (
     <>
