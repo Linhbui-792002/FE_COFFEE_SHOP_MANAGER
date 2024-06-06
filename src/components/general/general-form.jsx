@@ -1,180 +1,152 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
-import { Button, Col, Form, Input, Row, Upload, message, Image } from 'antd'
-const getBase64 = file =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = error => reject(error)
-  })
-
-const normFile = e => {
-  if (Array.isArray(e)) {
-    return e
-  }
-  return e?.fileList
-}
+import { Button, Col, Form, Input, Row, Upload, message, Image, Spin } from 'antd'
+import UploadImage from '../common/uploadImage'
+import { useGetGeneralQuery, useUpdateGeneralMutation } from '@src/redux/endPoint/general'
+import Notification from '../common/notification'
 
 const GeneralForm = () => {
   const [form] = Form.useForm()
+  const { data: generalInfo, isLoading: isLoadingGeneral } = useGetGeneralQuery()
+  const [updateGeneral, { isLoading }] = useUpdateGeneralMutation()
+
+  const handleAddGeneral = async body => {
+    try {
+      await updateGeneral(body).unwrap()
+      Notification('success', 'General Manage', 'General info has been updated successfully')
+    } catch (error) {
+      switch (error?.status) {
+        case 409:
+          return Notification('error', 'General Manage', error?.data?.message)
+        default:
+          return Notification('error', 'General Manage', 'Failed call api')
+      }
+    }
+  }
+
+  const handleUpdateGeneral = async body => {
+    try {
+      await updateGeneral({ ...body, generalId: generalInfo._id }).unwrap()
+      Notification('success', 'General Manage', 'General info has been updated successfully')
+    } catch (error) {
+      switch (error?.status) {
+        case 409:
+          return Notification('error', 'General Manage', error?.data?.message)
+        default:
+          return Notification('error', 'General Manage', 'Failed call api')
+      }
+    }
+  }
 
   const onFinish = values => {
-    console.log('Form values:', values)
-    message.success('Form submitted successfully')
+    const generalId = form.getFieldValue('generalId')
+    if (generalId) {
+      handleUpdateGeneral(values)
+    } else {
+      handleAddGeneral(values)
+    }
   }
 
   const onFinishFailed = errorInfo => {
-    console.log('Failed:', errorInfo)
-    message.error('Form submission failed')
+    Notification('error', 'General Manage', 'Form submission failed')
   }
 
-  const [previewOpen, setPreviewOpen] = useState(false)
-  const [previewImage, setPreviewImage] = useState('')
-  const [fileList, setFileList] = useState([
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: '/images/background-1.png'
-    }
-  ])
-  const handlePreview = async file => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj)
-    }
-    setPreviewImage(file.url || file.preview)
-    setPreviewOpen(true)
+  const getImageLogo = data => {
+    form.setFieldValue('logo', data)
   }
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList)
-  const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: 'none'
-      }}
-      type="button"
-    >
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8
-        }}
-      >
-        Upload
-      </div>
-    </button>
-  )
+
+  const getImageFavicon = data => {
+    form.setFieldValue('favicon', data)
+  }
+
+  useEffect(() => {
+    if (generalInfo) {
+      form.setFieldsValue({
+        email: generalInfo.email,
+        name: generalInfo.name,
+        phone: generalInfo.phone,
+        address: generalInfo.address,
+        logo: generalInfo.logo,
+        favicon: generalInfo.favicon,
+        generalId: generalInfo._id
+      })
+    }
+  }, [generalInfo])
 
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 4 }}
-      wrapperCol={{ span: 16 }}
-      layout="horizontal"
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      style={{ maxWidth: '100%' }}
-    >
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
-            ]}
-            wrapperCol={{ span: 24 }}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[{ required: true, message: 'Please input your name of web!' }]}
-            wrapperCol={{ span: 24 }}
-          >
-            <Input />
-          </Form.Item>
-
-          {/* set default or value for uplodad with public/images/background-1.png */}
-          <Form.Item
-            label="Logo"
-            name="logo"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-            extra="Upload your company logo"
-            wrapperCol={{ span: 24 }}
-          >
-            <Upload
-              // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleChange}
+    <Spin spinning={isLoadingGeneral}>
+      <Form
+        form={form}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 16 }}
+        layout="horizontal"
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        style={{ maxWidth: '100%' }}
+      >
+        <Row gutter={16}>
+          <Col span={14}>
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                { required: true, message: 'Please input your email!' },
+                { type: 'email', message: 'Please enter a valid email!' }
+              ]}
+              wrapperCol={{ span: 24 }}
             >
-              {fileList.length >= 8 ? null : uploadButton}
-            </Upload>
-            {previewImage && (
-              <Image
-                wrapperStyle={{
-                  display: 'none'
-                }}
-                preview={{
-                  visible: previewOpen,
-                  onVisibleChange: visible => setPreviewOpen(visible),
-                  afterOpenChange: visible => !visible && setPreviewImage('')
-                }}
-                src={previewImage}
-              />
-            )}
-          </Form.Item>
-        </Col>
+              <Input />
+            </Form.Item>
 
-        <Col span={12}>
-          <Form.Item
-            label="Phone"
-            name="phone"
-            rules={[{ required: true, message: 'Please input your phone number!' }]}
-            wrapperCol={{ span: 24 }}
-          >
-            <Input />
-          </Form.Item>
+            <Form.Item hidden name="generalId" wrapperCol={{ span: 24 }}>
+              <Input hidden />
+            </Form.Item>
 
-          <Form.Item
-            label="Address"
-            name="address"
-            rules={[{ required: true, message: 'Please input your address!' }]}
-            wrapperCol={{ span: 24 }}
-          >
-            <Input />
-          </Form.Item>
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[{ required: true, message: 'Please input your name of web!' }]}
+              wrapperCol={{ span: 24 }}
+            >
+              <Input />
+            </Form.Item>
 
-          <Form.Item
-            label="Favico"
-            name="favico"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-            extra="Upload your company logo"
-            wrapperCol={{ span: 24 }}
-          >
-            <Upload action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload" listType="picture-card">
-              <Button style={{ border: 0, background: 'none' }} icon={<PlusOutlined />}>
-                Upload
-              </Button>
-            </Upload>
-          </Form.Item>
-        </Col>
-      </Row>
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[{ required: true, message: 'Please input your phone number!' }]}
+              wrapperCol={{ span: 24 }}
+            >
+              <Input />
+            </Form.Item>
 
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item>
-    </Form>
+            <Form.Item
+              label="Address"
+              name="address"
+              rules={[{ required: true, message: 'Please input your address!' }]}
+              wrapperCol={{ span: 24 }}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+
+          <Col span={10}>
+            <Form.Item label="Logo" name="logo" valuePropName="fileList" wrapperCol={{ span: 24 }}>
+              <UploadImage getDataFn={getImageLogo} setData={form.getFieldValue('logo')} />
+            </Form.Item>
+            <Form.Item label="Favicon" name="favicon" valuePropName="fileList" wrapperCol={{ span: 24 }}>
+              <UploadImage getDataFn={getImageFavicon} setData={form.getFieldValue('favicon')} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit" className="w-[50%]">
+            Update
+          </Button>
+        </Form.Item>
+      </Form>
+    </Spin>
   )
 }
 

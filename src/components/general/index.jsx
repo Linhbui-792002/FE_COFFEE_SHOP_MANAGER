@@ -1,29 +1,11 @@
 import { Breadcrumb, Spin } from 'antd'
 import { Home, Settings } from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import GeneralForm from './general-form'
-
-const MOCK_GENERAL = {
-  email: 'demo@gmail.com',
-  phone: 123456789,
-  address: 'Đại Học FPT',
-  logo: 'url demo'
-}
 
 const General = () => {
   const [isLoadingGeneral, setIsLoadingGeneral] = useState(false)
-
-  //   const getGeneral = () => {
-  //     setIsLoadingGeneral(true)
-  //     setTimeout(() => {
-  //       setIsLoadingGeneral(false)
-  //     }, 2000)
-  //   }
-
-  //   useEffect(() => {
-  //     getGeneral()
-  //   }, [])
   return (
     <Spin spinning={isLoadingGeneral}>
       <Breadcrumb

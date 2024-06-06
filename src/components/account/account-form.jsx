@@ -81,6 +81,8 @@ const AccountForm = ({ label, accountId, title, type }) => {
       handleCancel()
     } catch (error) {
       switch (error?.status) {
+        case 400:
+          return Notification('error', 'Account Manager', error?.data?.message)
         case 409:
           return Notification('error', 'Account Manager', error?.data?.message)
         default:
