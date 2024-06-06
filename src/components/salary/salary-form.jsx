@@ -30,22 +30,6 @@ const SalaryForm = ({ salaryId, title }) => {
   //Get all employee has account:
   const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeQuery()
 
-  //Get all employee has account:
-  if (salaryId != null && isModalOpen) {
-    const { data: salaryInfo, isLoading: isLoadingSalaryData, refetch } = useGetInfoSalaryQuery(salaryId)
-
-    useEffect(() => {
-      form.setFieldsValue({
-        employeeId: salaryInfo?.employeeId?._id,
-        bonus: salaryInfo?.bonus,
-        workTerm: salaryInfo?.workTerm,
-        hardSalary: salaryInfo?.hardSalary,
-        bonusPercent: salaryInfo?.bonusPercent
-      }),
-        [salaryInfo]
-    })
-  }
-
   //filter Employee
   const [searchEmployee, setSearchEmployee] = useState('')
 
@@ -53,6 +37,9 @@ const SalaryForm = ({ salaryId, title }) => {
   const [salary, setHardSalary] = useState('')
   const handleEmployee = Form.useWatch('employeeId', form)
   useEffect(() => {
+    if (salaryId) {
+      return
+    }
     const hardSalary = employeeData?.find(item => item?._id == handleEmployee)?.hardSalary
     form.setFieldValue(
       'totalSalary',
@@ -111,6 +98,26 @@ const SalaryForm = ({ salaryId, title }) => {
   const showModal = () => {
     setIsModalOpen(true)
   }
+
+  const { data: salaryInfo, isLoading: isLoadingSalaryData, refetch } = useGetInfoSalaryQuery(salaryId, {
+    skip: !salaryId || !isModalOpen
+  });
+
+  //Get all employee has account:
+  useEffect(() => {
+    if (salaryInfo && isModalOpen) {
+      form.setFieldsValue({
+        employeeId: salaryInfo.employeeId?._id,
+        bonus: salaryInfo.bonus,
+        workTerm: salaryInfo.workTerm,
+        hardSalary: salaryInfo.hardSalary,
+        bonusPercent: salaryInfo.bonusPercent,
+        deduction: salaryInfo.deduction,
+        totalSalary: salaryInfo.totalSalary,
+        dateOff: salaryInfo.dateOff,
+      });
+    }
+  }, [salaryInfo, isModalOpen, form]);
 
   const onFinish = async () => {
     const dataForm = form.getFieldsValue()

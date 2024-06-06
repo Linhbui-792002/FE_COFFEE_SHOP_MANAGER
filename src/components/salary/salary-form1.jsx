@@ -88,6 +88,7 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
       handleAddSalaryInfo(values)
     }
   }
+  
   return (
     <Spin spinning={isLoadingSalaryInfo}>
       <Button
