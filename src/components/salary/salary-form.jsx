@@ -1,4 +1,9 @@
-import { useAddSalaryMutation, useEditSalaryMutation, useGetAllEmployeeQuery, useGetInfoSalaryQuery } from '@src/redux/endPoint/salary'
+import {
+  useAddSalaryMutation,
+  useEditSalaryMutation,
+  useGetAllEmployeeQuery,
+  useGetInfoSalaryQuery
+} from '@src/redux/endPoint/salary'
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Select, Spin } from 'antd'
 import { FilePenLine, Pencil, UserPlus } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
@@ -14,7 +19,7 @@ const SalaryForm = ({ salaryId, title }) => {
 
   //declare api:
   const [addSalary, isLoading] = useAddSalaryMutation()
-  const [editSalary, isLoadingEdit] = useEditSalaryMutation();
+  const [editSalary, isLoadingEdit] = useEditSalaryMutation()
 
   //handle close form:
   const handleCloseModal = () => {
@@ -27,7 +32,7 @@ const SalaryForm = ({ salaryId, title }) => {
 
   //Get all employee has account:
   if (salaryId != null && isModalOpen) {
-    const { data: salaryInfo, isLoading: isLoadingSalaryData, refetch } = useGetInfoSalaryQuery(salaryId);
+    const { data: salaryInfo, isLoading: isLoadingSalaryData, refetch } = useGetInfoSalaryQuery(salaryId)
 
     useEffect(() => {
       form.setFieldsValue({
@@ -35,13 +40,14 @@ const SalaryForm = ({ salaryId, title }) => {
         bonus: salaryInfo?.bonus,
         workTerm: salaryInfo?.workTerm,
         hardSalary: salaryInfo?.hardSalary,
-        bonusPercent: salaryInfo?.bonusPercent,
-      }), [salaryInfo]
+        bonusPercent: salaryInfo?.bonusPercent
+      }),
+        [salaryInfo]
     })
   }
 
   //filter Employee
-  const [searchEmployee, setSearchEmployee] = useState("")
+  const [searchEmployee, setSearchEmployee] = useState('')
 
   //get hardSalary:
   const [salary, setHardSalary] = useState('')
@@ -123,12 +129,12 @@ const SalaryForm = ({ salaryId, title }) => {
     try {
       if (!salaryId) {
         await addSalary(payload).unwrap()
-        Notification('success', 'Create Salary', 'Create Salary successfully');
+        Notification('success', 'Create Salary', 'Create Salary successfully')
       } else {
         await editSalary({ ...payload, _id: salaryId }).unwrap()
-        Notification('success', 'Edit Salary', 'Edit Salary successfully');
+        Notification('success', 'Edit Salary', 'Edit Salary successfully')
       }
-      handleCloseModal();
+      handleCloseModal()
     } catch (error) {
       console.error(error)
       Notification('error', 'Create Salary Fail', error?.data?.message)
@@ -137,7 +143,6 @@ const SalaryForm = ({ salaryId, title }) => {
 
   return (
     <Spin spinning={isLoadingEmployeeData}>
-
       <Button
         icon={salaryId ? <FilePenLine /> : <UserPlus size={18} />}
         onClick={showModal}
@@ -207,12 +212,7 @@ const SalaryForm = ({ salaryId, title }) => {
                 }
               ]}
             >
-              {salaryId
-                ?
-                <Input readOnly />
-                :
-                <DatePicker className="w-full" picker="month"></DatePicker>
-              }
+              {salaryId ? <Input readOnly /> : <DatePicker className="w-full" picker="month"></DatePicker>}
             </Form.Item>
 
             <Form.Item label="Hard Salary" name="hardSalary">

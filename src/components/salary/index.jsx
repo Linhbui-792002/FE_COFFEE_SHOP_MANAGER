@@ -17,7 +17,6 @@ const SalaryApp = () => {
   const [workTermSet, setWorkTermSet] = useState(new Set())
   const [filterWorkTerm, setFilterWorkTerm] = useState([])
 
-
   useEffect(() => {
     if (data) {
       employeeSet.clear()
@@ -26,21 +25,18 @@ const SalaryApp = () => {
         const name = `${item.employeeId.lastName} ${item.employeeId.firstName}`
         if (!employeeSet.has(name)) {
           employeeSet.add(name)
-        };
+        }
         if (!workTermSet.has(item.workTerm)) {
           workTermSet.add(item.workTerm)
         }
       })
-      setFilterEmployeeOption([...employeeSet]);
+      setFilterEmployeeOption([...employeeSet])
       setFilterWorkTerm([...workTermSet])
     } else {
-      setFilterEmployeeOption([]);
+      setFilterEmployeeOption([])
       setFilterWorkTerm([])
     }
   }, [data])
-
-
-
 
   const columns = [
     {
@@ -102,14 +98,15 @@ const SalaryApp = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (record) => (
-        <SalaryForm title="Edit" salaryId={record._id} />
-      )
+      render: record => <SalaryForm title="Edit" salaryId={record._id} />
     }
   ]
   return (
     <>
-      <Card className="relative custom-card-salary" style={{ maxHeight: '53rem', overflow: 'auto', paddingTop: '0px', overflowY: 'hidden' }}>
+      <Card
+        className="relative custom-card-salary"
+        style={{ maxHeight: '53rem', overflow: 'auto', paddingTop: '0px', overflowY: 'hidden' }}
+      >
         <div className="sticky bg-white h-16 top-0 border-b mb-2 grid grid-cols-12 items-center z-10">
           <h2 className="col-span-6 pt-0 col-start-4 font-bold text-lg text-center">Salary of Employee</h2>
           <SalaryForm title="Create new Salary" />
