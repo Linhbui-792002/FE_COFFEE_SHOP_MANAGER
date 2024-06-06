@@ -5,6 +5,7 @@ import { Home, Receipt } from 'lucide-react'
 import TooltipCustom from '../common/tooltip'
 import { useGetAllSalariesQuery } from '@src/redux/endPoint/salary'
 import SalaryForm from './salary-form'
+import SalaryForm1 from './salary-form1'
 
 const Salary = () => {
   //declare useGetAllSalariesQuery:

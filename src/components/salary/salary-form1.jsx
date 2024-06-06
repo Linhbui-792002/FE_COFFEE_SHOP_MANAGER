@@ -9,9 +9,11 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeQuery()
+
   const { data: dataSalaryInfo, isLoading: isLoadingSalaryInfo } = useGetInfoSalaryQuery(salaryId, {
     skip: !salaryId || !isModalOpen
-  })
+  });
+  
   const [createNewSalaryInfo, { isLoading: isLoadingCreateSalaryInfo }] = useAddSalaryMutation()
   const [updateNewSalaryInfo, { isLoading: isLoadingUpdateSalaryInfo }] = useEditSalaryMutation()
 
@@ -21,17 +23,86 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
   //filter Employee
   const [searchEmployee, setSearchEmployee] = useState('')
   const [totalSalary, setTotalSalary] = useState(0)
-  const [maxDayOff, setMaxDayOff] = useState(0)
 
-  // chưa xư í
+  useEffect(() => {
+    if (dataSalaryInfo && isModalOpen) {
+      form.setFieldsValue({
+        employeeId: dataSalaryInfo.employeeId?._id,
+        bonus: dataSalaryInfo.bonus,
+        workTerm: dataSalaryInfo.workTerm,
+        hardSalary: dataSalaryInfo.hardSalary,
+        bonusPercent: dataSalaryInfo.bonusPercent,
+        deduction: dataSalaryInfo.deduction,
+        totalSalary: dataSalaryInfo.totalSalary,
+        dateOff: dataSalaryInfo.dateOff,
+      });
+    }
+  }, [dataSalaryInfo, isModalOpen, form]);
+
+  //get hardSalary:
+  const [salary, setHardSalary] = useState('')
+  const handleEmployee = Form.useWatch('employeeId', form)
+  useEffect(() => {
+    if (salaryId) {
+      return
+    }
+    const hardSalary = employeeData?.find(item => item?._id == handleEmployee)?.hardSalary
+    form.setFieldValue(
+      'totalSalary',
+      hanldeTotalSalary(
+        Number(hardSalary),
+        Number(form.getFieldValue('bonus')),
+        Number(form.getFieldValue('deduction'))
+      )
+    )
+    form.setFieldValue('hardSalary', hardSalary)
+  }, [handleEmployee])
+
+  const [maxDayOff, setMaxDayOff] = useState(0)
+  const handleWorkTerm = Form.useWatch('workTerm', form)
+  useEffect(() => {
+    const month = handleWorkTerm ? handleWorkTerm.$d : new Date()
+    setMaxDayOff(new Date(month?.getFullYear(), month?.getMonth() + 1, 0).getDate())
+  }, [handleWorkTerm])
+
+  //get bonus:
+  const handleBonusPercent = Form.useWatch('bonusPercent', form)
+  useEffect(() => {
+    const bonusPercent = handleBonusPercent ? handleBonusPercent : 0
+    const totalBonus = (form.getFieldValue('hardSalary') * bonusPercent) / 100
+    form.setFieldValue(
+      'totalSalary',
+      hanldeTotalSalary(
+        Number(form.getFieldValue('hardSalary')),
+        Number(totalBonus),
+        Number(form.getFieldValue('deduction'))
+      )
+    )
+    form.setFieldValue('bonus', totalBonus || 0)
+  }, [handleBonusPercent])
+
+  //handle Deduction:
+  const handleDeduction = Form.useWatch('deduction', form)
+  useEffect(() => {
+    const deduction = handleDeduction ? handleDeduction : 0
+    form.setFieldValue(
+      'totalSalary',
+      hanldeTotalSalary(
+        Number(form.getFieldValue('hardSalary')),
+        Number(form.getFieldValue('bonus')),
+        Number(deduction)
+      )
+    )
+  }, [handleDeduction])
+
   const hanldeTotalSalary = (hardSalary, bonusPercent, deduction) => {
     return (hardSalary || 0) + (bonusPercent || 0) - (deduction || 0)
   }
-  //
 
-  useEffect(() => {
-    form.setFieldsValue({ ...dataSalaryInfo })
-  }, [dataSalaryInfo])
+//tungvs commect lại vì dùng hàm trên
+  // useEffect(() => {
+  //   form.setFieldsValue({ ...dataSalaryInfo })
+  // }, [dataSalaryInfo])
 
   const showModal = () => {
     setIsModalOpen(true)
@@ -43,16 +114,20 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
 
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
   }
 
   const handleAddSalaryInfo = async body => {
     try {
+      const getDate = body.workTerm ? new Date(body.workTerm.$d) : null
+      const monthTerm = body.workTerm ? getDate.getFullYear() + ' - ' + (getDate.getMonth() + 1) : null
+      body.workTerm = monthTerm;
+
       const res = await createNewSalaryInfo(body).unwrap()
       if (useSubComponent) {
         getSalaryInfoIdFn(res?.metadata?._id)
       }
       Notification('success', 'Salary Info Manager', 'Create salary info successfully')
-      form.resetFields()
       handleCancel()
     } catch (error) {
       switch (error?.status) {
@@ -88,7 +163,7 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
       handleAddSalaryInfo(values)
     }
   }
-  
+
   return (
     <Spin spinning={isLoadingSalaryInfo}>
       <Button
@@ -121,7 +196,11 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
             // disabled={isLoading}
             form={form}
             initialValues={{
-              hard: employeeData?.hardSalary
+              hard: employeeData?.hardSalary,
+              bonusPercent: 0,
+              bonus: 0,
+              deduction: 0,
+              dateOff: 0
             }}
           >
             <Form.Item
@@ -178,15 +257,15 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
                 }
               ]}
             >
-              <InputNumber className="w-full" min={0} defaultValue={0} addonAfter="%" />
+              <InputNumber className="w-full" min={0} addonAfter="%" />
             </Form.Item>
 
             <Form.Item label="Bonus" name="bonus">
-              <Input defaultValue={0} readOnly />
+              <Input readOnly />
             </Form.Item>
 
             <Form.Item label="Date Off" name="dateOff">
-              <InputNumber className="w-full" min={0} max={maxDayOff} defaultValue={0} addonAfter="days" />
+              <InputNumber className="w-full" min={0} max={maxDayOff} addonAfter="days" />
             </Form.Item>
 
             <Form.Item
@@ -199,7 +278,7 @@ const SalaryForm1 = ({ label, salaryId, title, type, useSubComponent, getSalaryI
                 }
               ]}
             >
-              <InputNumber className="w-full" min={0} defaultValue={0} />
+              <InputNumber className="w-full" min={0} />
             </Form.Item>
 
             <Form.Item label="Total Salary" name="totalSalary">
