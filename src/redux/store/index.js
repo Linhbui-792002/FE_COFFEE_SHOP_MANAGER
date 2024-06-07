@@ -4,9 +4,29 @@ import authSlice from '../slices/authSlice'
 import { authApi } from '../endPoint/auth'
 import { root } from 'postcss'
 import { persistReducer, persistStore } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
 import { employeeApi } from '../endPoint/employee'
-import orderSlice from '../slices/orderSlice'
+import { salaryApi } from '../endPoint/salary'
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
+import { uploadApi } from '../endPoint/upload'
+import { generalApi } from '../endPoint/general'
+import { productCategoryApi } from '../endPoint/productCategory'
+import { menuInfoApi } from '../endPoint/menuInfo'
+
+const createNoopStorage = () => {
+  return {
+    getItem(_key) {
+      return Promise.resolve(null)
+    },
+    setItem(_key, value) {
+      return Promise.resolve(value)
+    },
+    removeItem(_key) {
+      return Promise.resolve()
+    }
+  }
+}
+
+const storage = typeof window !== 'undefined' ? createWebStorage('local') : createNoopStorage()
 
 const persistConfig = {
   key: root,
@@ -20,7 +40,12 @@ const makeStore = () => {
     auth: authSlice,
     order: orderSlice,
     [authApi.reducerPath]: authApi.reducer,
-    [employeeApi.reducerPath]: employeeApi.reducer
+    [employeeApi.reducerPath]: employeeApi.reducer,
+    [uploadApi.reducerPath]: uploadApi.reducer,
+    [generalApi.reducerPath]: generalApi.reducer,
+    [menuInfoApi.reducerPath]: menuInfoApi.reducer,
+    [salaryApi.reducerPath]: salaryApi.reducer,
+    [productCategoryApi.reducerPath]: productCategoryApi.reducer
   })
 
   const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -31,7 +56,11 @@ const makeStore = () => {
       getDefaultMiddleware({ serializableCheck: false }).concat([
         //add middleware
         authApi.middleware,
-        employeeApi.middleware
+        employeeApi.middleware,
+        uploadApi.middleware,
+        generalApi.middleware,
+        menuInfoApi.middleware,
+        salaryApi.middleware
       ])
   })
 
@@ -40,4 +69,5 @@ const makeStore = () => {
 }
 
 export const store = makeStore()
+
 export const persistor = typeof window !== 'undefined' ? persistStore(store) : null

@@ -1,7 +1,12 @@
+import Employee from '@src/components/employee'
 import React from 'react'
 
 const EmployeePage = () => {
-  return <div>EmployeePage</div>
+  return (
+    <>
+      <Employee />
+    </>
+  )
 }
 
 export default EmployeePage

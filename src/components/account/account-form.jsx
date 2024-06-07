@@ -6,10 +6,13 @@ import { Pencil, UserPlus } from 'lucide-react'
 import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Notification from '../common/notification'
 import TooltipCustom from '../common/tooltip'
+import EmployeeForm from '../employee/employee-form'
 
-const AccountForm = ({ label, accountId, title, type }) => {
+const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccountIdFn }) => {
   const [searchEmployee, setSearchEmployee] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [employeeIdAddNew, setEmployeeIdAddNew] = useState('')
+
   const {
     data: accountData,
     isLoading: isLoadingAccountData,
@@ -37,6 +40,13 @@ const AccountForm = ({ label, accountId, title, type }) => {
       refetchListEmployee()
     }
   }, [isModalOpen])
+
+  useEffect(() => {
+    if (employeeIdAddNew) {
+      form.setFieldValue('employeeId', employeeIdAddNew)
+    }
+  }, [employeeIdAddNew, listEmployee])
+
   useEffect(() => {
     form.setFieldsValue(accountData)
   }, [accountData])
@@ -55,14 +65,21 @@ const AccountForm = ({ label, accountId, title, type }) => {
   }
 
   const handleCancel = () => {
-    form.resetFields()
     setIsModalOpen(false)
+  }
+  const getEmployeeIdAddNew = employeeId => {
+    setEmployeeIdAddNew(employeeId)
   }
 
   const handleAddAccount = async body => {
     try {
-      await addAccount(body).unwrap()
+      const res = await addAccount(body).unwrap()
+      if (useSubComponent) {
+        getAccountIdFn(res?.metadata?.account?._id)
+      }
       Notification('success', 'Account Manager', 'Create account successfully')
+      setEmployeeIdAddNew('')
+      form.resetFields()
       handleCancel()
     } catch (error) {
       switch (error?.status) {
@@ -78,9 +95,12 @@ const AccountForm = ({ label, accountId, title, type }) => {
     try {
       await editAccount({ ...body, accountId }).unwrap()
       Notification('success', 'Account Manager', 'Edit account successfully')
+      setEmployeeIdAddNew('')
       handleCancel()
     } catch (error) {
       switch (error?.status) {
+        case 400:
+          return Notification('error', 'Account Manager', error?.data?.message)
         case 409:
           return Notification('error', 'Account Manager', error?.data?.message)
         default:
@@ -198,44 +218,46 @@ const AccountForm = ({ label, accountId, title, type }) => {
                 </Select>
               </Form.Item>
               {!accountId && (
-                <Form.Item label="Block" name="status" initialValue={false}>
-                  <Switch defaultValue={false} />
+                <Form.Item label="Block" name="status" initialValue={useSubComponent ? false : true}>
+                  <Switch defaultValue={false} disabled={useSubComponent ?? false} />
                 </Form.Item>
               )}
-              <Form.Item className="w-full" label="Choose Employee" name="employeeId">
-                <Select
-                  loading={isLoadingListEmployee}
-                  showSearch
-                  filterOption={false}
-                  onSearch={setSearchEmployee}
-                  mode="single"
-                  allowClear
-                  dropdownRender={menu => (
-                    <>
-                      <div className="flex flex-col items-end">
-                        <div className="flex items-center justify-between gap-2">
-                          Add new employee
-                          <TooltipCustom title="Add new employee" color="blue">
-                            <AccountForm />
-                          </TooltipCustom>
+              {!useSubComponent && (
+                <Form.Item className="w-full" label="Choose Employee" name="employeeId">
+                  <Select
+                    loading={isLoadingListEmployee}
+                    showSearch
+                    filterOption={false}
+                    onSearch={setSearchEmployee}
+                    mode="single"
+                    allowClear
+                    dropdownRender={menu => (
+                      <>
+                        <div className="flex flex-col items-end">
+                          <div className="flex items-center justify-between gap-2">
+                            Add new employee
+                            <TooltipCustom title="Add new employee" color="blue">
+                              <EmployeeForm getEmployeeIdFn={getEmployeeIdAddNew} useSubComponent={true} />
+                            </TooltipCustom>
+                          </div>
+                          <Divider
+                            style={{
+                              margin: '8px 0'
+                            }}
+                          />
                         </div>
-                        <Divider
-                          style={{
-                            margin: '8px 0'
-                          }}
-                        />
-                      </div>
-                      {menu}
-                    </>
-                  )}
-                >
-                  {filteredEmployee?.map(item => (
-                    <Select.Option key={item?._id} value={item?._id}>
-                      {`${item?.firstName} ${item?.lastName}`}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
+                        {menu}
+                      </>
+                    )}
+                  >
+                    {filteredEmployee?.map(item => (
+                      <Select.Option key={item?._id} value={item?._id}>
+                        {`${item?.firstName} ${item?.lastName}`}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              )}
             </div>
 
             <Form.Item hidden>
