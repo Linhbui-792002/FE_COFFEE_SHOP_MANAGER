@@ -75,78 +75,67 @@ const GeneralForm = () => {
 
   return (
     <Spin spinning={isLoadingGeneral}>
+      <div className="w-[50%]">
       <Form
+         layout="vertical"
         form={form}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 16 }}
-        layout="horizontal"
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
-        style={{ maxWidth: '100%' }}
       >
-        <Row gutter={16}>
-          <Col span={14}>
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
-              ]}
-              wrapperCol={{ span: 24 }}
-            >
-              <Input />
-            </Form.Item>
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[
+            { required: true, message: 'Please input your email!' },
+            { type: 'email', message: 'Please enter a valid email!' }
+          ]}
+        >
+          <Input />
+        </Form.Item>
 
-            <Form.Item hidden name="generalId" wrapperCol={{ span: 24 }}>
-              <Input hidden />
-            </Form.Item>
+        <Form.Item hidden name="generalId" >
+          <Input hidden />
+        </Form.Item>
 
-            <Form.Item
-              label="Name"
-              name="name"
-              rules={[{ required: true, message: 'Please input your name of web!' }]}
-              wrapperCol={{ span: 24 }}
-            >
-              <Input />
-            </Form.Item>
+        <Form.Item
+          label="Name"
+          name="name"
+          rules={[{ required: true, message: 'Please input your name of web!' }]}
+        >
+          <Input />
+        </Form.Item>
 
-            <Form.Item
-              label="Phone"
-              name="phone"
-              rules={[{ required: true, message: 'Please input your phone number!' }]}
-              wrapperCol={{ span: 24 }}
-            >
-              <Input />
-            </Form.Item>
+        <Form.Item
+          label="Phone"
+          name="phone"
+          rules={[{ required: true, message: 'Please input your phone number!' }]}
+        >
+          <Input />
+        </Form.Item>
 
-            <Form.Item
-              label="Address"
-              name="address"
-              rules={[{ required: true, message: 'Please input your address!' }]}
-              wrapperCol={{ span: 24 }}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
+        <Form.Item
+          label="Address"
+          name="address"
+          rules={[{ required: true, message: 'Please input your address!' }]}
+        >
+          <Input />
+        </Form.Item>
 
-          <Col span={10}>
-            <Form.Item label="Logo" name="logo" valuePropName="fileList" wrapperCol={{ span: 24 }}>
-              <UploadImage getDataFn={getImageLogo} setData={form.getFieldValue('logo')} />
-            </Form.Item>
-            <Form.Item label="Favicon" name="favicon" valuePropName="fileList" wrapperCol={{ span: 24 }}>
-              <UploadImage getDataFn={getImageFavicon} setData={form.getFieldValue('favicon')} />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit" className="w-[50%]">
+        <Form.Item label="Logo" name="logo" valuePropName="fileList" >
+          <UploadImage getDataFn={getImageLogo} setData={form.getFieldValue('logo')} />
+        </Form.Item>
+        <Form.Item label="Favicon" name="favicon" valuePropName="fileList" >
+          <UploadImage getDataFn={getImageFavicon} setData={form.getFieldValue('favicon')} />
+        </Form.Item>
+        <Form.Item >
+          <Button type="primary" htmlType="submit" className="w-max">
             Update
           </Button>
         </Form.Item>
       </Form>
+      </div>
     </Spin>
+
   )
 }
 
