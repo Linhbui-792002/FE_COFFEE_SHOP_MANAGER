@@ -34,10 +34,10 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
       extraOptions
     )
 
-    if (refreshResult?.error?.status === 500) {
-      Cookies.remove('accessToken')
-      window.location.replace(window.location.pathname)
-    }
+    // if (refreshResult?.error?.status === 500) {
+    //   Cookies.remove('accessToken')
+    //   window.location.replace(window.location.pathname)
+    // }
     if (refreshResult.data.status === 200) {
       // store the new token
       const refreshResultData = {
