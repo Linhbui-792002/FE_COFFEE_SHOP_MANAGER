@@ -11,6 +11,7 @@ import { uploadApi } from '../endPoint/upload'
 import { generalApi } from '../endPoint/general'
 import { productCategoryApi } from '../endPoint/productCategory'
 import { menuInfoApi } from '../endPoint/menuInfo'
+import orderSlice from '../slices/orderSlice'
 
 const createNoopStorage = () => {
   return {
