@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useLogoutMutation } from '@src/redux/endPoint/auth'
 import { useRouter } from 'next/router'
 import Notification from '@src/components/common/notification'
+import ChangePassword from '@src/components/common/change-password-form'
 const { Header } = Layout
 
 const Navbar = ({ collapsed, setCollapsed }) => {
@@ -15,10 +16,8 @@ const Navbar = ({ collapsed, setCollapsed }) => {
 
   const handleLogout = async () => {
     try {
-      const res = await logout()
-      if (res?.data?.status === 200) {
+   await logout().unwrap()
         router.replace('/')
-      }
     } catch (error) {
       Notification('error', 'Logout', 'Failed call api')
     }
@@ -28,6 +27,10 @@ const Navbar = ({ collapsed, setCollapsed }) => {
     {
       key: '1',
       label: <Link href="/">Info</Link>
+    },
+    {
+      key: '3',
+      label: <ChangePassword />
     },
     {
       key: '2',
