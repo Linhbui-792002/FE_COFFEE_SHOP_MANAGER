@@ -20,7 +20,6 @@ const MenuInfoForm = ({ label, menuInfoId, title, type, useSubComponent, getMenu
   const formRef = useRef(null)
   const [form] = Form.useForm()
 
-  console.log(menuInfoId, 'menuInfoId', dataMenuInfo)
   useEffect(() => {
     form.setFieldsValue({ ...dataMenuInfo })
   }, [dataMenuInfo])
