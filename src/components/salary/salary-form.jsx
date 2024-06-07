@@ -122,14 +122,14 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
       if (useSubComponent) {
         getSalaryInfoIdFn(res?.metadata?._id)
       }
-      Notification('success', 'Salary Info Manager', 'Create salary info successfully')
+      Notification('success', 'Salary Manager', 'Create salary successfully')
       handleCancel()
     } catch (error) {
       switch (error?.status) {
-        case 409:
-          return Notification('error', 'Salary Info Manager', error?.data?.message)
+        case 400:
+          return Notification('error', 'Salary  Manager', error?.data?.message)
         default:
-          return Notification('error', 'Salary Info Manager', 'Failed call api')
+          return Notification('error', 'Salary Manager', 'Failed call api')
       }
     }
   }

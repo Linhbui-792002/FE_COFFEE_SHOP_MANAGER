@@ -31,13 +31,14 @@ const storage = typeof window !== 'undefined' ? createWebStorage('local') : crea
 const persistConfig = {
   key: root,
   storage,
-  whitelist: ['auth']
+  whitelist: ['auth', 'order']
 }
 
 const makeStore = () => {
   //add reducers
   const rootReducer = combineReducers({
     auth: authSlice,
+    order: orderSlice,
     [authApi.reducerPath]: authApi.reducer,
     [employeeApi.reducerPath]: employeeApi.reducer,
     [uploadApi.reducerPath]: uploadApi.reducer,

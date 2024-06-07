@@ -1,14 +1,10 @@
 import React from 'react'
 import ProductLeft from '../../components/order/productLeft'
 import OrderRight from '../../components/order/orderRight'
+import Order from '@src/components/order'
 
 const OrderPage = () => {
-  return (
-    <div className="flex gap-4 w-[1440px]">
-      <ProductLeft />
-      <OrderRight />
-    </div>
-  )
+  return <Order />
 }
 
 export default OrderPage
