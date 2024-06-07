@@ -11,7 +11,7 @@ import { convertDate } from '@src/utils'
 const MenuInfo = () => {
   const { data: listMenuInfo, isLoading: isLoadingListMenuIno } = useGetAllMenuInfoQuery()
   const { getColumnSearchProps } = useColumnSearch()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 5 })
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
 
   const handleTableChange = pagination => {
     setPagination(pagination)
@@ -82,7 +82,7 @@ const MenuInfo = () => {
         </div>
         <div className="px-4 py-5 mt-12">
           <Table
-            pagination={{ ...pagination, pageSize: 5 }}
+            pagination={{ ...pagination }}
             columns={columns}
             dataSource={listMenuInfo}
             rowKey="_id"
