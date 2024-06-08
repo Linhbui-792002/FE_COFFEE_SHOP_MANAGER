@@ -17,7 +17,7 @@ export async function middleware(request) {
     account = (await jwtDecode(accessToken.value)) || null
   }
 
-  if (account?.status) {
+  if (account && account?.status) {
     Cookies.remove('accessToken')
     return NextResponse.redirect(new URL('/login', request.nextUrl))
   }
@@ -47,6 +47,7 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL('/404', request.nextUrl.origin))
   }
 }
+
 export const config = {
   matcher: ['/', '/login', '/admin/:path*', '/coffee-shop/:path*']
 }

@@ -1,5 +1,5 @@
 import '@src/styles/globals.css'
-import { store } from '@src/redux/store'
+import { persistor, store } from '@src/redux/store'
 import { Provider } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
@@ -7,8 +7,9 @@ import { Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import AdminLayout from '@src/components/common/layout/admin/admin-layout'
 import DefaultLayout from '@src/components/common/layout/home/default-layout'
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 import Cookies from 'js-cookie'
+import { PersistGate } from 'redux-persist/integration/react'
 
 function App({ Component, pageProps }) {
   const router = useRouter()
@@ -74,11 +75,14 @@ function App({ Component, pageProps }) {
           />
         }
       >
-        {getLayout(<Component {...pageProps} />)}
+        <PersistGate loading={null} persistor={persistor}>
+          {getLayout(<Component {...pageProps} />)}
+        </PersistGate>
       </Spin>
     </Provider>
   )
 }
-export default dynamic(() => Promise.resolve(App), {
-  ssr: false
-})
+export default App
+// export default dynamic(() => Promise.resolve(App), {
+//   ssr: false,
+// })

@@ -15,6 +15,13 @@ export const employeeApi = api.injectEndpoints({
           : ['AccountsTag']
       }
     }),
+    getListAccountNotEmployee: builder.query({
+      query: employeeId => ({
+        url: `/account/list/accountNotExistEmployee/${employeeId && employeeId}`
+      }),
+      transformResponse: res => res?.metadata,
+      providesTags: ['AccountsTag']
+    }),
     getInfoAccount: builder.query({
       query: accountId => ({
         url: `/account/${accountId}`
@@ -62,5 +69,6 @@ export const {
   useEditAccountMutation,
   useResetPasswordMutation,
   useGetInfoAccountQuery,
-  useBlockAccountMutation
+  useBlockAccountMutation,
+  useGetListAccountNotEmployeeQuery
 } = employeeApi

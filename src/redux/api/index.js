@@ -34,10 +34,10 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
       extraOptions
     )
 
-    if (refreshResult?.error?.status === 500) {
-      Cookies.remove('accessToken')
-      window.location.replace(window.location.pathname)
-    }
+    // if (refreshResult?.error?.status === 500) {
+    //   Cookies.remove('accessToken')
+    //   window.location.replace(window.location.pathname)
+    // }
     if (refreshResult.data.status === 200) {
       // store the new token
       const refreshResultData = {
@@ -68,7 +68,17 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
 export const api = createApi({
   baseQuery: baseQueryWithInterceptor,
   reducerPath: 'api',
-  tagTypes: ['FAVORITE', 'STATUS', 'EmployeesTag', 'AccountsTag', 'AccountOptionsTag'],
+  tagTypes: [
+    'FAVORITE',
+    'STATUS',
+    'EmployeesTag',
+    'AccountsTag',
+    'AccountOptionsTag',
+    'GeneralsTag',
+    'MenuInfosTag',
+    'SalariesTag',
+    'ProductCategoryTag'
+  ],
   extractRehydrationInfo(action, { reducerPath }) {
     if (action.type === REHYDRATE) {
       return action.payload?.[reducerPath]
