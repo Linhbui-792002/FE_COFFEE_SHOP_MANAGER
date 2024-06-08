@@ -36,7 +36,10 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
         totalSalary: dataSalaryInfo.totalSalary,
         dateOff: dataSalaryInfo.dateOff
       })
+        dateOff: dataSalaryInfo.dateOff
+      })
     }
+  }, [dataSalaryInfo, isModalOpen, form])
   }, [dataSalaryInfo, isModalOpen, form])
 
   //get hardSalary:
@@ -49,7 +52,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
     const hardSalary = employeeData?.find(item => item?._id == handleEmployee)?.hardSalary
     form.setFieldValue(
       'totalSalary',
-      hanldeTotalSalary(
+      handleTotalSalary(
         Number(hardSalary),
         Number(form.getFieldValue('bonus')),
         Number(form.getFieldValue('deduction'))
@@ -72,7 +75,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
     const totalBonus = (form.getFieldValue('hardSalary') * bonusPercent) / 100
     form.setFieldValue(
       'totalSalary',
-      hanldeTotalSalary(
+      handleTotalSalary(
         Number(form.getFieldValue('hardSalary')),
         Number(totalBonus),
         Number(form.getFieldValue('deduction'))
@@ -87,7 +90,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
     const deduction = handleDeduction ? handleDeduction : 0
     form.setFieldValue(
       'totalSalary',
-      hanldeTotalSalary(
+      handleTotalSalary(
         Number(form.getFieldValue('hardSalary')),
         Number(form.getFieldValue('bonus')),
         Number(deduction)
@@ -95,7 +98,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
     )
   }, [handleDeduction])
 
-  const hanldeTotalSalary = (hardSalary, bonusPercent, deduction) => {
+  const handleTotalSalary = (hardSalary, bonusPercent, deduction) => {
     return (hardSalary || 0) + (bonusPercent || 0) - (deduction || 0)
   }
 
@@ -121,6 +124,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
     try {
       const getDate = body.workTerm ? new Date(body.workTerm.$d) : null
       const monthTerm = body.workTerm ? getDate.getFullYear() + ' - ' + (getDate.getMonth() + 1) : null
+      body.workTerm = monthTerm
       body.workTerm = monthTerm
 
       const res = await createNewSalaryInfo(body).unwrap()
