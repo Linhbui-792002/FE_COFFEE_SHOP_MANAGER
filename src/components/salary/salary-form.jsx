@@ -12,8 +12,8 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
 
   const { data: dataSalaryInfo, isLoading: isLoadingSalaryInfo } = useGetInfoSalaryQuery(salaryId, {
     skip: !salaryId || !isModalOpen
-  });
-  
+  })
+
   const [createNewSalaryInfo, { isLoading: isLoadingCreateSalaryInfo }] = useAddSalaryMutation()
   const [updateNewSalaryInfo, { isLoading: isLoadingUpdateSalaryInfo }] = useEditSalaryMutation()
 
@@ -34,10 +34,10 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
         bonusPercent: dataSalaryInfo.bonusPercent,
         deduction: dataSalaryInfo.deduction,
         totalSalary: dataSalaryInfo.totalSalary,
-        dateOff: dataSalaryInfo.dateOff,
-      });
+        dateOff: dataSalaryInfo.dateOff
+      })
     }
-  }, [dataSalaryInfo, isModalOpen, form]);
+  }, [dataSalaryInfo, isModalOpen, form])
 
   //get hardSalary:
   const [salary, setHardSalary] = useState('')
@@ -99,7 +99,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
     return (hardSalary || 0) + (bonusPercent || 0) - (deduction || 0)
   }
 
-//tungvs commect lại vì dùng hàm trên
+  //tungvs commect lại vì dùng hàm trên
   // useEffect(() => {
   //   form.setFieldsValue({ ...dataSalaryInfo })
   // }, [dataSalaryInfo])
@@ -121,7 +121,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
     try {
       const getDate = body.workTerm ? new Date(body.workTerm.$d) : null
       const monthTerm = body.workTerm ? getDate.getFullYear() + ' - ' + (getDate.getMonth() + 1) : null
-      body.workTerm = monthTerm;
+      body.workTerm = monthTerm
 
       const res = await createNewSalaryInfo(body).unwrap()
       if (useSubComponent) {
