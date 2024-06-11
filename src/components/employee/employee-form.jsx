@@ -21,7 +21,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
     data: listAccount,
     isLoading: isLoadingListAccount,
     refetch: refetchListAccount
-  } = useGetListAccountNotEmployeeQuery(employeeId)
+  } = useGetListAccountNotEmployeeQuery(employeeId, { skip: !employeeId || !isModalOpen })
 
   const [addEmployee, { isLoading }] = useAddEmployeeMutation()
   const [editEmployee, { isLoading: isLoadingUpdate }] = useEditEmployeeMutation()
@@ -29,18 +29,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
 
   const formRef = useRef(null)
   const [form] = Form.useForm()
-  useEffect(() => {
-    if (employeeId) {
-      // refetch()
-      refetchListAccount()
-    }
-  }, [employeeId])
 
-  useEffect(() => {
-    if (isModalOpen || employeeId) {
-      refetchListAccount()
-    }
-  }, [isModalOpen, employeeId])
   useEffect(() => {
     const accountId =
       listAccount?.length != 0 && listAccount?.find(account => account?.employeeId === employeeData?._id)?._id

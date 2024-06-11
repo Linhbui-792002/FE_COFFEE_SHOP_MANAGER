@@ -3,6 +3,7 @@ import { HYDRATE } from 'next-redux-wrapper'
 import { REHYDRATE } from 'redux-persist'
 import { setCredentials, logout } from '../slices/authSlice'
 import Cookies from 'js-cookie'
+import { authApi } from '../endPoint/auth'
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -20,6 +21,7 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions)
+
   if (result?.error?.status === 403) {
     console.log('sending refresh token')
     const auth = api.getState().auth
@@ -56,6 +58,7 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
       return refreshResult
     }
   }
+
   if (result?.error?.status === 401) {
     Cookies.remove('accessToken')
     api.dispatch(logout())

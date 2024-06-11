@@ -16,8 +16,8 @@ const Navbar = ({ collapsed, setCollapsed }) => {
 
   const handleLogout = async () => {
     try {
-   await logout().unwrap()
-        router.replace('/')
+      await logout().unwrap()
+      router.replace('/')
     } catch (error) {
       Notification('error', 'Logout', 'Failed call api')
     }
