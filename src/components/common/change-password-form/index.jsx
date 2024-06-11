@@ -13,7 +13,6 @@ const ChangePassword = () => {
   const formRef = useRef(null)
   const [form] = Form.useForm()
 
-
   const showModal = () => {
     setIsModalOpen(true)
   }
@@ -26,7 +25,7 @@ const ChangePassword = () => {
     setIsModalOpen(false)
   }
 
-  const handleChangePassword = async (body) => {
+  const handleChangePassword = async body => {
     try {
       await changePassword(body).unwrap()
       Notification('success', 'Change Password', 'Change password successfully')
@@ -48,11 +47,7 @@ const ChangePassword = () => {
   }
   return (
     <Spin spinning={false}>
-      <p
-        onClick={showModal}
-      >
-        Change password
-      </p>
+      <p onClick={showModal}>Change password</p>
       <Modal
         title="Change Password"
         open={isModalOpen}

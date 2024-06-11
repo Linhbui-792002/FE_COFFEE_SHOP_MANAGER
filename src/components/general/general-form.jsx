@@ -76,66 +76,52 @@ const GeneralForm = () => {
   return (
     <Spin spinning={isLoadingGeneral}>
       <div className="w-[50%]">
-      <Form
-         layout="vertical"
-        form={form}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-      >
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: 'Please input your email!' },
-            { type: 'email', message: 'Please enter a valid email!' }
-          ]}
-        >
-          <Input />
-        </Form.Item>
+        <Form layout="vertical" form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: 'Please input your email!' },
+              { type: 'email', message: 'Please enter a valid email!' }
+            ]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item hidden name="generalId" >
-          <Input hidden />
-        </Form.Item>
+          <Form.Item hidden name="generalId">
+            <Input hidden />
+          </Form.Item>
 
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: 'Please input your name of web!' }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your name of web!' }]}>
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          label="Phone"
-          name="phone"
-          rules={[{ required: true, message: 'Please input your phone number!' }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            label="Phone"
+            name="phone"
+            rules={[{ required: true, message: 'Please input your phone number!' }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          label="Address"
-          name="address"
-          rules={[{ required: true, message: 'Please input your address!' }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item label="Address" name="address" rules={[{ required: true, message: 'Please input your address!' }]}>
+            <Input />
+          </Form.Item>
 
-        <Form.Item label="Logo" name="logo" valuePropName="fileList" >
-          <UploadImage getDataFn={getImageLogo} setData={form.getFieldValue('logo')} />
-        </Form.Item>
-        <Form.Item label="Favicon" name="favicon" valuePropName="fileList" >
-          <UploadImage getDataFn={getImageFavicon} setData={form.getFieldValue('favicon')} />
-        </Form.Item>
-        <Form.Item >
-          <Button type="primary" htmlType="submit" className="w-max">
-            Update
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item label="Logo" name="logo" valuePropName="fileList">
+            <UploadImage getDataFn={getImageLogo} setData={form.getFieldValue('logo')} />
+          </Form.Item>
+          <Form.Item label="Favicon" name="favicon" valuePropName="fileList">
+            <UploadImage getDataFn={getImageFavicon} setData={form.getFieldValue('favicon')} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="w-max">
+              Update
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </Spin>
-
   )
 }
 

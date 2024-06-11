@@ -1,7 +1,8 @@
+import Menu from '@src/components/menu'
 import React from 'react'
 
 const MenuPage = () => {
-  return <div>Menu</div>
+  return <Menu />
 }
 
 export default MenuPage
