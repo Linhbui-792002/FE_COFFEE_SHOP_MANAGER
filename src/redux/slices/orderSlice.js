@@ -22,10 +22,15 @@ const orderSlice = createSlice({
     },
     updateOrder: (state, { payload }) => {
       const index = state.listOrder.findIndex(order => order.key === payload.key)
-      // console.log(payload.orderDetail)
-      state.listOrder[index] = {
-        ...state.listOrder[index],
-        orderDetail: [...state.listOrder[index].orderDetail, payload.orderDetail]
+      const orderIndex = state.listOrder[index].orderDetail.findIndex(item => item.id === payload.orderDetail.id)
+
+      if (orderIndex !== -1) {
+        state.listOrder[index].orderDetail[orderIndex] = {
+          ...payload.orderDetail,
+          quantity: state.listOrder[index].orderDetail[orderIndex].quantity + 1
+        }
+      } else {
+        state.listOrder[index].orderDetail = [...state.listOrder[index].orderDetail, payload.orderDetail]
       }
     },
     setKeyOrderActive: (state, { payload }) => {

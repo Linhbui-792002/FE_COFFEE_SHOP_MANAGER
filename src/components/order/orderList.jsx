@@ -13,7 +13,7 @@ const OrderList = () => {
     return order?.orderDetail ?? []
   }, [initialItems, activeKey])
 
-  console.log('orderDetail', orderDetail)
+  // console.log('orderDetail', orderDetail)
   const handleIncrease = orderId => {
     setOrders(prevOrders =>
       prevOrders.map(order => (order.id === orderId ? { ...order, quantity: order.quantity + 1 } : order))

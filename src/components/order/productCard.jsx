@@ -1,25 +1,61 @@
-import { updateOrder } from '@src/redux/slices/orderSlice'
+import { updateOrder, addOrder } from '@src/redux/slices/orderSlice'
 import { List, Skeleton, Card } from 'antd'
-import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const ProductCard = ({ product, loading, isList }) => {
-  console.log(product, 'product')
   const keyActive = useSelector(state => state.order.keyOrderActive)
+  const listOrder = useSelector(state => state.order.listOrder)
   const dispatch = useDispatch()
+
   const handleChooseProduct = () => {
-    dispatch(
-      updateOrder({
-        key: keyActive,
-        orderDetail: {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          quantity: 1,
-          note: ''
-        }
-      })
-    )
+    const existingOrderIndex = listOrder.findIndex(order => order.key === keyActive)
+
+    if (existingOrderIndex !== -1) {
+      const existingProductIndex = listOrder[existingOrderIndex].orderDetail.findIndex(item => item.id === product.id)
+
+      if (existingProductIndex !== -1) {
+        dispatch(
+          updateOrder({
+            key: keyActive,
+            orderDetail: {
+              ...listOrder[existingOrderIndex].orderDetail[existingProductIndex],
+              quantity: listOrder[existingOrderIndex].orderDetail[existingProductIndex].quantity + 1
+            }
+          })
+        )
+      } else {
+        dispatch(
+          updateOrder({
+            key: keyActive,
+            orderDetail: {
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              quantity: 1,
+              note: ''
+            }
+          })
+        )
+      }
+    } else {
+      const newKey = listOrder.length === 0 ? 1 : listOrder[listOrder.length - 1].key + 1
+
+      dispatch(
+        addOrder({
+          key: newKey,
+          label: `Order-${newKey}`,
+          orderDetail: [
+            {
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              quantity: 1,
+              note: ''
+            }
+          ]
+        })
+      )
+    }
   }
 
   return isList ? (
