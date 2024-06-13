@@ -1,6 +1,7 @@
 import { api } from '../api'
 import { logOut } from '../slices/authSlice'
 import { setCredentials } from '../slices/authSlice'
+import Cookies from 'js-cookie'
 
 export const authApi = api.injectEndpoints({
   endpoints: builder => ({
@@ -22,6 +23,9 @@ export const authApi = api.injectEndpoints({
             })
           )
         } catch (error) {
+          if (error?.error?.status === 400) {
+            dispatch(authApi.endpoints.logout.initiate())
+          }
           console.error('Failed to login:', error)
         }
       }
@@ -48,8 +52,16 @@ export const authApi = api.injectEndpoints({
         url: '/handleRefreshToken',
         method: 'POST'
       })
+    }),
+    changePassword: builder.mutation({
+      query: body => ({
+        url: '/changePassword',
+        method: 'PATCH',
+        body
+      }),
+      transformResponse: res => res.metadata
     })
   })
 })
 
-export const { useLoginMutation, useRefreshMutation, useLogoutMutation } = authApi
+export const { useLoginMutation, useRefreshMutation, useLogoutMutation, useChangePasswordMutation } = authApi
