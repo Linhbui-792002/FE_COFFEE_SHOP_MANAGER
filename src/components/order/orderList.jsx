@@ -1,35 +1,32 @@
 import React, { useMemo, useState } from 'react'
 import { Input } from 'antd'
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined, SnippetsOutlined } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { updateOrder, removeOrderDetailInOrder } from '@src/redux/slices/orderSlice'
 
 const OrderList = () => {
   const [orders, setOrders] = useState([])
-  const initialItems = useSelector(state => state.order.listOrder)
+  const initialOrderItems = useSelector(state => state.order.orderDetail)
   const activeKey = useSelector(state => state.order.keyOrderActive)
+  const dispatch = useDispatch()
 
   const orderDetail = useMemo(() => {
-    const order = initialItems.find(order => order.key === activeKey)
-    return order?.orderDetail ?? []
-  }, [initialItems, activeKey])
+    const order = initialOrderItems?.listOrder
+    return order ?? []
+  }, [initialOrderItems, activeKey])
 
-  // console.log('orderDetail', orderDetail)
+  console.log(orderDetail, 'orderDetail')
   const handleIncrease = orderId => {
-    setOrders(prevOrders =>
-      prevOrders.map(order => (order.id === orderId ? { ...order, quantity: order.quantity + 1 } : order))
-    )
+    console.log(orderId, 'orderId')
+    dispatch(updateOrder({ key: activeKey, status: 'up', orderDetail: { id: orderId } }))
   }
 
   const handleDecrease = orderId => {
-    setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId && order.quantity > 1 ? { ...order, quantity: order.quantity - 1 } : order
-      )
-    )
+    dispatch(updateOrder({ key: activeKey, status: 'down', orderDetail: { id: orderId } }))
   }
 
   const handleDelete = orderId => {
-    setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId))
+    dispatch(removeOrderDetailInOrder({ key: activeKey, id: orderId }))
   }
 
   const handleNoteChange = (orderId, newNote) => {

@@ -8,12 +8,12 @@ const OrderRight = ({ className }) => {
   const initialItems = useSelector(state => state.order.listOrder)
   const activeKey = useSelector(state => state.order.keyOrderActive)
   const dispatch = useDispatch()
-  const keyOrderActive = useSelector(state => state.order.keyOrderActive)
   const [items, setItems] = useState([])
-
+  console.log(items, 'items')
+  console.log(activeKey, 'activeKey', initialItems)
   useEffect(() => {
     if (initialItems.length !== 0) {
-      let order = initialItems.find(order => order.key === keyOrderActive)
+      let order = initialItems.find(order => order.key === activeKey)
       order = { ...order, children: <OrderList /> }
       const listOrder = initialItems.filter(item => item.key !== order.key)
       const index = initialItems.findIndex(item => item?.key == order.key)
@@ -22,14 +22,15 @@ const OrderRight = ({ className }) => {
     } else {
       setItems([])
     }
-  }, [keyOrderActive, initialItems])
+  }, [activeKey, initialItems])
 
   const onChange = newActiveKey => {
     dispatch(setKeyOrderActive(newActiveKey))
   }
 
   const add = () => {
-    const newKey = initialItems.length == 0 ? 1 : initialItems[initialItems.length - 1]?.key + 1
+    const findKey = initialItems.length == 0 ? false : initialItems.find(item => item.key === 1)
+    const newKey = initialItems.length == 0 && !findKey ? 1 : initialItems[initialItems.length - 1]?.key + 1
 
     const newActiveKey = `Order-${newKey}`
     dispatch(
