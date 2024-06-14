@@ -9,8 +9,6 @@ const OrderRight = ({ className }) => {
   const activeKey = useSelector(state => state.order.keyOrderActive)
   const dispatch = useDispatch()
   const [items, setItems] = useState([])
-  console.log(items, 'items')
-  console.log(activeKey, 'activeKey', initialItems)
   useEffect(() => {
     if (initialItems.length !== 0) {
       let order = initialItems.find(order => order.key === activeKey)

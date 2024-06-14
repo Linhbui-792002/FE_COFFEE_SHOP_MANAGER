@@ -8,7 +8,6 @@ const ProductCard = ({ product, loading, isList }) => {
   const orderDetail = useSelector(state => state.order.orderDetail)
   const dispatch = useDispatch()
 
-  console.log(listOrder, 'listOrder')
 
   const handleChooseProduct = () => {
     const existingOrderIndex = listOrder.findIndex(order => order.key === keyActive)

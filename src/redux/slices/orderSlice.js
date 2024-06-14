@@ -40,31 +40,84 @@ const orderSlice = createSlice({
   initialState,
   reducers: {
     addOrder: (state, { payload }) => {
-      console.log(payload.key, 'payload.key')
-      console.log(payload, 'payload')
       state.listOrder.push(payload)
       state.keyOrderActive = payload.key
       state.orderDetail = { key: payload.key, listOrder: new Array() }
-      console.log(state.listOrder, '  state.listOrder')
     },
     removeOrder: (state, { payload }) => {
       const index = state.listOrder.findIndex(order => order?.key == payload)
       state.listOrder = state.listOrder.length != 0 ? state.listOrder.filter(order => order.key !== payload) : []
       if (state.keyOrderActive == payload) {
-        state.keyOrderActive =
-          state.listOrder.length != 0 ? state.listOrder[index - 1]?.key ?? state.listOrder[index + 1]?.key : null
+        state.keyOrderActive = state.listOrder.length === 1
+          ? state.listOrder[0]?.key
+          : state.listOrder[index - 1]?.key ?? state.listOrder[index + 1]?.key ?? null;
       }
-      state.orderDetail = null
+
+      // load orderDetail if keyOrderActive !null
+      const keyActive = state.keyOrderActive
+      if (keyActive == null) {
+        state.orderDetail = null
+      } else {
+        const listOrder = state.listOrder
+        const order = listOrder.find(order => order.key == keyActive)
+        listOrder ? state.orderDetail = {
+          key: order?.key,
+          listOrder: order?.orderDetail
+        } : state.orderDetail = null
+      }
+
     },
     updateOrder: (state, { payload }) => {
+      const orderDetail = state.orderDetail.listOrder
+      const productExits = orderDetail.find(item => item.id == payload.orderDetail.id)
       if (payload.status == 'up') {
-        console.log('vo up')
+        if (!productExits) {
+          state.orderDetail = {
+            key: payload?.key,
+            listOrder: state.orderDetail
+              ? [...state.orderDetail.listOrder, payload.orderDetail]
+              : [{ ...payload.orderDetail }]
+          }
+        } else {
+
+          const updatedOrderList = state.orderDetail.listOrder.map(item =>
+            item.id === payload.orderDetail.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+
+          state.orderDetail = {
+            key: payload?.key,
+            listOrder: updatedOrderList
+          };
+        }
+
+      } else if (payload.status == 'change') {
+        let updatedOrderList = state.orderDetail.listOrder.map(item =>
+          item.id === payload.orderDetail.id
+            ? { ...item, quantity: payload.quantity }
+            : item
+        );
         state.orderDetail = {
           key: payload?.key,
-          listOrder: state.orderDetail
-            ? [...state.orderDetail.listOrder, payload.orderDetail]
-            : [{ ...payload.orderDetail }]
+          listOrder: updatedOrderList
+        };
+      } else {
+        let updatedOrderList = state.orderDetail.listOrder.map(item =>
+          item.id === payload.orderDetail.id
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        );
+        if (productExits.quantity == 1) {
+          updatedOrderList = state.orderDetail.listOrder.filter(item =>
+            item.id !== payload.orderDetail.id
+          );
         }
+
+        state.orderDetail = {
+          key: payload?.key,
+          listOrder: updatedOrderList
+        };
       }
       const indexListOrder = state.listOrder.findIndex(order => order.key === state.keyOrderActive)
 
@@ -76,40 +129,16 @@ const orderSlice = createSlice({
       state.listOrder = indexListOrder != -1 ? [...state.listOrder] : []
 
       state.keyOrderActive = indexListOrder != -1 ? payload?.key : null
-      // console.log(index, 'index')
-      // // Check if orderDetail exists
-      // // if (state.orderDetail?.listOrder?.length !== 0) {
-      // //   state.orderDetail = { key: payload.key, listOrder: [] }
-      // // }
-      // const orderIndex = state.orderDetail.listOrder.findIndex(item => item.id === payload.orderDetail.id)
-      // if (orderIndex !== undefined) {
-      //   const quantity = state?.orderDetail?.listOrder?.[orderIndex]?.quantity
-      //   if (payload?.status == 'up') {
-      //     state.orderDetail.listOrder[orderIndex] = {
-      //       ...state.orderDetail.listOrder[orderIndex],
-      //       quantity: quantity + 1
-      //     }
-      //   } else {
-      //     state.orderDetail.listOrder[orderIndex] = {
-      //       ...state.orderDetail.listOrder[orderIndex],
-      //       quantity: quantity - 1
-      //     }
-      //   }
-      // } else {
-      //   state.orderDetail.listOrder.push({
-      //     id: payload.orderDetail.id,
-      //     name: payload.orderDetail.name,
-      //     price: payload.orderDetail.price,
-      //     quantity: 1,
-      //     note: ''
-      //   })
-      // }
-      // state.listOrder[index].orderDetail = [...state.orderDetail.listOrder]
+
     },
     removeOrderDetailInOrder: (state, { payload }) => {
-      const index = state.listOrder.findIndex(order => order.key === payload.key)
-      state.listOrder[index].orderDetail = state.listOrder[index].orderDetail.filter(item => item.id !== payload.id)
-      state.orderDetail.listOrder = state.orderDetail.listOrder.filter(item => item.id !== payload.id)
+      const updatedOrderList = state.orderDetail.listOrder.filter(item =>
+        item.id !== payload.id
+      );
+      state.orderDetail = {
+        key: payload?.key,
+        listOrder: updatedOrderList
+      };
     },
     setKeyOrderActive: (state, { payload }) => {
       const index = state.listOrder.findIndex(order => order.key === payload)
