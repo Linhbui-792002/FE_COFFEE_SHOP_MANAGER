@@ -43,11 +43,7 @@ const Navbar = () => {
     },
     {
       key: '3',
-      label: (
-        <p onClick={handleShowSalary}>
-          View Salary
-        </p>
-      )
+      label: <p onClick={handleShowSalary}>View Salary</p>
     },
     {
       key: '2',

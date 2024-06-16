@@ -3,9 +3,9 @@ import { Modal, Spin, Table } from 'antd'
 import { useGetEmployeeSalaryQuery } from '@src/redux/endPoint/salary'
 
 const SalaryEmployee = ({ isShow, isClose }) => {
-  const [isModalVisible, setIsModalVisible] = useState(isShow);
-  const { data, isLoading, isError, error } = useGetEmployeeSalaryQuery();
-  console.log(data);
+  const [isModalVisible, setIsModalVisible] = useState(isShow)
+  const { data, isLoading, isError, error } = useGetEmployeeSalaryQuery()
+  console.log(data)
   const closeModel = () => {
     setIsModalVisible(false)
     isClose(true)
@@ -70,7 +70,7 @@ const SalaryEmployee = ({ isShow, isClose }) => {
       closable={true}
     >
       <Spin spinning={isLoading}>
-        <Table className='mt-2' pagination={{ pageSize: 5 }} dataSource={data} columns={columns}></Table>
+        <Table className="mt-2" pagination={{ pageSize: 5 }} dataSource={data} columns={columns}></Table>
       </Spin>
     </Modal>
   )
