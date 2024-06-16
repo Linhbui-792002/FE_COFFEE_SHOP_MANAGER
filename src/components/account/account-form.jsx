@@ -17,29 +17,16 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
     data: accountData,
     isLoading: isLoadingAccountData,
     refetch
-  } = useGetInfoAccountQuery(accountId, { skip: !accountId })
+  } = useGetInfoAccountQuery(accountId, { skip: !accountId || !isModalOpen })
   const {
     data: listEmployee,
     isLoading: isLoadingListEmployee,
     refetch: refetchListEmployee
-  } = useGetEmployeesHasNotAccountQuery(accountId)
+  } = useGetEmployeesHasNotAccountQuery(accountId, { skip: !accountId || !isModalOpen })
   const [addAccount, { isLoading }] = useAddAccountMutation()
   const [editAccount, { isLoading: isEditLoading }] = useEditAccountMutation()
   const formRef = useRef(null)
   const [form] = Form.useForm()
-
-  useEffect(() => {
-    if (accountId) {
-      refetch()
-      refetchListEmployee()
-    }
-  }, [accountId])
-
-  useEffect(() => {
-    if (isModalOpen) {
-      refetchListEmployee()
-    }
-  }, [isModalOpen])
 
   useEffect(() => {
     if (employeeIdAddNew) {

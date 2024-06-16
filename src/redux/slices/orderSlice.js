@@ -22,7 +22,6 @@ const orderSlice = createSlice({
     },
     updateOrder: (state, { payload }) => {
       const index = state.listOrder.findIndex(order => order.key === payload.key)
-      // console.log(payload.orderDetail)
       state.listOrder[index] = {
         ...state.listOrder[index],
         orderDetail: [...state.listOrder[index].orderDetail, payload.orderDetail]

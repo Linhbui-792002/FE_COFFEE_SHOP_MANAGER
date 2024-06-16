@@ -23,6 +23,9 @@ export const authApi = api.injectEndpoints({
             })
           )
         } catch (error) {
+          if (error?.error?.status === 400) {
+            dispatch(authApi.endpoints.logout.initiate())
+          }
           console.error('Failed to login:', error)
         }
       }

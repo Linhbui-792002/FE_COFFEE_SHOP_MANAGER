@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { jwtDecode } from 'jwt-decode'
 import { ROLES } from './constants'
 import Cookies from 'js-cookie'
+import { useLogoutMutation } from './redux/endPoint/auth'
 
 const hasRole = (userRole, role) => {
   return userRole?.toLowerCase() === role?.toLowerCase()
@@ -19,6 +20,10 @@ export async function middleware(request) {
 
   if (account && account?.status) {
     Cookies.remove('accessToken')
+    await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/logout'`, {
+      method: 'POST',
+      credentials: 'include'
+    })
     return NextResponse.redirect(new URL('/login', request.nextUrl))
   }
   if (isPublicPath && account) {
