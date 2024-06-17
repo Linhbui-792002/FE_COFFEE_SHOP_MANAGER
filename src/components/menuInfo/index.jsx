@@ -7,6 +7,7 @@ import { Home, List } from 'lucide-react'
 import { useGetAllMenuInfoQuery } from '@src/redux/endPoint/menuInfo'
 import MenuInfoForm from './menuInfo-form'
 import { convertDate } from '@src/utils'
+import OrderPayment from '../order/orderPayment'
 
 const MenuInfo = () => {
   const { data: listMenuInfo, isLoading: isLoadingListMenuIno } = useGetAllMenuInfoQuery()
@@ -79,6 +80,7 @@ const MenuInfo = () => {
         <div className="flex justify-between items-center py-4 px-4">
           <h1 className="text-2xl font-normal">Menu Info Manager</h1>
           <MenuInfoForm title="Add new menu info" label="New menu info" />
+          <OrderPayment title="test" label="Payment" />
         </div>
         <div className="px-4 py-5 mt-12">
           <Table

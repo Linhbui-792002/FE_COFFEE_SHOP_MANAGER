@@ -4,36 +4,44 @@ import { useSelector } from 'react-redux'
 
 const MOCK_PRODUCT = [
   {
-    id: 1,
-    category: 1,
-    name: 'Cà phê đen',
-    price: 15000,
-    image: 'https://via.placeholder.com/150',
-    description: 'Cà phê đen'
+    _id: '666ecb585f833c5fd68dd21f',
+    categoryId: '666ec7f8367ab979a1b9cab3',
+    name: 'Sample product combo',
+    detail: 'This is a detailed description of the sample product.',
+    isCombo: false,
+    productCombo: [],
+    costPrice: 10.99,
+    price: 15.99,
+    image: 'sample-product-image.jpg',
+    quantity: 100,
+    status: true,
+    createdAt: {
+      $date: '2024-06-16T11:24:08.510Z'
+    },
+    updatedAt: {
+      $date: '2024-06-16T11:24:08.510Z'
+    },
+    __v: 0
   },
   {
-    id: 2,
-    category: 1,
-    name: 'Cà phê sữa',
-    price: 20000,
-    image: 'https://via.placeholder.com/150',
-    description: 'Cà phê sữa'
-  },
-  {
-    id: 3,
-    category: 2,
-    name: 'Trà sữa',
-    price: 20000,
-    image: 'https://via.placeholder.com/150',
-    description: 'Trà sữa'
-  },
-  {
-    id: 4,
-    category: 2,
-    name: 'Trà sữa trân châu',
-    price: 25000,
-    image: 'https://via.placeholder.com/150',
-    description: 'Trà sữa trân châu'
+    _id: '666ecc64c958dd3ccd4098ac',
+    categoryId: '666ec7f8367ab979a1b9cab3',
+    name: 'Sample product1',
+    detail: 'This is a detailed description of the sample product.',
+    isCombo: false,
+    productCombo: [],
+    costPrice: 10.99,
+    price: 15.99,
+    image: 'sample-product-image.jpg',
+    quantity: 100,
+    status: true,
+    createdAt: {
+      $date: '2024-06-16T11:28:36.355Z'
+    },
+    updatedAt: {
+      $date: '2024-06-16T11:28:36.355Z'
+    },
+    __v: 0
   }
 ]
 
@@ -109,7 +117,7 @@ const ProductList = ({ searchTerm, isList }) => {
       <div className={!isList && 'flex gap-3 flex-wrap justify-center'}>
         {searchedProducts &&
           searchedProducts?.map(product => (
-            <ProductCard key={product.id} product={product} loading={loading} isList={isList} />
+            <ProductCard key={product._id} product={product} loading={loading} isList={isList} />
           ))}
       </div>
     </div>

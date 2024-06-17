@@ -1,87 +1,84 @@
-import React, { useState } from 'react'
-import { Button, Form, Input, Modal, Spin } from 'antd'
-import { Pencil, UserRoundPlus } from 'lucide-react'
-import Notification from '../common/notification'
+import React from 'react'
+import { Button, Divider, Modal, Spin } from 'antd'
+import { useSelector } from 'react-redux'
 
-const OrderPayment = ({ label, orderDetail, title, type }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation()
-
-  const handlePayment = async () => {
-    setIsLoading(true)
-    try {
-      const orderData = {
-        totalMoney: calculateTotalMoney(),
-        receivedMoney: 0, // Assuming initial received money is 0
-        excessMoney: 0, // Assuming initial excess money is 0
-        orderDetail: orderDetail.map(item => ({
-          productId: item.id,
-          quantity: item.quantity,
-          costPrice: item.price, // Assuming costPrice is the same as price
-          price: item.price,
-          voucherUsed: [] // Assuming no vouchers are used initially
-        }))
-      }
-
-      await createOrder(orderData).unwrap()
-      Notification('success', 'Order Manager', 'Order created successfully')
-      setIsLoading(false)
-      handleCancel()
-    } catch (error) {
-      setIsLoading(false)
-      Notification('error', 'Order Manager', 'Failed to create order')
-    }
-  }
-
-  const calculateTotalMoney = () => {
-    return orderDetail.reduce((total, item) => total + item.price * item.quantity, 0)
-  }
-
-  const showModal = () => {
-    setIsModalOpen(true)
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false)
-  }
-
+const OrderPayment = ({
+  isModalOpen,
+  handleOpenPaymentModal,
+  handleClosePaymentModal,
+  orderDetail,
+  totalOrder,
+  totalQuantityOrder
+}) => {
   return (
-    <>
-      <Button
-        type={type}
-        icon={<UserRoundPlus size={18} />}
-        shape="default"
-        onClick={showModal}
-        className="flex items-center w-max"
-      >
-        {label}
-      </Button>
-      <Modal
-        title={title}
-        visible={isModalOpen}
-        onOk={handlePayment}
-        onCancel={handleCancel}
-        confirmLoading={isCreatingOrder}
-        okText="Pay"
-        width={600}
-        centered
-      >
-        <Spin spinning={isLoading}>
-          <Form layout="vertical" autoComplete="off">
-            {orderDetail.map(item => (
-              <Form.Item key={item.id} label={`${item.name} (${item.quantity})`} name={`quantity_${item.id}`}>
-                <Input value={`${item.price * item.quantity}`} disabled />
-              </Form.Item>
-            ))}
-            <Form.Item label="Total" name="total">
-              <Input value={`${calculateTotalMoney()}`} disabled />
-            </Form.Item>
-          </Form>
-        </Spin>
-      </Modal>
-    </>
+    <div className="flex items-center gap-2">
+      <Spin spinning={false}>
+        <Button onClick={handleOpenPaymentModal} className="flex items-center w-max">
+          Payment
+        </Button>
+        <Modal
+          title="Payment"
+          open={isModalOpen}
+          style={{ left: '23%' }}
+          loading={true}
+          okText="Submit"
+          width={800}
+          onCancel={handleClosePaymentModal}
+          centered
+        >
+          <Spin spinning={false}>
+            <div className="flex gap-10 min-h-[83vh]">
+              <div className="w-[53%]">
+                <div className="flex flex-col gap-2 flex-grow">
+                  {orderDetail.map(order => (
+                    <div key={order.id} className="px-2 bg-white w-full rounded-md">
+                      <div className="w-full flex font-medium">
+                        <div className="min-w-[40%] max-w-[40%] flex items-center ">{order?.name}</div>
+                        <div className="w-32 font-medium">{order?.quantity}</div>
+                        <div className="w-full flex gap-2 justify-around">
+                          <div className="whitespace-nowrap">{order?.price?.toLocaleString()} </div>
+                          <div className="whitespace-nowrap">{(order.price * order.quantity).toLocaleString()}</div>
+                        </div>
+                      </div>
+                      <Divider className="!py-1 !my-1" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="w-[40%] flex flex-col gap-4">
+                <div className="flex justify-between">
+                  <div className="font-bold">
+                    Tổng tiền
+                    <span className="border border-[#f0f0f0] bg-[#f0f0f0] text-[#333] px-2 py-0.5 rounded-[50%] font-medium mx-1">
+                      {totalQuantityOrder}
+                    </span>
+                  </div>
+                  <div className="font-bold">
+                    {totalOrder.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}{' '}
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="font-bold">Giảm giá</div>
+                  <div className="font-bold">0</div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="font-bold">Khách cần trả</div>
+                  <div className="font-bold">
+                    {totalOrder.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}{' '}
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="font-bold">Khách thanh toán</div>
+                  <div className="font-bold">
+                    {totalOrder.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}{' '}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Spin>
+        </Modal>
+      </Spin>
+    </div>
   )
 }
 

@@ -80,7 +80,7 @@ const ProductLeft = ({ className }) => {
               onChange={onSearchChange}
               size="middle"
               allowClear
-              ref={searchInputRef} // Attach ref to the search input
+              ref={searchInputRef}
             />
             <div
               className="p-3 bg-white rounded-md max-h-400px mt-1 absolute w-full top-10 z-50"

@@ -25,7 +25,7 @@ const ProductCard = ({ product, loading, isList }) => {
           key: newKey,
           status: 'up',
           orderDetail: {
-            id: product?.id,
+            id: product?._id,
             name: product?.name,
             price: product?.price,
             quantity: 1,
@@ -39,7 +39,7 @@ const ProductCard = ({ product, loading, isList }) => {
           key: keyActive,
           status: 'up',
           orderDetail: {
-            id: product?.id,
+            id: product?._id,
             name: product?.name,
             price: product?.price,
             quantity: 1,
