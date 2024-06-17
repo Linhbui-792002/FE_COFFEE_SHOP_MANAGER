@@ -3,12 +3,12 @@ import { Pencil, UserRoundPlus } from 'lucide-react'
 import React, { useRef, useState, useEffect } from 'react'
 import Notification from '../common/notification'
 import { useAddSalaryMutation, useEditSalaryMutation, useGetInfoSalaryQuery } from '@src/redux/endPoint/salary'
-import { useGetAllEmployeeQuery } from '@src/redux/endPoint/employee'
+import { useGetAllEmployeeFixQuery } from '@src/redux/endPoint/employee'
 
 const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryInfoIdFn }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeQuery()
+  const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeFixQuery()
 
   const { data: dataSalaryInfo, isLoading: isLoadingSalaryInfo } = useGetInfoSalaryQuery(salaryId, {
     skip: !salaryId || !isModalOpen
