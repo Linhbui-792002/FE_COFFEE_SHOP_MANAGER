@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import ProductCard from './productCard'
+import ProductCard from './product-item'
 import { useSelector } from 'react-redux'
+import { useSearchProductByEmployeeQuery } from '@src/redux/endPoint/product'
 
 const MOCK_PRODUCT = [
   {
@@ -60,7 +61,7 @@ const MOCK_CATEGORY = [
   }
 ]
 
-const ProductList = ({ searchTerm, isList }) => {
+const ProductList = () => {
   const [loading, setLoading] = useState(false)
   const [productCards, setProductCards] = useState([])
   const [productCategories, setProductCategories] = useState([])
@@ -87,40 +88,28 @@ const ProductList = ({ searchTerm, isList }) => {
     setSelectedCategory(categoryId)
   }
 
-  const filteredProducts =
-    selectedCategory === 0 ? productCards : productCards.filter(product => product.category === selectedCategory)
-
-  const searchedProducts = searchTerm
-    ? filteredProducts.filter(product => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : filteredProducts
-
   return (
-    <div>
-      {!isList && (
-        <div className="flex flex-row gap-3 font-medium items-center cursor-pointer mb-4">
-          {productCategories?.map(category => (
-            <div
-              key={category.id}
-              className={`mb-2 ${
-                selectedCategory === category.id
-                  ? 'bg-[#1677ff] px-3 py-1 rounded-2xl text-white'
-                  : 'bg-white px-3 py-1 rounded-2xl text-black'
-              }`}
-              onClick={() => handleCategorySelect(category.id)}
-            >
-              {category.name}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className={!isList && 'flex gap-3 flex-wrap justify-center'}>
-        {searchedProducts &&
-          searchedProducts?.map(product => (
-            <ProductCard key={product._id} product={product} loading={loading} isList={isList} />
-          ))}
+    <>
+      <div className="flex flex-row gap-3 font-medium items-center cursor-pointer mb-4">
+        {productCategories?.map(category => (
+          <div
+            key={category.id}
+            className={`mb-2 ${
+              selectedCategory === category.id
+                ? 'bg-[#1677ff] px-3 py-1 rounded-2xl text-white'
+                : 'bg-white px-3 py-1 rounded-2xl text-black'
+            }`}
+            onClick={() => handleCategorySelect(category.id)}
+          >
+            {category.name}
+          </div>
+        ))}
       </div>
-    </div>
+      <div className={'flex gap-3 flex-wrap'}>
+        {productCards &&
+          productCards?.map(product => <ProductCard key={product._id} product={product} loading={loading} />)}
+      </div>
+    </>
   )
 }
 

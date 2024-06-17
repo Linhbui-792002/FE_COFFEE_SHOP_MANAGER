@@ -1,6 +1,8 @@
 import { updateOrder, addOrder } from '@src/redux/slices/orderSlice'
 import { List, Skeleton, Card } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
+import CustomImage from '../common/custom-image'
+import { currencyFormatter } from '@src/utils'
 
 const ProductCard = ({ product, loading, isList }) => {
   const keyActive = useSelector(state => state.order.keyOrderActive)
@@ -9,6 +11,7 @@ const ProductCard = ({ product, loading, isList }) => {
   const dispatch = useDispatch()
 
   const handleChooseProduct = () => {
+    alert('test')
     const existingOrderIndex = listOrder.findIndex(order => order.key === keyActive)
 
     if (keyActive == undefined || keyActive == null) {
@@ -28,6 +31,7 @@ const ProductCard = ({ product, loading, isList }) => {
             id: product?._id,
             name: product?.name,
             price: product?.price,
+            costPrice: product?.costPrice,
             quantity: 1,
             note: ''
           }
@@ -42,6 +46,7 @@ const ProductCard = ({ product, loading, isList }) => {
             id: product?._id,
             name: product?.name,
             price: product?.price,
+            costPrice: product?.costPrice,
             quantity: 1,
             note: ''
           }
@@ -52,20 +57,29 @@ const ProductCard = ({ product, loading, isList }) => {
 
   return isList ? (
     <List
+      onClick={handleChooseProduct}
       itemLayout="horizontal"
       dataSource={[
         {
           title: ''
         }
       ]}
-      onClick={handleChooseProduct}
       renderItem={(item, index) => (
         <Skeleton loading={loading} avatar active>
           <List.Item>
             <List.Item.Meta
-              avatar={<img alt={product.name} src={product.image} className="h-[50px] object-cover" />}
+              avatar={
+                <CustomImage
+                  // onLoad={isLoading}
+                  height={400}
+                  width={400}
+                  src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${product?.image}`}
+                  alt={product.name}
+                  className="h-[50px] w-[50px] object-cover"
+                />
+              }
               title={product.name}
-              description={product.price.toLocaleString() + ' vnđ'}
+              description={currencyFormatter(product?.price)}
             />
           </List.Item>
         </Skeleton>
@@ -74,7 +88,16 @@ const ProductCard = ({ product, loading, isList }) => {
   ) : (
     <Card
       hoverable
-      cover={<img alt={product.name} src={product.image} className="h-[150px] object-cover min-w-[180px]" />}
+      cover={
+        <CustomImage
+          // onLoad={isLoading}
+          height={400}
+          width={400}
+          src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${product?.image}`}
+          alt={product.name}
+          className="h-[150px] object-cover min-w-[180px]"
+        />
+      }
       className="shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105"
       loading={loading}
       onClick={handleChooseProduct}

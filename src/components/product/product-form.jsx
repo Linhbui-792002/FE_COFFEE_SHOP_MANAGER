@@ -2,7 +2,12 @@ import { Button, Card, Form, Input, Modal, Select, Spin, Switch, Tag } from 'ant
 import { ClipboardPlus, Pencil, SquareX } from 'lucide-react'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import UploadImage from '../common/uploadImage'
-import { useAddProductMutation, useGetAllProductPublicQuery, useGetProductInfoQuery, useUpdateProductMutation } from '@src/redux/endPoint/product'
+import {
+  useAddProductMutation,
+  useGetAllProductPublicQuery,
+  useGetProductInfoQuery,
+  useUpdateProductMutation
+} from '@src/redux/endPoint/product'
 import CustomImage from '../common/custom-image'
 import { useGetAllProductCategoryQuery } from '@src/redux/endPoint/productCategory'
 import Notification from '../common/notification'
@@ -16,26 +21,30 @@ const ProductForm = ({ productId, title, type, label }) => {
   const productCombo = Form.useWatch('productCombo', form)
 
   const { data: dataProductPublic, isLoading: isLoadingProductPublic } = useGetAllProductPublicQuery('/', {
-    skip: !isModalOpen 
+    skip: !isModalOpen
   })
 
-  const { data: dataProductCate, isLoading: isLoadingProductCate } = useGetAllProductCategoryQuery('/', { skip: !isModalOpen})
+  const { data: dataProductCate, isLoading: isLoadingProductCate } = useGetAllProductCategoryQuery('/', {
+    skip: !isModalOpen
+  })
 
-  const {data: productInfo, isLoading: isLoadingProductInfo} = useGetProductInfoQuery(productId,{skip:!isModalOpen || !productId})
+  const { data: productInfo, isLoading: isLoadingProductInfo } = useGetProductInfoQuery(productId, {
+    skip: !isModalOpen || !productId
+  })
   const [addNewProduct, { isLoading: isLoadingAddProduct }] = useAddProductMutation()
   const [updateProduct, { isLoading: isLoadingUpdateProduct }] = useUpdateProductMutation()
 
-  useEffect(()=>{
-    if(productInfo){
-        const productCombo = productInfo?.productCombo?.map(item => ({
-          productId: {value:item?.productId?._id, label: item?.productId?.name},
-          quantity: item.quantity
-        }));
-        console.log(productCombo,'productCombo123å')
-        form.setFieldsValue(productInfo)
-        form.setFieldValue('productCombo',productCombo)
+  useEffect(() => {
+    if (productInfo) {
+      const productCombo = productInfo?.productCombo?.map(item => ({
+        productId: { value: item?.productId?._id, label: item?.productId?.name },
+        quantity: item.quantity
+      }))
+      console.log(productCombo, 'productCombo123å')
+      form.setFieldsValue(productInfo)
+      form.setFieldValue('productCombo', productCombo)
     }
-  },[productInfo,isLoadingProductInfo])
+  }, [productInfo, isLoadingProductInfo])
 
   useEffect(() => {
     if (!isCombo) {
@@ -43,7 +52,7 @@ const ProductForm = ({ productId, title, type, label }) => {
     }
     getCostPrice()
   }, [isCombo, productCombo])
-  console.log(productInfo?.productCombo,'productCombo')
+  console.log(productInfo?.productCombo, 'productCombo')
   const optionsProductPublic = useMemo(() => {
     const selectedProductIds = productCombo?.map(item => item?.productId?.value)
     console.log(selectedProductIds, 'selectedProductIds')
@@ -54,11 +63,11 @@ const ProductForm = ({ productId, title, type, label }) => {
 
   const getCostPrice = () => {
     const totalCostPrice = dataProductPublic?.reduce((total, product) => {
-      const selectedItem = productCombo?.find(item => item?.productId?.value === product._id);
-      return total + (selectedItem?.quantity || 0) * product?.costPrice;
-    }, 0);
-    form.setFieldValue('costPrice', totalCostPrice);
-  };
+      const selectedItem = productCombo?.find(item => item?.productId?.value === product._id)
+      return total + (selectedItem?.quantity || 0) * product?.costPrice
+    }, 0)
+    form.setFieldValue('costPrice', totalCostPrice)
+  }
 
   const showModal = () => {
     setIsModalOpen(true)
@@ -69,7 +78,7 @@ const ProductForm = ({ productId, title, type, label }) => {
   }
 
   const handleCancel = () => {
-    if(productId){
+    if (productId) {
       form.resetFields()
     }
     setIsModalOpen(false)
@@ -79,7 +88,7 @@ const ProductForm = ({ productId, title, type, label }) => {
     form.setFieldValue('image', data)
   }
 
-  const handleAddProduct = async (payload) => {
+  const handleAddProduct = async payload => {
     try {
       await addNewProduct(payload).unwrap()
       Notification('success', 'Product Manager', 'Create product successfully')
@@ -96,7 +105,7 @@ const ProductForm = ({ productId, title, type, label }) => {
       }
     }
   }
-  const handleUpdateProduct = async (payload) => {
+  const handleUpdateProduct = async payload => {
     try {
       await updateProduct(payload).unwrap()
       Notification('success', 'Product Manager', 'Update product successfully')
@@ -115,21 +124,21 @@ const ProductForm = ({ productId, title, type, label }) => {
   }
 
   const onFinish = values => {
-
-    const updatedProductCombo = values?.productCombo?.map(item => ({
-      productId: item.productId.value,
-      quantity: item.quantity
-    })) || [];
-    const payload = {...values,productCombo:[...updatedProductCombo]}
+    const updatedProductCombo =
+      values?.productCombo?.map(item => ({
+        productId: item.productId.value,
+        quantity: item.quantity
+      })) || []
+    const payload = { ...values, productCombo: [...updatedProductCombo] }
     if (productId) {
-      handleUpdateProduct({...payload,productId})
+      handleUpdateProduct({ ...payload, productId })
     } else {
       handleAddProduct(payload)
     }
   }
 
   return (
-    <Spin spinning={isLoadingProductPublic ||isLoadingProductInfo}>
+    <Spin spinning={isLoadingProductPublic || isLoadingProductInfo}>
       <Button
         type={type}
         icon={productId ? <Pencil className="m-auto text-t-blue" /> : <ClipboardPlus size={18} />}
@@ -166,7 +175,6 @@ const ProductForm = ({ productId, title, type, label }) => {
                     <UploadImage getDataFn={getImage} setData={form.getFieldValue('image')} />
                     <span>Upload image product</span>
                   </Form.Item>
-
                 </div>
               </div>
               <div className="col-span-8 grid grid-cols-12 gap-2">
@@ -250,7 +258,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                     }
                   ]}
                 >
-                  <Input  readOnly={isCombo}/>
+                  <Input readOnly={isCombo} />
                 </Form.Item>
 
                 <Form.Item
@@ -323,7 +331,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                                     filterOption={false}
                                     onSearch={setSearchProduct}
                                     options={optionsProductPublic?.map(item => ({
-                                      productId: item._id, 
+                                      productId: item._id,
                                       label: item.name,
                                       value: item._id
                                     }))}

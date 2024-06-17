@@ -52,12 +52,6 @@ const OrderHistory = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (_, { createdAt }) => convertDate(createdAt)
-    },
-    {
-      title: 'Updated At',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
-      render: (_, { updatedAt }) => convertDate(updatedAt)
     }
     // {
     //   title: 'Action',

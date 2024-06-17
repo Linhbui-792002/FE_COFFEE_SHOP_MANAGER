@@ -1,6 +1,6 @@
 import React from 'react'
-import ProductLeft from './productLeft'
-import OrderRight from './orderRight'
+import ProductLeft from './product-left'
+import OrderRight from './order-right'
 
 const Order = () => {
   return (

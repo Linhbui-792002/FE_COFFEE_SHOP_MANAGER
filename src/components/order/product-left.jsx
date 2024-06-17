@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Tabs, Input } from 'antd'
-import ProductList from './productList'
+import ProductList from './product-list'
+import ProductCard from './product-item'
+import { useSearchProductByEmployeeQuery } from '@src/redux/endPoint/product'
+import { useDebounce } from '@src/hooks'
 
 const initialItems = [
   {
@@ -16,7 +19,8 @@ const ProductLeft = ({ className }) => {
   const [items, setItems] = useState(initialItems)
   const [openModalSearch, setOpenModalSearch] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  const debounce = useDebounce(searchTerm, 300)
+  const { data, isLoading } = useSearchProductByEmployeeQuery(debounce, { skip: !searchTerm })
 
   const searchInputRef = useRef(null)
 
@@ -24,21 +28,6 @@ const ProductLeft = ({ className }) => {
     const value = e.target.value
     setSearchTerm(value)
   }
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm)
-      if (searchTerm === '') {
-        setOpenModalSearch(false)
-      } else {
-        setOpenModalSearch(true)
-      }
-    }, 500)
-
-    return () => {
-      clearTimeout(handler)
-    }
-  }, [searchTerm])
 
   const onChange = newActiveKey => {
     setActiveKey(newActiveKey)
@@ -84,9 +73,12 @@ const ProductLeft = ({ className }) => {
             />
             <div
               className="p-3 bg-white rounded-md max-h-400px mt-1 absolute w-full top-10 z-50"
-              hidden={!openModalSearch}
+              hidden={!openModalSearch && !searchTerm}
             >
-              <ProductList searchTerm={debouncedSearchTerm} isList />
+              <div className="flex flex-col gap-1 flex-wrap">
+                {data &&
+                  data?.map(product => <ProductCard key={product._id} product={product} loading={isLoading} isList />)}
+              </div>
             </div>
           </div>
         }

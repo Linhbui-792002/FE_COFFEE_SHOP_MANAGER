@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Tabs } from 'antd'
-import OrderList from './orderList'
+import OrderList from './order-item'
 import { useDispatch, useSelector } from 'react-redux'
 import { addOrder, removeOrder, setKeyOrderActive } from '@src/redux/slices/orderSlice'
 

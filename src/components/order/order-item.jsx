@@ -31,7 +31,6 @@ const OrderList = () => {
   const handleClosePaymentModal = () => setIsModalOpen(false)
 
   const handlePayment = async () => {
-    setLoading(true)
     const orderData = {
       totalMoney: totalMoney,
       receivedMoney: receivedMoney,
@@ -53,8 +52,6 @@ const OrderList = () => {
       handleClosePaymentModal()
     } catch (error) {
       Notification('error', 'Order Create', 'Create order fail')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -187,13 +184,12 @@ const OrderList = () => {
                   </div>
                   <div className="flex justify-between">
                     <div className="font-bold">Customer Payment</div>
-                    {/* input */}
                     <InputNumber
                       className="border-none !border-b-2 border-blue-500 focus:border-blue-700 text-right"
                       onChange={value => setReceivedMoney(value)}
                       min={totalMoney}
                       controls={false}
-                      value={receivedMoney.toLocaleString()}
+                      value={receivedMoney}
                     />
                   </div>
                   <div className="flex justify-between">

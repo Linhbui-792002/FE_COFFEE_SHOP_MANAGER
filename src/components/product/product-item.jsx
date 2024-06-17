@@ -81,7 +81,7 @@ const ProductItem = ({ isLoading, className, item }) => {
       className={`${className} !w-full !flex flex-col justify-between border-2`}
       cover={
         <CustomImage
-         onLoad={isLoading}
+          onLoad={isLoading}
           height={400}
           width={400}
           src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${item?.image}`}
@@ -114,13 +114,13 @@ const ProductItem = ({ isLoading, className, item }) => {
             <div className="flex justify-between">
               <span>Type:</span>
               <Tag color={item?.isCombo ? 'gold' : 'red'} className="w-max !m-0">
-              {item?.isCombo ? 'Combo' : 'Product'}
+                {item?.isCombo ? 'Combo' : 'Product'}
               </Tag>
             </div>
             <div className="flex justify-between">
               <span>Status:</span>
               <Tag color={item?.status ? 'green' : 'gray'} className="w-max !m-0">
-              {item?.status ? 'Public' : 'Draft'}
+                {item?.status ? 'Public' : 'Draft'}
               </Tag>
             </div>
           </div>
