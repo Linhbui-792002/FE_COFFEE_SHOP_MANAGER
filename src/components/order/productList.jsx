@@ -26,6 +26,14 @@ const MOCK_PRODUCT = [
     price: 20000,
     image: 'https://via.placeholder.com/150',
     description: 'Trà sữa'
+  },
+  {
+    id: 4,
+    category: 2,
+    name: 'Trà sữa trân châu',
+    price: 25000,
+    image: 'https://via.placeholder.com/150',
+    description: 'Trà sữa trân châu'
   }
 ]
 
@@ -98,7 +106,7 @@ const ProductList = ({ searchTerm, isList }) => {
         </div>
       )}
 
-      <div className={!isList && 'flex gap-2 flex-wrap'}>
+      <div className={!isList && 'flex gap-3 flex-wrap justify-center'}>
         {searchedProducts &&
           searchedProducts?.map(product => (
             <ProductCard key={product.id} product={product} loading={loading} isList={isList} />

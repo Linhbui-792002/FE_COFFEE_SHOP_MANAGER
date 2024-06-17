@@ -8,7 +8,6 @@ const ProductCard = ({ product, loading, isList }) => {
   const orderDetail = useSelector(state => state.order.orderDetail)
   const dispatch = useDispatch()
 
-
   const handleChooseProduct = () => {
     const existingOrderIndex = listOrder.findIndex(order => order.key === keyActive)
 
@@ -75,7 +74,7 @@ const ProductCard = ({ product, loading, isList }) => {
   ) : (
     <Card
       hoverable
-      cover={<img alt={product.name} src={product.image} className="h-[150px] object-cover" />}
+      cover={<img alt={product.name} src={product.image} className="h-[150px] object-cover min-w-[180px]" />}
       className="shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105"
       loading={loading}
       onClick={handleChooseProduct}
