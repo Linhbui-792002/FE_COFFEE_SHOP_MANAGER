@@ -5,61 +5,38 @@ import { currencyFormatter } from '@src/utils'
 import TooltipCustom from '../common/tooltip'
 import Notification from '../common/notification'
 import Confirm from '../common/confirm'
-import { LockKeyhole, LockKeyholeOpen, SquareAsterisk } from 'lucide-react'
-import AccountForm from '../account/account-form'
+import { LockKeyhole, LockKeyholeOpen } from 'lucide-react'
 import ProductForm from './product-form'
-const ResetPassword = ({ product }) => {
-  // const [resetPassword] = useResetPasswordMutation()
+import { useChangeStatusProductMutation } from '@src/redux/endPoint/product'
 
-  const handleResetPassword = async () => {
-    // try {
-    //   const accountId = account?._id
-    //   await resetPassword({ accountId }).unwrap()
-    //   Notification('success', 'Account Manager', 'Reset password successfully')
-    // } catch (error) {
-    //   Notification('error', 'Account Manager', 'Failed call api')
-    // }
-  }
-  return (
-    <Confirm
-      icon={<SquareAsterisk className="m-auto text-t-orange" />}
-      title="Reset password"
-      color="gold"
-      type="text"
-      message={`Are you sure you want to reset password account `}
-      onConfirm={handleResetPassword}
-    />
-  )
-}
-
-const ChangeStatusAccount = ({ product }) => {
-  // const [changeStatus] = useBlockAccountMutation()
+const ChangeStatusProduct = ({ product }) => {
+  const [changeStatusProduct] = useChangeStatusProductMutation()
 
   const handleChangeStatus = async () => {
-    // try {
-    //   const body = {
-    //     accountId: account?._id,
-    //     status: !account.status
-    //   }
-    //   await changeStatus(body).unwrap()
-    //   Notification('success', 'Account Manager', `${account?.status ? 'Unlock' : 'Lock'} successfully`)
-    // } catch (error) {
-    //   Notification('error', 'Account Manager', 'Failed call api')
-    // }
+    try {
+      const body = {
+        productId: product?._id,
+        status: !product.status
+      }
+      await changeStatusProduct(body).unwrap()
+      Notification('success', 'Product Manager', `${product?.status ? 'Public' : 'Draft'} successfully`)
+    } catch (error) {
+      Notification('error', 'Product Manager', 'Failed call api')
+    }
   }
   return (
     <Confirm
       icon={
-        product?.status ? (
+        !product?.status ? (
           <LockKeyhole className="m-auto text-t-red" />
         ) : (
           <LockKeyholeOpen className="m-auto text-t-green" />
         )
       }
-      title={product?.status ? 'Unlock account' : 'Lock account'}
-      color={product?.status ? 'green' : 'red'}
+      title={!product?.status ? 'Public product' : 'Draff product'}
+      color={!product?.status ? 'green' : 'red'}
       type="text"
-      message={`Are you sure you want to ${product?.status ? 'Unlock' : 'Lock'} account ${product?.username}?`}
+      message={`Are you sure you want to ${!product?.status ? 'Public' : 'Draft'} product ${product?.name}?`}
       onConfirm={handleChangeStatus}
     />
   )
@@ -81,7 +58,7 @@ const ProductItem = ({ isLoading, className, item }) => {
       className={`${className} !w-full !flex flex-col justify-between border-2`}
       cover={
         <CustomImage
-         onLoad={isLoading}
+          onLoad={isLoading}
           height={400}
           width={400}
           src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${item?.image}`}
@@ -93,8 +70,7 @@ const ProductItem = ({ isLoading, className, item }) => {
         <TooltipCustom title="Edit product" key="edit" color="blue">
           <ProductForm productId={item?._id} type="text" title="Edit product" />
         </TooltipCustom>,
-        <ChangeStatusAccount product={item} key="changeStatus" />,
-        <ResetPassword product={item} key="resetPassword" />
+        <ChangeStatusProduct product={item} key="changeStatus" />,
       ]}
       hoverable
     >
@@ -114,13 +90,13 @@ const ProductItem = ({ isLoading, className, item }) => {
             <div className="flex justify-between">
               <span>Type:</span>
               <Tag color={item?.isCombo ? 'gold' : 'red'} className="w-max !m-0">
-              {item?.isCombo ? 'Combo' : 'Product'}
+                {item?.isCombo ? 'Combo' : 'Product'}
               </Tag>
             </div>
             <div className="flex justify-between">
               <span>Status:</span>
               <Tag color={item?.status ? 'green' : 'gray'} className="w-max !m-0">
-              {item?.status ? 'Public' : 'Draft'}
+                {item?.status ? 'Public' : 'Draft'}
               </Tag>
             </div>
           </div>

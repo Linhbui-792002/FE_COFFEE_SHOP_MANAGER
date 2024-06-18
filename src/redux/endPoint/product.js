@@ -17,12 +17,21 @@ export const productApi = api.injectEndpoints({
           : ['ProductsTag']
       }
     }),
+    searchProductByEmployee: builder.query({
+      query: query => {
+        return { url: `/product/search/${query}` }
+      },
+      transformResponse: res => {
+        return res?.metadata
+      },
+      providesTags: ['ProductsTag']
+    }),
     getAllProductPublic: builder.query({
       query: () => {
         return { url: `/product/getProduct/productsPublic` }
       },
       transformResponse: res => res.metadata,
-      invalidatesTags: ['ProductsTag']
+      providesTags: ['ProductsTag']
     }),
     getProductInfo: builder.query({
       query: productId => ({
@@ -63,5 +72,7 @@ export const {
   useGetAllProductPublicQuery,
   useGetAllProductQuery,
   useGetProductInfoQuery,
-  useUpdateProductMutation
+  useUpdateProductMutation,
+  useChangeStatusProductMutation,
+  useSearchProductByEmployeeQuery
 } = productApi
