@@ -63,5 +63,6 @@ export const {
   useGetAllProductPublicQuery,
   useGetAllProductQuery,
   useGetProductInfoQuery,
-  useUpdateProductMutation
+  useUpdateProductMutation,
+  useChangeStatusProductMutation
 } = productApi
