@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useLogoutMutation } from '@src/redux/endPoint/auth'
 import { useSelector } from 'react-redux'
+import Notification from '@src/components/common/notification'
 const { Header } = Layout
 
 const Navbar = () => {
@@ -39,7 +40,8 @@ const Navbar = () => {
     }
   ]
   return (
-    <Header className="p-0 !bg-b-primary-from flex justify-end items-center px-4">
+    <Header className="p-0 !bg-b-primary-from flex justify-between  items-center px-4">
+      <div>Logo </div>
       <Dropdown
         menu={{
           items: MENU_ITEMS

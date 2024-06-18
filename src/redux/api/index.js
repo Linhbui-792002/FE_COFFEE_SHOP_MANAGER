@@ -81,6 +81,7 @@ export const api = createApi({
     'MenuInfosTag',
     'SalariesTag',
     'ProductCategoryTag',
+    'OrdersTag',
     'ProductsTag'
   ],
   extractRehydrationInfo(action, { reducerPath }) {
