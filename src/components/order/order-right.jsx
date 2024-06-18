@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Tabs } from 'antd'
-import OrderList from './order-item'
+import OrderItem from './order-item'
 import { useDispatch, useSelector } from 'react-redux'
 import { addOrder, removeOrder, setKeyOrderActive } from '@src/redux/slices/orderSlice'
 
@@ -12,7 +12,7 @@ const OrderRight = ({ className }) => {
   useEffect(() => {
     if (initialItems.length !== 0) {
       let order = initialItems.find(order => order.key === activeKey)
-      order = { ...order, children: <OrderList /> }
+      order = { ...order, children: <OrderItem /> }
       const listOrder = initialItems.filter(item => item.key !== order.key)
       const index = initialItems.findIndex(item => item?.key == order.key)
       listOrder.splice(index, 0, order)

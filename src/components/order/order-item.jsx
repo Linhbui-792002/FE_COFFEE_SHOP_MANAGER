@@ -1,17 +1,33 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Button, Divider, InputNumber, Modal, Spin, message } from 'antd'
+import { Button, Divider, InputNumber, Modal, Select, Spin, message } from 'antd'
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
-import { updateOrder, removeOrderDetailInOrder } from '@src/redux/slices/orderSlice'
+import { updateOrder, removeOrderDetailInOrder, removeOrder } from '@src/redux/slices/orderSlice'
 import { useCreateOrderMutation } from '@src/redux/endPoint/order'
 import Notification from '../common/notification'
 
-const OrderList = () => {
+const MOCK_VOUCHER = [
+  {
+    id: 1,
+    name: 'Voucher 1',
+    discount: 10
+  },
+  {
+    id: 2,
+    name: 'Voucher 2',
+    discount: 20
+  }
+]
+
+const OrderItem = () => {
   const [totalMoney, setTotalMoney] = useState(0)
   const [totalQuantityOrder, setTotalQuantityOrder] = useState(0)
   const [receivedMoney, setReceivedMoney] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalVoucherOpen, setIsModalVoucherOpen] = useState(false)
   const [arrCalculate5ReceivedMoney, setArrCalculate5ReceivedMoney] = useState([])
+  const [searchVoucher, setSearchVoucher] = useState('')
+  const [voucherData, setVoucherData] = useState(MOCK_VOUCHER)
 
   const [createOrder, { isLoading: isLoadingCreateOrder }] = useCreateOrderMutation()
 
@@ -29,6 +45,8 @@ const OrderList = () => {
 
   const handleOpenPaymentModal = () => setIsModalOpen(true)
   const handleClosePaymentModal = () => setIsModalOpen(false)
+  const handleOpenVoucherModal = () => setIsModalVoucherOpen(true)
+  const handleCloseVoucherModal = () => setIsModalVoucherOpen(false)
 
   const handlePayment = async () => {
     const orderData = {
@@ -49,6 +67,7 @@ const OrderList = () => {
       await createOrder(orderData).unwrap()
       console.log(orderData, 'orderData')
       Notification('success', 'Order Create', 'Create order successfully')
+      dispatch(removeOrder(activeKey))
       handleClosePaymentModal()
     } catch (error) {
       Notification('error', 'Order Create', 'Create order fail')
@@ -74,6 +93,17 @@ const OrderList = () => {
     }
     setArrCalculate5ReceivedMoney(suggestions)
   }
+
+  useEffect(() => {
+    if (searchVoucher === '') {
+      setVoucherData(MOCK_VOUCHER)
+    } else {
+      const filterData = MOCK_VOUCHER.filter(voucher =>
+        voucher.name.toLowerCase().includes(searchVoucher.toLowerCase())
+      )
+      setVoucherData(filterData)
+    }
+  }, [searchVoucher])
 
   useEffect(() => {
     const total = orderDetails.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
@@ -129,11 +159,11 @@ const OrderList = () => {
       </div>
       <div className="w-full flex mt-4 justify-end items-center">
         <Spin spinning={isLoadingCreateOrder}>
-          <Button onClick={handleOpenPaymentModal} className="flex items-center w-max">
+          <Button type="primary" onClick={handleOpenPaymentModal} className="w-[200px]">
             Payment
           </Button>
           <Modal
-            title="Payment"
+            title={`Payment Order ` + activeKey}
             open={isModalOpen}
             style={{ left: '23%' }}
             okText="Submit"
@@ -150,7 +180,11 @@ const OrderList = () => {
                 <div className="w-[53%]">
                   <div className="flex flex-col gap-2 flex-grow">
                     {orderDetails.map(order => (
-                      <div key={order.id} className="px-2 bg-white w-full rounded-md">
+                      <div
+                        key={order.id}
+                        className="px-1 mt-4 bg-white w-full rounded-md"
+                        onClick={handleOpenVoucherModal}
+                      >
                         <div className="w-full flex font-medium">
                           <div className="min-w-[40%] max-w-[40%] flex items-center">{order.name}</div>
                           <div className="w-32 font-medium">{order.quantity}</div>
@@ -212,6 +246,36 @@ const OrderList = () => {
               </div>
             </Spin>
           </Modal>
+          {/* Modal select include voucher list */}
+          <Modal
+            title="Voucher"
+            open={isModalVoucherOpen}
+            okText="Submit"
+            width={400}
+            onOk={handlePayment}
+            confirmLoading={isLoadingCreateOrder}
+            onCancel={handleCloseVoucherModal}
+            centered
+            okButtonProps={{ loading: isLoadingCreateOrder }}
+            cancelButtonProps={{ disabled: isLoadingCreateOrder }}
+          >
+            <Select
+              className="w-full"
+              labelInValue
+              // loading={isLoadingProductPublic}
+              showSearch
+              filterOption={false}
+              onSearch={setSearchVoucher}
+              options={
+                voucherData &&
+                voucherData.map(voucher => ({
+                  label: voucher.name,
+                  value: voucher.id,
+                  discount: voucher.discount
+                }))
+              }
+            />
+          </Modal>
         </Spin>
         <div className="ml-auto flex gap-2 items-end">
           <div className="font-bold">
@@ -227,4 +291,4 @@ const OrderList = () => {
   )
 }
 
-export default OrderList
+export default OrderItem
