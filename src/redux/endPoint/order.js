@@ -1,14 +1,19 @@
+import { objectToUrlParams } from '@src/utils'
 import { api } from '../api'
 
 export const orderApi = api.injectEndpoints({
   endpoints: builder => ({
     getAllOrders: builder.query({
-      query: () => ({
-        url: '/order'
-      }),
-      transformResponse: res => res.metadata,
-      providesTags: (result, error, arg) =>
-        result ? [...result.map(({ _id }) => ({ type: 'OrdersTag', _id })), 'OrdersTag'] : ['OrdersTag']
+      query: query => {
+        const strQuery = objectToUrlParams(query)
+        return { url: `/order?${strQuery}` }
+      },
+      transformResponse: res => {
+        return { metadata: res?.metadata, options: res?.options }
+      },
+      providesTags: (result, error, arg) => {
+        return result ? [...result.metadata.map(({ _id }) => ({ type: 'OrdersTag', _id })), 'OrdersTag'] : ['OrdersTag']
+      }
     }),
     getOneOrder: builder.query({
       query: orderId => ({
