@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import ProductCard from './product-item'
+import ProductItem from './product-item'
 import { useSelector } from 'react-redux'
 import { useSearchProductByEmployeeQuery } from '@src/redux/endPoint/product'
 
@@ -107,7 +107,7 @@ const ProductList = () => {
       </div>
       <div className={'flex gap-3 flex-wrap'}>
         {productCards &&
-          productCards?.map(product => <ProductCard key={product._id} product={product} loading={loading} />)}
+          productCards?.map(product => <ProductItem key={product._id} product={product} loading={loading} />)}
       </div>
     </>
   )

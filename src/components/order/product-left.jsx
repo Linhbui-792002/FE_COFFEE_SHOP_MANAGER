@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Tabs, Input } from 'antd'
 import ProductList from './product-list'
-import ProductCard from './product-item'
+import ProductItem from './product-item'
 import { useSearchProductByEmployeeQuery } from '@src/redux/endPoint/product'
 import { useDebounce } from '@src/hooks'
 
@@ -77,7 +77,7 @@ const ProductLeft = ({ className }) => {
             >
               <div className="flex flex-col gap-1 flex-wrap">
                 {data &&
-                  data?.map(product => <ProductCard key={product._id} product={product} loading={isLoading} isList />)}
+                  data?.map(product => <ProductItem key={product._id} product={product} loading={isLoading} isList />)}
               </div>
             </div>
           </div>

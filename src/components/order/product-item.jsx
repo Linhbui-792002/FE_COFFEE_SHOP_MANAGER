@@ -4,14 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import CustomImage from '../common/custom-image'
 import { currencyFormatter } from '@src/utils'
 
-const ProductCard = ({ product, loading, isList }) => {
+const ProductItem = ({ product, loading, isList }) => {
   const keyActive = useSelector(state => state.order.keyOrderActive)
   const listOrder = useSelector(state => state.order.listOrder)
   const orderDetail = useSelector(state => state.order.orderDetail)
   const dispatch = useDispatch()
 
   const handleChooseProduct = () => {
-    alert('test')
     const existingOrderIndex = listOrder.findIndex(order => order.key === keyActive)
 
     if (keyActive == undefined || keyActive == null) {
@@ -113,4 +112,4 @@ const ProductCard = ({ product, loading, isList }) => {
   )
 }
 
-export default ProductCard
+export default ProductItem
