@@ -37,51 +37,48 @@ const OrderHistory = () => {
 
   const columns = [
     {
-      title: 'Index',
+      title: '#',
       key: 'index',
       render: (_, __, index) => (formFilterData.page - 1) * formFilterData.limit + index + 1
     },
     {
       title: 'Total Money',
       dataIndex: 'totalMoney',
-      key: 'totalMoney',
-      ...getColumnSearchProps('totalMoney', 'Total Money')
+      key: 'totalMoney'
     },
     {
       title: 'Received Money',
       dataIndex: 'receivedMoney',
-      key: 'receivedMoney',
-      ...getColumnSearchProps('receivedMoney', 'Received Money')
+      key: 'receivedMoney'
     },
     {
       title: 'Excess Money',
       dataIndex: 'excessMoney',
-      key: 'excessMoney',
-      ...getColumnSearchProps('excessMoney', 'Excess Money')
+      key: 'excessMoney'
     },
     {
       title: 'Created By',
       dataIndex: 'createdBy',
       key: 'createdBy',
-      render: (_, { createdBy }) => createdBy
+      render: (_, { createdBy }) => <>{createdBy?.firstName + ' ' + createdBy?.lastName}</>
     },
     {
       title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (_, { createdAt }) => convertDate(createdAt)
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <TooltipCustom title="Edit order" key="edit" color="blue">
-            {/* <OrderForm orderId={record?._id} type="text" title="Edit order" /> */}
-          </TooltipCustom>
-        </Space>
-      )
     }
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (_, record) => (
+    //     <Space size="middle">
+    //       <TooltipCustom title="Edit order" key="edit" color="blue">
+    //         {/* <OrderForm orderId={record?._id} type="text" title="Edit order" /> */}
+    //       </TooltipCustom>
+    //     </Space>
+    //   )
+    // }
   ]
 
   return (
