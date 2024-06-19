@@ -104,7 +104,7 @@ const ProductItem = ({ product, loading, isList }) => {
       <Skeleton loading={loading} avatar active>
         <Card.Meta
           title={product.name}
-          description={product.price.toLocaleString() + ' vnđ'}
+          description={currencyFormatter(product.price)}
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
         />
       </Skeleton>

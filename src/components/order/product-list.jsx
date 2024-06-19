@@ -125,7 +125,7 @@ const ProductList = () => {
           </div>
         ))}
       </div>
-      <div className="flex gap-4 flex-wrap max-h-[65vh] overflow-y-auto justify-center py-3">
+      <div className="flex gap-4 flex-wrap max-h-[65vh] overflow-y-auto pl-5 py-3">
         {productCards &&
           productCards.map(product => <ProductItem key={product._id} product={product} loading={loading} />)}
       </div>
