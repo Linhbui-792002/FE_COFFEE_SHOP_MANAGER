@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Button, Divider, InputNumber, Modal, Select, Spin, message } from 'antd'
+import { Button, Divider, Input, InputNumber, Modal, Select, Spin, message } from 'antd'
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateOrder, removeOrderDetailInOrder, removeOrder } from '@src/redux/slices/orderSlice'
 import { useCreateOrderMutation } from '@src/redux/endPoint/order'
 import Notification from '../common/notification'
+import { currencyFormatter } from '@src/utils'
 
 const MOCK_VOUCHER = [
   {
@@ -43,7 +44,10 @@ const OrderItem = () => {
     dispatch(removeOrderDetailInOrder({ key: activeKey, id: orderId }))
   }
 
-  const handleOpenPaymentModal = () => setIsModalOpen(true)
+  const handleOpenPaymentModal = () => {
+    setReceivedMoney(totalMoney)
+    setIsModalOpen(true)
+  }
   const handleClosePaymentModal = () => setIsModalOpen(false)
   const handleOpenVoucherModal = () => setIsModalVoucherOpen(true)
   const handleCloseVoucherModal = () => setIsModalVoucherOpen(false)
@@ -51,7 +55,7 @@ const OrderItem = () => {
   const handlePayment = async () => {
     const orderData = {
       totalMoney: totalMoney,
-      receivedMoney: receivedMoney,
+      receivedMoney: receivedMoney > totalMoney ? receivedMoney : totalMoney,
       excessMoney: receivedMoney - totalMoney > 0 ? receivedMoney - totalMoney : 0,
       voucherUsed: [],
       orderDetail: orderDetails.map(order => ({
@@ -65,7 +69,6 @@ const OrderItem = () => {
 
     try {
       await createOrder(orderData).unwrap()
-      console.log(orderData, 'orderData')
       Notification('success', 'Order Create', 'Create order successfully')
       dispatch(removeOrder(activeKey))
       handleClosePaymentModal()
@@ -92,6 +95,15 @@ const OrderItem = () => {
       suggestions.push(200000)
     }
     setArrCalculate5ReceivedMoney(suggestions)
+  }
+
+  const handleInputChange = e => {
+    const value = +e.target.value
+    if (!isNaN(value)) {
+      setReceivedMoney(value)
+    } else {
+      setReceivedMoney(totalMoney)
+    }
   }
 
   useEffect(() => {
@@ -121,12 +133,12 @@ const OrderItem = () => {
             <div className="w-full flex justify-between gap-4 items-center">
               <div className="min-w-[40%] max-w-[40%] flex items-center gap-2 font-bold">
                 <DeleteOutlined
-                  className="w-[2rem] h-[2rem] text-lg p-2 border-[1px] border-b-red rounded-full cursor-pointer"
+                  className="w-[2rem] h-[2rem] text-lg p-2 border border-red-400 rounded-full cursor-pointer hover:bg-red-100 hover:text-red-600 transition duration-300 ease-in-out"
                   onClick={() => handleDelete(order.id)}
                 />
                 {order.name}
               </div>
-              <div className="w-full font-medium">
+              <div className="w-full font-medium mb-2">
                 <InputNumber
                   addonBefore={
                     <MinusCircleOutlined
@@ -148,18 +160,23 @@ const OrderItem = () => {
                   className="w-[9rem] text-center"
                 />
               </div>
-              <div className="w-full flex gap-2 justify-around">
+              <div className="w-full flex gap-2 justify-around font-medium ">
                 <div className="underline whitespace-nowrap">{order.price.toLocaleString()}</div>
                 <div className="whitespace-nowrap">{(order.price * order.quantity).toLocaleString()}</div>
               </div>
             </div>
-            <Divider className="!py-1 !my-1" />
+            <Divider className="!my-1" />
           </div>
         ))}
       </div>
       <div className="w-full flex mt-4 justify-end items-center">
         <Spin spinning={isLoadingCreateOrder}>
-          <Button type="primary" onClick={handleOpenPaymentModal} className="w-[200px]">
+          <Button
+            type="primary"
+            onClick={handleOpenPaymentModal}
+            className="w-[300px]"
+            disabled={orderDetails.length === 0}
+          >
             Payment
           </Button>
           <Modal
@@ -179,18 +196,24 @@ const OrderItem = () => {
               <div className="flex gap-10 min-h-[83vh]">
                 <div className="w-[53%]">
                   <div className="flex flex-col gap-2 flex-grow">
+                    <div className="grid grid-cols-12">
+                      <div className="col-span-1 font-bold">#</div>
+                      <div className="col-span-5 font-bold">Product</div>
+                      <div className="col-span-2 font-bold text-center">Quantity</div>
+                      <div className="col-span-2 font-bold text-end">Price</div>
+                      <div className="col-span-2 font-bold text-end">Total</div>
+                    </div>
+                    <Divider className="!py-1 !my-1" />
+
                     {orderDetails.map(order => (
-                      <div
-                        key={order.id}
-                        className="px-1 mt-4 bg-white w-full rounded-md"
-                        onClick={handleOpenVoucherModal}
-                      >
-                        <div className="w-full flex font-medium">
-                          <div className="min-w-[40%] max-w-[40%] flex items-center">{order.name}</div>
-                          <div className="w-32 font-medium">{order.quantity}</div>
-                          <div className="w-full flex gap-2 justify-around">
-                            <div className="whitespace-nowrap">{order.price.toLocaleString()}</div>
-                            <div className="whitespace-nowrap">{(order.price * order.quantity).toLocaleString()}</div>
+                      <div key={order.id} className="px-1 bg-white w-full rounded-md" onClick={handleOpenVoucherModal}>
+                        <div className="w-full grid grid-cols-12 gap-2 font-medium">
+                          <div className="col-span-1">{orderDetails.indexOf(order) + 1}</div>
+                          <div className="col-span-5 flex items-center">{order.name}</div>
+                          <div className="col-span-2 text-center">{order.quantity}</div>
+                          <div className="col-span-2 whitespace-nowrap text-end">{order.price.toLocaleString()}</div>
+                          <div className="col-span-2 whitespace-nowrap text-end">
+                            {(order.price * order.quantity).toLocaleString()}
                           </div>
                         </div>
                         <Divider className="!py-1 !my-1" />
@@ -216,18 +239,18 @@ const OrderItem = () => {
                     <div className="font-bold">Amount Due</div>
                     <div className="font-bold">{totalMoney.toLocaleString()}</div>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <div className="font-bold">Customer Payment</div>
-                    <InputNumber
-                      className="border-none !border-b-2 border-blue-500 focus:border-blue-700 text-right"
-                      onChange={value => setReceivedMoney(value)}
+                    <Input
+                      className={`!border-none !outline-none !w-max-content !bg-red text-right pr-0 w-20 font-bold ${
+                        receivedMoney - totalMoney < 0 ? 'text-red-500' : ''
+                      }`}
+                      onChange={handleInputChange}
                       min={totalMoney}
-                      controls={false}
                       value={receivedMoney}
                     />
                   </div>
                   <div className="flex justify-between">
-                    {/* gen list arrCalculate5ReceivedMoney option to setReceivedMoney for receivedMoney*/}
                     <div className="flex gap-2 flex-wrap border border-spacing-0 p-2 rounded-md bg-slate-100">
                       {arrCalculate5ReceivedMoney.map((item, index) => (
                         <Button key={index} onClick={() => setReceivedMoney(item)} className="rounded-3xl">
@@ -277,14 +300,14 @@ const OrderItem = () => {
             />
           </Modal>
         </Spin>
-        <div className="ml-auto flex gap-2 items-end">
+        <div className={`ml-auto gap-2 items-end ${totalQuantityOrder === 0 ? 'hidden' : 'flex'}`}>
           <div className="font-bold">
             Total
             <span className="border border-[#f0f0f0] bg-[#f0f0f0] text-[#333] px-2 py-0.5 rounded-[50%] font-medium mx-1">
               {totalQuantityOrder}
             </span>
           </div>
-          <div className="font-bold">{totalMoney.toLocaleString()}</div>
+          <div className="font-bold">{currencyFormatter(totalMoney)}</div>
         </div>
       </div>
     </div>

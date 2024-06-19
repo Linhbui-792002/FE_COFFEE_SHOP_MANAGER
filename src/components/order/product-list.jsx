@@ -43,6 +43,26 @@ const MOCK_PRODUCT = [
       $date: '2024-06-16T11:28:36.355Z'
     },
     __v: 0
+  },
+  {
+    _id: '666ecc64c958dd3ccd4098a2',
+    categoryId: '666ec7f8367ab979a1b9cab3',
+    name: 'Sample product2',
+    detail: 'This is a detailed description of the sample product.',
+    isCombo: false,
+    productCombo: [],
+    costPrice: 10.99,
+    price: 15.99,
+    image: 'sample-product-image.jpg',
+    quantity: 100,
+    status: true,
+    createdAt: {
+      $date: '2024-06-16T11:28:36.355Z'
+    },
+    updatedAt: {
+      $date: '2024-06-16T11:28:36.355Z'
+    },
+    __v: 0
   }
 ]
 
@@ -90,7 +110,7 @@ const ProductList = () => {
 
   return (
     <>
-      <div className="flex flex-row gap-3 font-medium items-center cursor-pointer mb-4">
+      <div className="flex flex-row gap-3 font-medium items-center cursor-pointer mb-2">
         {productCategories?.map(category => (
           <div
             key={category.id}
@@ -105,9 +125,9 @@ const ProductList = () => {
           </div>
         ))}
       </div>
-      <div className={'flex gap-3 flex-wrap'}>
+      <div className="flex gap-4 flex-wrap max-h-[65vh] overflow-y-auto justify-center py-3">
         {productCards &&
-          productCards?.map(product => <ProductItem key={product._id} product={product} loading={loading} />)}
+          productCards.map(product => <ProductItem key={product._id} product={product} loading={loading} />)}
       </div>
     </>
   )

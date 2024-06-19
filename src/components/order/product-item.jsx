@@ -6,13 +6,9 @@ import { currencyFormatter } from '@src/utils'
 
 const ProductItem = ({ product, loading, isList }) => {
   const keyActive = useSelector(state => state.order.keyOrderActive)
-  const listOrder = useSelector(state => state.order.listOrder)
-  const orderDetail = useSelector(state => state.order.orderDetail)
   const dispatch = useDispatch()
 
   const handleChooseProduct = () => {
-    const existingOrderIndex = listOrder.findIndex(order => order.key === keyActive)
-
     if (keyActive == undefined || keyActive == null) {
       const newKey = 1
       dispatch(
@@ -58,6 +54,10 @@ const ProductItem = ({ product, loading, isList }) => {
     <List
       onClick={handleChooseProduct}
       itemLayout="horizontal"
+      className="px-4 cursor-pointer border
+      border-gray-200 hover:bg-gray-100
+      hover:text-gray-900 transition duration-300 ease-in-out bg-white
+      shadow-md rounded"
       dataSource={[
         {
           title: ''
