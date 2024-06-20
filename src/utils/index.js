@@ -16,6 +16,26 @@ export const convertDate = dateString => {
   return date.toLocaleDateString('en-GB') // dd/mm/yyyy
 }
 
+export const convertDateWithTime = dateString => {
+  const date = new Date(dateString)
+  if (isNaN(date)) {
+    return 'Updating'
+  }
+
+  const options = {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+    timeZone: 'Asia/Ho_Chi_Minh'
+  }
+
+  return date.toLocaleDateString('en-GB', options)
+}
+
 export const objectToUrlParams = obj => {
   const params = []
   for (const key in obj) {
