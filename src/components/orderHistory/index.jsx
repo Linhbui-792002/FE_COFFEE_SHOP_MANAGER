@@ -3,10 +3,11 @@ import { Breadcrumb, Empty, Input, Pagination, Space, Spin, Table, Tag } from 'a
 import { FileText, Home, Search } from 'lucide-react'
 import Link from 'next/link'
 import { useDebounce } from '@src/hooks'
-import { convertDate } from '@src/utils'
+import { convertDateWithTime } from '@src/utils'
 import { useGetAllOrdersQuery } from '@src/redux/endPoint/order'
 import { useColumnSearch } from '../common/column-search-props'
 import TooltipCustom from '../common/tooltip'
+import OrderDetailModal from './order-detail'
 
 const OrderHistory = () => {
   const [formFilterData, setFormFilterData] = useState({
@@ -51,11 +52,11 @@ const OrderHistory = () => {
       dataIndex: 'receivedMoney',
       key: 'receivedMoney'
     },
-    {
-      title: 'Excess Money',
-      dataIndex: 'excessMoney',
-      key: 'excessMoney'
-    },
+    // {
+    //   title: 'Excess Money',
+    //   dataIndex: 'excessMoney',
+    //   key: 'excessMoney'
+    // },
     {
       title: 'Created By',
       dataIndex: 'createdBy',
@@ -63,22 +64,24 @@ const OrderHistory = () => {
       render: (_, { createdBy }) => <>{createdBy?.firstName + ' ' + createdBy?.lastName}</>
     },
     {
-      title: 'Created At',
+      title: <div className="text-end">Created At</div>,
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (_, { createdAt }) => convertDate(createdAt)
+      render: (_, { createdAt }) => <div className="text-end">{convertDateWithTime(createdAt)}</div>
+    },
+    {
+      title: <div className="text-end">Action</div>,
+      key: 'action',
+      render: (_, record) => (
+        <div className="text-end">
+          <Space size="middle">
+            <TooltipCustom title="View Order Detail" color="blue">
+              <OrderDetailModal orderId={record?._id} type="text" title="Edit menu info" />
+            </TooltipCustom>
+          </Space>
+        </div>
+      )
     }
-    // {
-    //   title: 'Action',
-    //   key: 'action',
-    //   render: (_, record) => (
-    //     <Space size="middle">
-    //       <TooltipCustom title="Edit order" key="edit" color="blue">
-    //         {/* <OrderForm orderId={record?._id} type="text" title="Edit order" /> */}
-    //       </TooltipCustom>
-    //     </Space>
-    //   )
-    // }
   ]
 
   return (
