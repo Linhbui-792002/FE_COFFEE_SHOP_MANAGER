@@ -5,20 +5,38 @@ import { useGetEmployeeSalaryQuery } from '@src/redux/endPoint/salary'
 const SalaryEmployee = ({ isShow, isClose }) => {
   const [isModalVisible, setIsModalVisible] = useState(isShow)
   const { data, isLoading, isError, error } = useGetEmployeeSalaryQuery()
-  console.log(data)
   const closeModel = () => {
     setIsModalVisible(false)
     isClose(true)
   }
+
+  //create workTermSet:
+  const workTermSet = new Set();
+  const [filterWorkTerm, setFilterWorkTerm] = useState([])
+
+  useEffect(() => {
+    if (data) {
+      workTermSet.clear()
+      data.forEach(item => {
+        if (!workTermSet.has(item.workTerm)) {
+          workTermSet.add(item.workTerm)
+        }
+      })
+      setFilterWorkTerm([...workTermSet])
+    } else {
+      setFilterWorkTerm([])
+    }
+  }, [data])
 
   const columns = [
     {
       title: 'Work Terms',
       dataIndex: 'workTerm',
       key: 'workTerm',
-      filters: data.map(item => ({
-        text: `${item.workTerm}`,
-        value: `${item.workTerm}`
+      filters: filterWorkTerm?.map(item => ({
+        key: item,
+        text: `${item}`,
+        value: `${item}`
       })),
       onFilter: (value, record) => `${record.workTerm}` === value
     },
