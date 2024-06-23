@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import Cookies from 'js-cookie'
+import { jwtDecode } from 'jwt-decode'
 
 const initialState = {
   accessToken: null,
@@ -13,7 +14,11 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, { payload }) => {
       const { accessToken, refreshToken, account } = payload
-      Cookies.set('accessToken', accessToken)
+      const decodedToken = jwtDecode(accessToken)
+      const accessTokenExpiry = decodedToken.exp
+
+      const expires = new Date(accessTokenExpiry * 1000)
+      Cookies.set('accessToken', accessToken, { expires })
       state.accessToken = accessToken
       state.refreshToken = refreshToken
       state.account = account
