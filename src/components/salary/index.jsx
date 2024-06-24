@@ -97,22 +97,6 @@ const Salary = () => {
       ellipsis: true
     },
     {
-      title: 'Created At',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (_, record) => (
-        new Date(record.updatedAt).toLocaleDateString('en-GB')
-      )
-    },
-    {
-      title: 'Updated At',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
-      render: (_, record) => (
-          new Date(record.updatedAt).toLocaleDateString('en-GB')
-      )
-    },
-    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
