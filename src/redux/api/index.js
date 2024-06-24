@@ -80,7 +80,9 @@ export const api = createApi({
     'GeneralsTag',
     'MenuInfosTag',
     'SalariesTag',
-    'ProductCategoryTag'
+    'ProductCategoryTag',
+    'OrdersTag',
+    'ProductsTag'
   ],
   extractRehydrationInfo(action, { reducerPath }) {
     if (action.type === REHYDRATE) {
