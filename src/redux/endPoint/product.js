@@ -6,7 +6,7 @@ export const productApi = api.injectEndpoints({
     getAllProduct: builder.query({
       query: query => {
         const strQuery = objectToUrlParams(query)
-        return { url: `/product?${strQuery}` }
+        return { url: `/product${strQuery && "?"+strQuery}` }
       },
       transformResponse: res => {
         return { metadata: res?.metadata, options: res?.options }

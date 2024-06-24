@@ -17,7 +17,7 @@ export async function middleware(request) {
     account = (await jwtDecode(accessToken.value)) || null
   }
   if (account && account?.status) {
-    Cookies.remove('accessToken')
+    // Cookies.remove('accessToken')
     await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/logout'`, {
       method: 'POST',
       credentials: 'include'
