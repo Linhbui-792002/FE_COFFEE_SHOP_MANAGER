@@ -48,5 +48,5 @@ export const {
   useGetAllSalariesQuery,
   useGetEmployeeSalaryQuery,
   useGetInfoSalaryQuery,
-  useEditSalaryMutation,
+  useEditSalaryMutation
 } = salaryApi

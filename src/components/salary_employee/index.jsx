@@ -11,7 +11,7 @@ const SalaryEmployee = ({ isShow, isClose }) => {
   }
 
   //create workTermSet:
-  const workTermSet = new Set();
+  const workTermSet = new Set()
   const [filterWorkTerm, setFilterWorkTerm] = useState([])
 
   useEffect(() => {
