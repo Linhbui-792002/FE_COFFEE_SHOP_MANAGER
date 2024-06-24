@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import ProductItem from './product-item'
 import { useSelector } from 'react-redux'
 import { useSearchProductByEmployeeQuery } from '@src/redux/endPoint/product'
+import { Spin } from 'antd'
 
 const MOCK_PRODUCT = [
   {
@@ -63,6 +64,46 @@ const MOCK_PRODUCT = [
       $date: '2024-06-16T11:28:36.355Z'
     },
     __v: 0
+  },
+  {
+    _id: '666ecb585f833c5fd68dd21f4',
+    categoryId: '666ec7f8367ab979a1b9cab3',
+    name: 'Sample product combo',
+    detail: 'This is a detailed description of the sample product.',
+    isCombo: false,
+    productCombo: [],
+    costPrice: 10.99,
+    price: 15.99,
+    image: 'sample-product-image.jpg',
+    quantity: 100,
+    status: true,
+    createdAt: {
+      $date: '2024-06-16T11:24:08.510Z'
+    },
+    updatedAt: {
+      $date: '2024-06-16T11:24:08.510Z'
+    },
+    __v: 0
+  },
+  {
+    _id: '666ecb585f833c5fd68dd21f1',
+    categoryId: '666ec7f8367ab979a1b9cab3',
+    name: 'Sample product combo',
+    detail: 'This is a detailed description of the sample product.',
+    isCombo: false,
+    productCombo: [],
+    costPrice: 10.99,
+    price: 15.99,
+    image: 'sample-product-image.jpg',
+    quantity: 100,
+    status: true,
+    createdAt: {
+      $date: '2024-06-16T11:24:08.510Z'
+    },
+    updatedAt: {
+      $date: '2024-06-16T11:24:08.510Z'
+    },
+    __v: 0
   }
 ]
 
@@ -109,7 +150,7 @@ const ProductList = () => {
   }
 
   return (
-    <>
+    <Spin spinning={false}>
       <div className="flex flex-row gap-3 font-medium items-center cursor-pointer mb-2">
         {productCategories?.map(category => (
           <div
@@ -125,11 +166,13 @@ const ProductList = () => {
           </div>
         ))}
       </div>
-      <div className="flex gap-4 flex-wrap max-h-[65vh] overflow-y-auto pl-5 py-3">
+      <div className="grid grid-cols-12 gap-1 min-h-[65vh] max-h-[65vh] h-full overflow-y-auto px-1 py-3">
         {productCards &&
-          productCards.map(product => <ProductItem key={product._id} product={product} loading={loading} />)}
+          productCards.map(product => (
+            <ProductItem key={product._id} className="col-span-3" product={product} loading={loading} />
+          ))}
       </div>
-    </>
+    </Spin>
   )
 }
 

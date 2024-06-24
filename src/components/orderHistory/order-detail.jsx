@@ -10,6 +10,7 @@ const OrderDetailModal = ({ orderId }) => {
   const { data: orderDetails, isLoading: isLoadingOrderDetails } = useGetOneOrderQuery(orderId, {
     skip: !orderId || !isModalOpen
   })
+
   const componentRef = useRef()
 
   const showModal = () => {

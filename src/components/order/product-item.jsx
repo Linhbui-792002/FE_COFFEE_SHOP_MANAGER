@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import CustomImage from '../common/custom-image'
 import { currencyFormatter } from '@src/utils'
 
-const ProductItem = ({ product, loading, isList }) => {
+const ProductItem = ({ className, product, loading, isList }) => {
   const keyActive = useSelector(state => state.order.keyOrderActive)
   const dispatch = useDispatch()
 
@@ -57,7 +57,7 @@ const ProductItem = ({ product, loading, isList }) => {
       className="px-4 cursor-pointer border
       border-gray-200 hover:bg-gray-100
       hover:text-gray-900 transition duration-300 ease-in-out bg-white
-      shadow-md rounded"
+       rounded"
       dataSource={[
         {
           title: ''
@@ -94,10 +94,13 @@ const ProductItem = ({ product, loading, isList }) => {
           width={400}
           src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${product?.image}`}
           alt={product.name}
-          className="h-[150px] object-cover min-w-[180px]"
+          className="w-20 h-40 object-cover"
         />
       }
-      className="shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105"
+      className={
+        className +
+        ' min-h-[18rem] max-h-[18rem] shadow-lg rounded-lg overflow-hidden transition-transform transform scale-95 hover:scale-100'
+      }
       loading={loading}
       onClick={handleChooseProduct}
     >
