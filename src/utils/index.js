@@ -1,10 +1,15 @@
-export const currencyFormatter = number => {
+export const currencyFormatter = (number, currency = 'VND') => {
+  if (currency === 'VND') {
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: currency,
+      currencyDisplay: 'code'
+    })
+    return formatter.format(number)
+  }
   const formatter = new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-    currencyDisplay: 'code'
+    style: 'decimal'
   })
-
   return formatter.format(number)
 }
 

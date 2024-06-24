@@ -52,7 +52,7 @@ const OrderDetailModal = ({ orderId }) => {
             <div className="flex flex-col gap-3 pb-16 text-xl">
               <div className="flex gap-2 font-bold">
                 <FileText className="" />
-                Order Detail
+                <span>Invoice: #{orderId?.slice(0, 8)}</span>
               </div>
               <div className="font-medium">
                 Employee: {orderDetails?.createdBy?.firstName + ' ' + orderDetails?.createdBy?.lastName}
@@ -74,7 +74,7 @@ const OrderDetailModal = ({ orderId }) => {
                   <div key={order.productId._id} className="px-1 bg-white w-full rounded-md">
                     <div className="w-full grid grid-cols-12 gap-2 font-medium">
                       <div className="col-span-1">{orderDetails.orderDetail.indexOf(order) + 1}</div>
-                      <div className="col-span-5 flex items-center">{order.productId.name}</div>
+                      <div className="col-span-5 flex items-center">{order.productId?.name}</div>
                       <div className="col-span-2 text-center">{order.quantity}</div>
                       <div className="col-span-2 whitespace-nowrap text-end">{order.price.toLocaleString()}</div>
                       <div className="col-span-2 whitespace-nowrap text-end">
