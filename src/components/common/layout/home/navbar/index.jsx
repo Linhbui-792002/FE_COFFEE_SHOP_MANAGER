@@ -6,6 +6,9 @@ import { useRouter } from 'next/router'
 import { useLogoutMutation } from '@src/redux/endPoint/auth'
 import { useSelector } from 'react-redux'
 import Notification from '@src/components/common/notification'
+import CustomImage from '@src/components/common/custom-image'
+import Logo from '~public/images/logo.png'
+
 const { Header } = Layout
 
 const Navbar = () => {
@@ -40,8 +43,14 @@ const Navbar = () => {
     }
   ]
   return (
-    <Header className="p-0 !bg-b-primary-from flex justify-between  items-center px-4">
-      <div>Logo </div>
+    <Header className="p-0 !bg-gradient flex justify-between items-center px-4">
+      <CustomImage
+        alt="logo"
+        className="w-[170px] h-max object-contain aspect-[16/8] px-1"
+        src={Logo.src}
+        width={150}
+        height={50}
+      />
       <Dropdown
         menu={{
           items: MENU_ITEMS

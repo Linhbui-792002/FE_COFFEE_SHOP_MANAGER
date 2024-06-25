@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Tabs, Input } from 'antd'
+import { Tabs, Input, Empty } from 'antd'
 import ProductList from './product-list'
 import ProductItem from './product-item'
 import { useSearchProductByEmployeeQuery } from '@src/redux/endPoint/product'
@@ -73,14 +73,17 @@ const ProductLeft = ({ className }) => {
               allowClear
             />
             <div
-              className={`p-3 bg-slate-200 rounded-md max-h-[50vh] mt-1 absolute w-full top-10 z-50 transition-opacity duration-500 ${
+              className={`p-3 bg-b-white rounded-md max-h-[50vh] mt-1 absolute w-full top-10 z-50 transition-opacity duration-500 shadow-lg ${
                 openModalSearch && searchTerm ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
               style={{ overflowY: 'auto' }} // Add scrollable behavior
             >
-              <div className="flex flex-col gap-1 flex-wrap">
-                {data &&
-                  data.map(product => <ProductItem key={product._id} product={product} loading={isLoading} isList />)}
+              <div className="flex flex-col gap-3 flex-wrap">
+                {data?.length !== 0 ? (
+                  data?.map(product => <ProductItem key={product._id} product={product} loading={isLoading} isList />)
+                ) : (
+                  <Empty />
+                )}
               </div>
             </div>
           </div>
