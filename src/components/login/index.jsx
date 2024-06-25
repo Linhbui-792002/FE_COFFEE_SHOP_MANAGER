@@ -17,7 +17,7 @@ const Login = () => {
       router.replace('/')
     } catch (error) {
       switch (error?.status) {
-        case 409:
+        case 400:
           return Notification('error', 'Login', error?.data?.message)
         default:
           return Notification('error', 'Login', 'Failed call api')

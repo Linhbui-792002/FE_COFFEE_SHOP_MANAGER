@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import { Layout } from 'antd'
 const { Content } = Layout
@@ -7,7 +9,7 @@ const DefaultLayout = ({ children }) => {
   return (
     <Layout className="!bg-b-primary-from">
       <Navbar />
-      <Content className="my-6 mx-4 p-6 min-h-[100vh] rounded-md">{children}</Content>
+      <Content className="m-6 min-h-[calc(100vh-(64px+21px+21px))] rounded-md">{children}</Content>
     </Layout>
   )
 }

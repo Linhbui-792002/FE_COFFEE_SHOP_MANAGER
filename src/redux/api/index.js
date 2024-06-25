@@ -3,6 +3,7 @@ import { HYDRATE } from 'next-redux-wrapper'
 import { REHYDRATE } from 'redux-persist'
 import { setCredentials, logout } from '../slices/authSlice'
 import Cookies from 'js-cookie'
+import { authApi } from '../endPoint/auth'
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -20,6 +21,7 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions)
+
   if (result?.error?.status === 403) {
     console.log('sending refresh token')
     const auth = api.getState().auth
@@ -34,10 +36,10 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
       extraOptions
     )
 
-    if (refreshResult?.error?.status === 500) {
-      Cookies.remove('accessToken')
-      window.location.replace(window.location.pathname)
-    }
+    // if (refreshResult?.error?.status === 500) {
+    //   Cookies.remove('accessToken')
+    //   window.location.replace(window.location.pathname)
+    // }
     if (refreshResult.data.status === 200) {
       // store the new token
       const refreshResultData = {
@@ -56,6 +58,7 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
       return refreshResult
     }
   }
+
   if (result?.error?.status === 401) {
     Cookies.remove('accessToken')
     api.dispatch(logout())
@@ -68,7 +71,19 @@ export const baseQueryWithInterceptor = async (args, api, extraOptions) => {
 export const api = createApi({
   baseQuery: baseQueryWithInterceptor,
   reducerPath: 'api',
-  tagTypes: ['FAVORITE', 'STATUS', 'EmployeesTag', 'AccountsTag', 'AccountOptionsTag'],
+  tagTypes: [
+    'FAVORITE',
+    'STATUS',
+    'EmployeesTag',
+    'AccountsTag',
+    'AccountOptionsTag',
+    'GeneralsTag',
+    'MenuInfosTag',
+    'SalariesTag',
+    'ProductCategoryTag',
+    'OrdersTag',
+    'ProductsTag'
+  ],
   extractRehydrationInfo(action, { reducerPath }) {
     if (action.type === REHYDRATE) {
       return action.payload?.[reducerPath]

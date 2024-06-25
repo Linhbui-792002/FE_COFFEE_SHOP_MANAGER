@@ -16,8 +16,11 @@ import {
   Users,
   Receipt,
   Ticket,
-  Settings
+  Settings,
+  FileText,
+  History
 } from 'lucide-react'
+
 const { Sider } = Layout
 
 const items = [
@@ -66,6 +69,11 @@ const items = [
     ]
   },
   {
+    key: 'order',
+    label: <Link href={'/admin/order'}>Order</Link>,
+    icon: <FileText size={16} />
+  },
+  {
     key: 'voucher',
     label: <Link href={'/admin/voucher'}>Voucher</Link>,
     icon: <Ticket size={16} />
@@ -86,6 +94,7 @@ const items = [
     icon: <Settings size={16} />
   }
 ]
+
 const Sidebar = ({ collapsed = false }) => {
   const router = useRouter()
 
@@ -99,22 +108,21 @@ const Sidebar = ({ collapsed = false }) => {
     if (router.asPath.startsWith('/admin/product/product-list')) {
       return 'productList'
     }
-
     if (router.asPath.startsWith('/admin/product/product-category')) {
       return 'productCategory'
     }
     if (router.asPath.startsWith('/admin/menu/menu-list')) {
       return 'menuList'
     }
-
     if (router.asPath.startsWith('/admin/menu/menu-info')) {
       return 'menuInfo'
     }
-
+    if (router.asPath.startsWith('/admin/order')) {
+      return 'order'
+    }
     if (router.asPath.startsWith('/admin/voucher')) {
       return 'voucher'
     }
-
     if (router.asPath.startsWith('/admin/employee')) {
       return 'employee'
     }
@@ -125,6 +133,7 @@ const Sidebar = ({ collapsed = false }) => {
       return 'general'
     }
   }, [router])
+
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
       <Link className="w-full flex justify-center items-center mt-5" href="/admin">

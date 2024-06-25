@@ -3,6 +3,7 @@
 @tailwind utilities;
 @import './custom-utilities.css';
 @import './custom-ant-styles.css';
+@import './custom-salary-styles.css';
 
 html,
 body {
