@@ -65,23 +65,19 @@ const DashBoard = () => {
               }
             >
               <Card.Meta style={{ marginLeft: '3px' }} title="Ca phe phin" description="18.000₫" />
-            </Card> */}
-
+                        </Card> */}
 
             <Card className="h-full" title="Total">
-              <span className="w-100%">
-                Orders in day
-              </span>
-              <br/>
-              <span className="w-full text-end">
-                Orders in day
-              </span>
+              <span className="w-100%">Orders in day:</span>
+              <br />
+              <div className="w-full text-end text-xl">250 orders</div>
 
-              <Card style={{ marginTop: 4 }} type="inner" hoverable title="Revenue in day">
-                5.000.000₫
-              </Card>
+              <hr className="my-5" />
+
+              <span className="w-100%">Revenue in day:</span>
+              <br />
+              <div className="w-full text-end text-xl">5.000.000₫</div>
             </Card>
-
 
             <Card className="h-full" title="Order Analytics">
               <ResponsiveContainer width="78%" height={200}>
@@ -113,7 +109,10 @@ const DashBoard = () => {
             </Card>
           </div>
         </div>
-        <div className="flex-grow" style={{ flex: 4 }}></div>
+
+        <div className="flex-grow" style={{ flex: 4, maxHeight: '94%' }}>
+          <Card className="h-full ml-3" title="Order Recent"></Card>
+        </div>
       </div>
     </>
   )
