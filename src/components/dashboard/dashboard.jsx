@@ -1,5 +1,5 @@
-import React from 'react'
-import { Card } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Card, Space, Spin, Table } from 'antd'
 import {
   CartesianGrid,
   Legend,
@@ -12,6 +12,10 @@ import {
   BarChart,
   Bar
 } from 'recharts'
+import { useGetAllOrdersQuery } from '@src/redux/endPoint/order'
+import { convertDateWithTime } from '@src/utils'
+import OrderDetailModal from '../orderHistory/order-detail'
+import TooltipCustom from '../common/tooltip'
 
 const dataRevenue = [
   { name: '06 - 2023', revenue: 4000 },
@@ -46,74 +50,132 @@ const dataOrder = [
 ]
 
 const DashBoard = () => {
+  //declare variable:
+  const now = new Date(2024, 5, 28);
+
+  //convert to ISO string
+  const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString();
+  const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString();
+
+  //todo: Lấy dữ liệu order recent
+  const [orderInDay, setOrderInDay] = useState(0);
+  const [orderRecent, setOrderRecent] = useState([])
+  const filter = {
+    fromDate: fromDate,
+    toDate: toDate,
+    limit: 10,
+    page: 1,
+    // sort: -1
+  }
+  const { data: listOrdersRecent, isLoading: isLoadingOrderRecent } = useGetAllOrdersQuery(filter)
+
+  useEffect(() => {
+    if (listOrdersRecent) {
+      setOrderInDay(listOrdersRecent?.options?.totalRecords);
+      setOrderRecent(listOrdersRecent.metadata);
+    }
+  }, [listOrdersRecent])
+
+  const columns = [
+    {
+      title: <div>Created At</div>,
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (_, { createdAt }) => <div>{convertDateWithTime(createdAt)}</div>
+    },
+    {
+      title: 'Total Money',
+      dataIndex: 'totalMoney',
+      key: 'totalMoney'
+    },
+    {
+      title: 'Created By',
+      dataIndex: 'createdBy',
+      key: 'createdBy',
+      render: (_, { createdBy }) => <>{createdBy?.firstName + ' ' + createdBy?.lastName}</>
+    },
+    {
+      title: <div className="text-end">Detail</div>,
+      key: 'action',
+      render: (_, record) => (
+        <div className="text-end">
+          <Space size="middle">
+            <TooltipCustom title="View Order Detail" color="blue">
+              <OrderDetailModal orderId={record?._id} type="text" title="Edit menu info" />
+            </TooltipCustom>
+          </Space>
+        </div>
+      )
+    }
+  ]
+
   return (
     <>
-      <div className="w-full text-center text-2xl">Admin DashBord</div>
-      {/* Chia layout cho phần dashboard */}
-      <div class="flex">
-        <div className="flex-grow" style={{ flex: 8 }}>
-          <div className="grid grid-rows-1 grid-flow-col gap-2 h-1/3">
-            {/* <Card
-              className="h-full"
-              title="Most popular Product"
-              cover={
-                <img
-                  alt="Ảnh cà phê"
-                  style={{ width: 230, display: 'block', margin: 'auto', marginTop: '6px' }}
-                  src="https://1.bp.blogspot.com/-7HUZMIomjZk/XjLh77L4_JI/AAAAAAAAg6c/QfJQgNMLhvMxQKDpmWP6vhK0qjmOF118gCLcBGAsYHQ/s1600/ty-le-pha-ca-phe-phin.png"
-                />
-              }
-            >
-              <Card.Meta style={{ marginLeft: '3px' }} title="Ca phe phin" description="18.000₫" />
-                        </Card> */}
+      <Spin spinning={isLoadingOrderRecent}>
+        <div className="w-full text-center text-2xl">Admin DashBord</div>
+        {/* Chia layout cho phần dashboard */}
+        <div className="flex">
+          {/* nửa bên trái */}
+          <div className="flex-grow" style={{ flex: 8 }}>
+            <div className="grid grid-rows-1 grid-flow-col gap-2 h-1/3">
 
-            <Card className="h-full" title="Total">
-              <span className="w-100%">Orders in day:</span>
-              <br />
-              <div className="w-full text-end text-xl">250 orders</div>
+              <Card className="h-full" title="Total">
+                <span className="w-100%">Orders in day:</span>
+                <br />
+                <div className="w-full text-end text-xl">{orderInDay} orders</div>
 
-              <hr className="my-5" />
+                <hr className="my-5" />
 
-              <span className="w-100%">Revenue in day:</span>
-              <br />
-              <div className="w-full text-end text-xl">5.000.000₫</div>
-            </Card>
+                <span className="w-100%">Revenue in day:</span>
+                <br />
+                <div className="w-full text-end text-xl">5.000.000₫</div>
+              </Card>
 
-            <Card className="h-full" title="Order Analytics">
-              <ResponsiveContainer width="78%" height={200}>
-                <BarChart data={dataOrder} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="order" fill="#8884d8" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
+              <Card className="h-full" title="Order Analytics">
+                <ResponsiveContainer width="78%" height={200}>
+                  <BarChart data={dataOrder} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="order" fill="#8884d8" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </div>
+
+            {/* Phẩn bảng doanh thu */}
+            <div className="mt-3 w-full h-fit">
+              <Card className="h-full" title="Revenue Chart">
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={dataRevenue} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Card>
+            </div>
           </div>
 
-          {/* Phẩn bảng doanh thu */}
-          <div className="mt-3 w-full h-fit">
-            <Card className="h-full" title="Revenue Chart">
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={dataRevenue} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-                </LineChart>
-              </ResponsiveContainer>
+          {/* nửa bên phải */}
+          <div className="flex-grow" style={{ flex: 4, maxHeight: '93%' }}>
+            <Card className="h-full ml-3" title="Order Recent">
+              <Table 
+                class="-t-8"
+                rowHoverBg="#fafafa" 
+                pagination={false} 
+                key={orderRecent?._id}
+                dataSource={orderRecent} 
+                columns={columns} />
             </Card>
           </div>
         </div>
-
-        <div className="flex-grow" style={{ flex: 4, maxHeight: '94%' }}>
-          <Card className="h-full ml-3" title="Order Recent"></Card>
-        </div>
-      </div>
+      </Spin>
     </>
   )
 }
