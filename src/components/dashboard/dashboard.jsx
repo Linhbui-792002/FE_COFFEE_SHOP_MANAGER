@@ -51,28 +51,28 @@ const dataOrder = [
 
 const DashBoard = () => {
   //declare variable:
-  const now = new Date(2024, 5, 28);
+  const now = new Date(2024, 5, 28)
 
   //convert to ISO string
-  const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString();
-  const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString();
+  const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString()
+  const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString()
 
   //todo: Lấy dữ liệu order recent
-  const [orderInDay, setOrderInDay] = useState(0);
+  const [orderInDay, setOrderInDay] = useState(0)
   const [orderRecent, setOrderRecent] = useState([])
   const filter = {
     fromDate: fromDate,
     toDate: toDate,
     limit: 10,
-    page: 1,
+    page: 1
     // sort: -1
   }
   const { data: listOrdersRecent, isLoading: isLoadingOrderRecent } = useGetAllOrdersQuery(filter)
 
   useEffect(() => {
     if (listOrdersRecent) {
-      setOrderInDay(listOrdersRecent?.options?.totalRecords);
-      setOrderRecent(listOrdersRecent.metadata);
+      setOrderInDay(listOrdersRecent?.options?.totalRecords)
+      setOrderRecent(listOrdersRecent.metadata)
     }
   }, [listOrdersRecent])
 
@@ -118,7 +118,6 @@ const DashBoard = () => {
           {/* nửa bên trái */}
           <div className="flex-grow" style={{ flex: 8 }}>
             <div className="grid grid-rows-1 grid-flow-col gap-2 h-1/3">
-
               <Card className="h-full" title="Total">
                 <span className="w-100%">Orders in day:</span>
                 <br />
@@ -165,13 +164,14 @@ const DashBoard = () => {
           {/* nửa bên phải */}
           <div className="flex-grow" style={{ flex: 4, maxHeight: '93%' }}>
             <Card className="h-full ml-3" title="Order Recent">
-              <Table 
+              <Table
                 class="-t-8"
-                rowHoverBg="#fafafa" 
-                pagination={false} 
+                rowHoverBg="#fafafa"
+                pagination={false}
                 key={orderRecent?._id}
-                dataSource={orderRecent} 
-                columns={columns} />
+                dataSource={orderRecent}
+                columns={columns}
+              />
             </Card>
           </div>
         </div>
