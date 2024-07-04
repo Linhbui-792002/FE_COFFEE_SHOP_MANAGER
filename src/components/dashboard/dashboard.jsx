@@ -87,15 +87,7 @@ const columns = [
 
 const DashBoard = () => {
   //declare variable:
-  const now = new Date(2024, 5, 28)
-
-  //orderRecent
-  const [orderRecent, setOrderRecent] = useState([])
-
-  //orderStatistic
-  const [orderInDay, setOrderInDay] = useState(0)
-  const [totalRevenue, setTotalRevenue] = useState(0)
-  const [orderStatistic, setOrderStatistic] = useState(dataOrder)
+  const now = new Date()
 
   //convert to ISO string
   const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString()
@@ -111,20 +103,14 @@ const DashBoard = () => {
   }
   const { data: listOrdersRecent, isLoading: isLoadingOrderRecent } = useGetAllOrdersQuery(filter)
 
-  useEffect(() => {
-    if (listOrdersRecent) {
-      setOrderRecent(listOrdersRecent.metadata)
-    }
-  }, [listOrdersRecent])
+  //orderStatistic
+  const [orderStatistic, setOrderStatistic] = useState(dataOrder)
 
   //Get order statistic
   const { data: dataOrderStatistic, isLoading: isLoadingOrderStatistic } = useGetStatisticQuery()
+
   useEffect(() => {
     if (dataOrderStatistic) {
-      //set data
-      setOrderInDay(dataOrderStatistic?.totalOrder || 0)
-      setTotalRevenue(dataOrderStatistic?.totalRevenue || 0)
-
       // //declare new map orderStatistic
       // const orderStatistic = new Map()
       // dataOrder.forEach(item => {
@@ -134,7 +120,7 @@ const DashBoard = () => {
       //declare new  orderStatistic
       let orderStatistic = [...dataOrder]
 
-      //hanlde dataOrderStatistic:
+      //handle dataOrderStatistic:
       if (Array.isArray(dataOrderStatistic?.results) && dataOrderStatistic?.results.length > 0) {
         dataOrderStatistic?.results.forEach(dataReturn => {
           orderStatistic.forEach(value => {
@@ -149,76 +135,75 @@ const DashBoard = () => {
   }, [dataOrderStatistic])
 
   return (
-    <>
+    <div className="flex h-full">
+      {/* nửa bên trái */}
+      <div className="flex-grow" style={{ flex: 8 }}>
+        <div className="grid grid-rows-1 grid-flow-col gap-2 h-1/3">
+          <Card className="h-full" title="Total">
+            <span className="w-100%">Orders in day:</span>
+            <br />
+            <div className="w-full text-end text-xl">
+              {(dataOrderStatistic && dataOrderStatistic?.totalOrder) || 0} orders
+            </div>
 
-      <div className="w-full text-center text-2xl">Admin DashBord</div>
-      {/* Chia layout cho phần dashboard */}
-      <div className="flex">
-        {/* nửa bên trái */}
-        <div className="flex-grow" style={{ flex: 8 }}>
-          <div className="grid grid-rows-1 grid-flow-col gap-2 h-1/3">
-            <Card className="h-full" title="Total">
-              <span className="w-100%">Orders in day:</span>
-              <br />
-              <div className="w-full text-end text-xl">{orderInDay} orders</div>
+            <hr className="my-5" />
 
-              <hr className="my-5" />
+            <span className="w-100%">Revenue in day:</span>
+            <br />
+            <div className="w-full text-end text-xl">
+              {currencyFormatter((dataOrderStatistic && dataOrderStatistic?.totalRevenue) || 0)}
+            </div>
+          </Card>
 
-              <span className="w-100%">Revenue in day:</span>
-              <br />
-              <div className="w-full text-end text-xl">{currencyFormatter(totalRevenue)}</div>
-            </Card>
-
-            <Card className="h-full" title="Order Analytics">
-              <Spin spinning={isLoadingOrderStatistic}>
-                <ResponsiveContainer width="78%" height={200}>
-                  <BarChart data={orderStatistic} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="order" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Spin>
-            </Card>
-          </div>
-
-          {/* Phẩn bảng doanh thu */}
-          <div className="mt-3 w-full h-fit">
-            <Card className="h-full" title="Revenue Chart">
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={dataRevenue} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <Card className="h-full" title="Order Analytics">
+            <Spin spinning={isLoadingOrderStatistic}>
+              <ResponsiveContainer width="78%" height={200}>
+                <BarChart data={orderStatistic} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-                </LineChart>
+                  <Bar dataKey="order" fill="#8884d8" />
+                </BarChart>
               </ResponsiveContainer>
-            </Card>
-          </div>
-        </div>
-
-        {/* nửa bên phải */}
-        <div className="flex-grow" style={{ flex: 4, maxHeight: '93%' }}>
-          <Card className="h-full ml-3" title="Order Recent">
-            <Spin spinning={isLoadingOrderRecent}>
-              <Table
-                class="-t-8"
-                rowHoverBg="#fafafa"
-                pagination={false}
-                key={orderRecent?._id}
-                dataSource={orderRecent}
-                columns={columns}
-              />
             </Spin>
           </Card>
         </div>
+
+        {/* Phẩn bảng doanh thu */}
+        <div className="mt-3 w-full h-fit">
+          <Card className="h-full" title="Revenue Chart">
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={dataRevenue} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
       </div>
-    </>
+
+      {/* nửa bên phải */}
+      <div className="flex-grow min-h-[96%] max-h-[96%] ">
+        <Card className="h-full ml-3" title="Order Recent">
+          <Spin spinning={isLoadingOrderRecent}>
+            <Table
+              class="-t-8"
+              rowHoverBg="#fafafa"
+              pagination={false}
+              rowKey="_id"
+              dataSource={listOrdersRecent && listOrdersRecent.metadata}
+              columns={columns}
+            />
+          </Spin>
+        </Card>
+      </div>
+    </div>
   )
 }
 
