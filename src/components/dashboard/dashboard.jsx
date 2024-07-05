@@ -21,12 +21,6 @@ import { useGetStatisticQuery } from '@src/redux/endPoint/statistic'
 import { data } from 'autoprefixer'
 
 const dataRevenue = [
-  { name: '06 - 2023', revenue: 4000 },
-  { name: '07 - 2023', revenue: 3000 },
-  { name: '08 - 2023', revenue: 4600 },
-  { name: '09 - 2023', revenue: 4800 },
-  { name: '10 - 2023', revenue: 5500 },
-  { name: '11 - 2023', revenue: 7200 },
   { name: '12 - 2023', revenue: 8000 },
   { name: '01 - 2024', revenue: 8500 },
   { name: '02 - 2024', revenue: 7500 },
@@ -137,9 +131,9 @@ const DashBoard = () => {
   return (
     <div className="flex h-full">
       {/* nửa bên trái */}
-      <div className="flex-grow" style={{ flex: 8 }}>
-        <div className="grid grid-rows-1 grid-flow-col gap-2 h-1/3">
-          <Card className="h-full" title="Total">
+      <div className="flex-grow pb-2" style={{ flex: 8 }}>
+        <div className="flex" style={{position: "relative", height: 300}}>
+          <Card className="h-full grow-0" title="Total" style={{ flex: 4 }}>
             <span className="w-100%">Orders in day:</span>
             <br />
             <div className="w-full text-end text-xl">
@@ -155,20 +149,19 @@ const DashBoard = () => {
             </div>
           </Card>
 
-          <Card className="h-full" title="Order Analytics">
-            <Spin spinning={isLoadingOrderStatistic}>
-              <ResponsiveContainer width="78%" height={200}>
-                <BarChart data={orderStatistic} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="order" fill="#8884d8" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Spin>
+          <Card className="h-full grow min-h-fit ml-3" title="Revenue Chart" style={{ flex: 8 }}>
+            <ResponsiveContainer width="90%" height={220} style={{zIndex: 9}}>
+              <LineChart data={dataRevenue} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+              </LineChart>
+            </ResponsiveContainer>
           </Card>
+
         </div>
 
         {/* Phẩn bảng doanh thu */}
@@ -189,8 +182,25 @@ const DashBoard = () => {
       </div>
 
       {/* nửa bên phải */}
-      <div className="flex-grow min-h-[96%] max-h-[96%] ">
-        <Card className="h-full ml-3" title="Order Recent">
+      <div className="flex-grow min-h-[96%] max-h-[96%] ml-5">
+        <div style={{height: 300}}>
+          <Card title="Order Analytics">
+            <Spin spinning={isLoadingOrderStatistic}>
+              <ResponsiveContainer width="78%" height={200}>
+                <BarChart data={orderStatistic} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="order" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Spin>
+          </Card>
+        </div>
+
+        <Card className="h-auto min-h-[57%] mt-3" title="Order Recent">
           <Spin spinning={isLoadingOrderRecent}>
             <Table
               class="-t-8"
