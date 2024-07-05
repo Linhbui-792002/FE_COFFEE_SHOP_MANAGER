@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Space, Spin, Table } from 'antd'
+import { Card, Divider, Space, Spin, Table } from 'antd'
 import {
   CartesianGrid,
   Legend,
@@ -16,9 +16,7 @@ import { useGetAllOrdersQuery } from '@src/redux/endPoint/order'
 import { convertDateWithTime, currencyFormatter } from '@src/utils'
 import OrderDetailModal from '../orderHistory/order-detail'
 import TooltipCustom from '../common/tooltip'
-import { set } from 'react-hook-form'
 import { useGetStatisticQuery } from '@src/redux/endPoint/statistic'
-import { data } from 'autoprefixer'
 
 const dataRevenue = [
   { name: '12 - 2023', revenue: 8000 },
@@ -30,6 +28,14 @@ const dataRevenue = [
 ]
 
 const dataOrder = [
+  { name: '1:00', order: 0 },
+  { name: '2:00', order: 0 },
+  { name: '3:00', order: 0 },
+  { name: '4:00', order: 0 },
+  { name: '5:00', order: 0 },
+  { name: '6:00', order: 0 },
+  { name: '7:00', order: 0 },
+  { name: '8:00', order: 0 },
   { name: '9:00', order: 0 },
   { name: '10:00', order: 0 },
   { name: '11:00', order: 0 },
@@ -43,7 +49,9 @@ const dataOrder = [
   { name: '19:00', order: 0 },
   { name: '20:00', order: 0 },
   { name: '21:00', order: 0 },
-  { name: '22:00', order: 0 }
+  { name: '22:00', order: 0 },
+  { name: '23:00', order: 0 },
+  { name: '24:00', order: 0 }
 ]
 
 const columns = [
@@ -80,77 +88,66 @@ const columns = [
 ]
 
 const DashBoard = () => {
-  //declare variable:
   const now = new Date()
-
-  //convert to ISO string
   const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString()
   const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString()
+  const filter = { fromDate, toDate, limit: 10, page: 1 }
 
-  //Get order recent
-  const filter = {
-    fromDate: fromDate,
-    toDate: toDate,
-    limit: 10,
-    page: 1
-    // sort: -1
-  }
-  const { data: listOrdersRecent, isLoading: isLoadingOrderRecent } = useGetAllOrdersQuery(filter)
+  const {
+    data: listOrdersRecent,
+    isLoading: isLoadingOrderRecent,
+    refetch: refetchListOrdersRecent
+  } = useGetAllOrdersQuery(filter)
+  const {
+    data: dataOrderStatistic,
+    isLoading: isLoadingOrderStatistic,
+    refetch: refetchOrderStatistic
+  } = useGetStatisticQuery()
 
-  //orderStatistic
   const [orderStatistic, setOrderStatistic] = useState(dataOrder)
 
-  //Get order statistic
-  const { data: dataOrderStatistic, isLoading: isLoadingOrderStatistic } = useGetStatisticQuery()
-
   useEffect(() => {
-    if (dataOrderStatistic) {
-      // //declare new map orderStatistic
-      // const orderStatistic = new Map()
-      // dataOrder.forEach(item => {
-      //   orderStatistic.set(item.name, 0)
-      // })
-
-      //declare new  orderStatistic
-      let orderStatistic = [...dataOrder]
-
-      //handle dataOrderStatistic:
-      if (Array.isArray(dataOrderStatistic?.results) && dataOrderStatistic?.results.length > 0) {
-        dataOrderStatistic?.results.forEach(dataReturn => {
-          orderStatistic.forEach(value => {
-            if (dataReturn._id == value.name.split(':')[0]) {
-              value.order = dataReturn.count
-            }
-          })
-        })
-        setOrderStatistic(orderStatistic)
-      }
+    if (dataOrderStatistic?.results?.length > 0) {
+      updateOrderStatistic(dataOrderStatistic.results)
     }
   }, [dataOrderStatistic])
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchOrderStatistic()
+      refetchListOrdersRecent()
+    }, 10000)
+
+    return () => clearInterval(interval)
+  }, [refetchOrderStatistic, refetchListOrdersRecent])
+
+  const updateOrderStatistic = results => {
+    const updatedOrderStatistic = dataOrder.map(item => {
+      const found = results.find(data => data._id == item.name.split(':')[0])
+      return found ? { ...item, order: found.count } : item
+    })
+    setOrderStatistic(updatedOrderStatistic)
+  }
+
+  const renderStatisticCard = (title, value) => (
+    <>
+      <span className="w-100% font-medium">{title}</span>
+      <div className="w-full text-end text-xl">{value}</div>
+      <Divider style={{ margin: '10px 0' }} />
+    </>
+  )
+
   return (
-    <div className="flex h-full">
-      {/* nửa bên trái */}
-      <div className="flex-grow pb-2" style={{ flex: 8 }}>
-        <div className="flex" style={{position: "relative", height: 300}}>
-          <Card className="h-full grow-0" title="Total" style={{ flex: 4 }}>
-            <span className="w-100%">Orders in day:</span>
-            <br />
-            <div className="w-full text-end text-xl">
-              {(dataOrderStatistic && dataOrderStatistic?.totalOrder) || 0} orders
-            </div>
-
-            <hr className="my-5" />
-
-            <span className="w-100%">Revenue in day:</span>
-            <br />
-            <div className="w-full text-end text-xl">
-              {currencyFormatter((dataOrderStatistic && dataOrderStatistic?.totalRevenue) || 0)}
-            </div>
+    <div className="flex">
+      <div className="flex-grow w-[60%] flex flex-col">
+        <div className="flex h-[310px]">
+          <Card className="h-full grow-0" title="Total Per Day" style={{ width: '35%' }}>
+            {renderStatisticCard('Orders (orders):', dataOrderStatistic?.totalOrder || 0)}
+            {renderStatisticCard('Revenue (VND):', currencyFormatter(dataOrderStatistic?.totalRevenue || 0, ''))}
+            {renderStatisticCard('Profit (VND):', currencyFormatter(dataOrderStatistic?.totalProfit || 0, ''))}
           </Card>
-
-          <Card className="h-full grow min-h-fit ml-3" title="Revenue Chart" style={{ flex: 8 }}>
-            <ResponsiveContainer width="90%" height={220} style={{zIndex: 9}}>
+          <Card className="h-full grow min-h-fit ml-3 w-[65%]" title="Revenue Chart">
+            <ResponsiveContainer width="100%" height={220} style={{ zIndex: 9 }}>
               <LineChart data={dataRevenue} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -161,13 +158,10 @@ const DashBoard = () => {
               </LineChart>
             </ResponsiveContainer>
           </Card>
-
         </div>
-
-        {/* Phẩn bảng doanh thu */}
-        <div className="mt-3 w-full h-fit">
+        <div className="mt-3 w-full h-full flex-grow">
           <Card className="h-full" title="Revenue Chart">
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={500}>
               <LineChart data={dataRevenue} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -180,34 +174,36 @@ const DashBoard = () => {
           </Card>
         </div>
       </div>
-
-      {/* nửa bên phải */}
-      <div className="flex-grow min-h-[96%] max-h-[96%] ml-5">
-        <div style={{height: 300}}>
-          <Card title="Order Analytics">
-            <Spin spinning={isLoadingOrderStatistic}>
-              <ResponsiveContainer width="78%" height={200}>
-                <BarChart data={orderStatistic} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
+      <div className="ml-3 w-[40%] flex">
+        <Card className="flex-grow" title="Order Recent">
+          <div>
+            <div className="font-medium">Order Analytics</div>
+            <Spin spinning={isLoadingOrderStatistic} className="mx-auto">
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart width={'100%'} data={orderStatistic} margin={{ top: 5, right: 3, left: 3, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Legend />
+                  <Legend
+                    verticalAlign="top"
+                    height={36}
+                    align="left"
+                    wrapperStyle={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                  />
                   <Bar dataKey="order" fill="#8884d8" />
                 </BarChart>
               </ResponsiveContainer>
             </Spin>
-          </Card>
-        </div>
-
-        <Card className="h-auto min-h-[57%] mt-3" title="Order Recent">
+          </div>
+          <Divider style={{ margin: '20px 0' }} />
           <Spin spinning={isLoadingOrderRecent}>
             <Table
-              class="-t-8"
+              className="-t-8"
               rowHoverBg="#fafafa"
               pagination={false}
               rowKey="_id"
-              dataSource={listOrdersRecent && listOrdersRecent.metadata}
+              dataSource={listOrdersRecent?.metadata}
               columns={columns}
             />
           </Spin>
