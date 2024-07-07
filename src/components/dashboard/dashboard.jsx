@@ -17,14 +17,15 @@ import { convertDateWithTime, currencyFormatter } from '@src/utils'
 import OrderDetailModal from '../orderHistory/order-detail'
 import TooltipCustom from '../common/tooltip'
 import { useGetStatisticQuery } from '@src/redux/endPoint/statistic'
+import { useDebounce } from '@src/hooks'
 
 const dataRevenue = [
-  { name: '12 - 2023', revenue: 8000 },
-  { name: '01 - 2024', revenue: 8500 },
-  { name: '02 - 2024', revenue: 7500 },
-  { name: '03 - 2024', revenue: 8600 },
-  { name: '04 - 2024', revenue: 9000 },
-  { name: '05 - 2024', revenue: 8890 }
+  { name: '12 - 2023', revenue: 8000, profit: 0 },
+  { name: '01 - 2024', revenue: 8500, profit: 0 },
+  { name: '02 - 2024', revenue: 7500, profit: 0 },
+  { name: '03 - 2024', revenue: 8600, profit: 0 },
+  { name: '04 - 2024', revenue: 9000, profit: 9000 },
+  { name: '05 - 2024', revenue: 8890, profit: 0 }
 ]
 
 const dataOrder = [
@@ -93,33 +94,40 @@ const DashBoard = () => {
   const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString()
   const filter = { fromDate, toDate, limit: 10, page: 1 }
 
+  const debounced = useDebounce({}, 500);
+
   const {
     data: listOrdersRecent,
     isLoading: isLoadingOrderRecent,
     refetch: refetchListOrdersRecent
   } = useGetAllOrdersQuery(filter)
+
   const {
     data: dataOrderStatistic,
     isLoading: isLoadingOrderStatistic,
     refetch: refetchOrderStatistic
-  } = useGetStatisticQuery()
+  } = useGetStatisticQuery(debounced)
 
   const [orderStatistic, setOrderStatistic] = useState(dataOrder)
 
   useEffect(() => {
-    if (dataOrderStatistic?.results?.length > 0) {
-      updateOrderStatistic(dataOrderStatistic.results)
+    if (dataOrderStatistic?.orderAnalistic?.results?.length > 0) {
+      updateOrderStatistic(dataOrderStatistic.orderAnalistic.results)
+    }
+    //update revenue chart
+    if (dataOrderStatistic?.revenueAnalistic?.revenueData.length) {
+      updateRevenueChart(dataOrderStatistic.revenueAnalistic)
     }
   }, [dataOrderStatistic])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetchOrderStatistic()
-      refetchListOrdersRecent()
-    }, 10000)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     refetchOrderStatistic()
+  //     refetchListOrdersRecent()
+  //   }, 10000)
 
-    return () => clearInterval(interval)
-  }, [refetchOrderStatistic, refetchListOrdersRecent])
+  //   return () => clearInterval(interval)
+  // }, [refetchOrderStatistic, refetchListOrdersRecent])
 
   const updateOrderStatistic = results => {
     const updatedOrderStatistic = dataOrder.map(item => {
@@ -137,24 +145,55 @@ const DashBoard = () => {
     </>
   )
 
+  const updateRevenueChart = (data) => {
+    //Set lại thời gian cho dữ liệu mẫu và nếu có dữ liệu thực thì update dự liệu thực
+    const sixMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 6));
+    dataRevenue.forEach((item, index) => {
+      const month = String(sixMonthAgo.getMonth() + 1 + index).padStart(2, '0');
+      const year = sixMonthAgo.getFullYear();
+      const date = `${month} - ${year}`;
+      const found = data.revenueData.find(data => data.month == date);
+      if (found) {
+        dataRevenue[index] = { found, name: date, revenue: found.revenue, profit: found.profit }
+      } else {
+        dataRevenue[index] = { ...item, name: date, revenue: 0, profit: 0 };
+      }
+    })
+
+  }
+
   return (
     <div className="flex">
       <div className="flex-grow w-[60%] flex flex-col">
         <div className="flex h-[310px]">
           <Card className="h-full grow-0" title="Total Per Day" style={{ width: '35%' }}>
-            {renderStatisticCard('Orders (orders):', dataOrderStatistic?.totalOrder || 0)}
-            {renderStatisticCard('Revenue (VND):', currencyFormatter(dataOrderStatistic?.totalRevenue || 0, ''))}
-            {renderStatisticCard('Profit (VND):', currencyFormatter(dataOrderStatistic?.totalProfit || 0, ''))}
+            {renderStatisticCard('Orders (orders):', dataOrderStatistic?.orderAnalistic?.totalOrder || 0)}
+            {renderStatisticCard('Revenue (VND):', currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalRevenue || 0, ''))}
+            {renderStatisticCard('Profit (VND):', currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalProfit || 0, ''))}
           </Card>
           <Card className="h-full grow min-h-fit ml-3 w-[65%]" title="Revenue Chart">
             <ResponsiveContainer width="100%" height={220} style={{ zIndex: 9 }}>
-              <LineChart data={dataRevenue} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
+              <LineChart data={dataRevenue} margin={{ top: 5, right: 5, left: 15, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#8884d8"
+                  strokeWidth={2}
+                  dot={{ stroke: '#8884d8', strokeWidth: 2, r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="profit"
+                  stroke="#82ca9d"
+                  strokeWidth={2}
+                  dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 4 }}
+                />
+
               </LineChart>
             </ResponsiveContainer>
           </Card>
