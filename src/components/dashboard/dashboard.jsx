@@ -55,6 +55,16 @@ const dataOrder = [
   { name: '24:00', order: 0 }
 ]
 
+const dataProduct = [
+  { yearMonth: '12 - 2023', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
+  { yearMonth: '01 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
+  { yearMonth: '02 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
+  { yearMonth: '03 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
+  { yearMonth: '04 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
+  { yearMonth: '05 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
+  { yearMonth: '06 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 15000, "Combo mùa hè": 18000 },
+]
+
 const columns = [
   {
     title: <div>Created At</div>,
@@ -106,7 +116,7 @@ const DashBoard = () => {
     data: dataOrderStatistic,
     isLoading: isLoadingOrderStatistic,
     refetch: refetchOrderStatistic
-  } = useGetStatisticQuery(debounced)
+  } = useGetStatisticQuery(debounced, {pollingInterval : 10000})
 
   const [orderStatistic, setOrderStatistic] = useState(dataOrder)
 
@@ -115,8 +125,12 @@ const DashBoard = () => {
       updateOrderStatistic(dataOrderStatistic.orderAnalistic.results)
     }
     //update revenue chart
-    if (dataOrderStatistic?.revenueAnalistic?.revenueData.length) {
+    if (dataOrderStatistic?.revenueAnalistic?.revenueData?.length) {
       updateRevenueChart(dataOrderStatistic.revenueAnalistic)
+    }
+    //update product chart
+    if (dataOrderStatistic?.productStatistic?.productData?.length) {
+      // updateProductChart(dataOrderStatistic.productStatistic.productData)
     }
   }, [dataOrderStatistic])
 
@@ -162,6 +176,61 @@ const DashBoard = () => {
 
   }
 
+  const updateProductChart = (data) => {
+    //Tạo set các sản phẩm được trả về
+    const setProduct = new Set(data.map(item => item.productName));
+
+    //Tạo mảng dữ liệu mới:
+    const productExist = Array
+      .from(setProduct)
+      .map(item => ({
+        productName: item,
+        productProfit: 0, 
+        yearMonth: ""
+      }));
+
+    //Xử lý dữ liệu API trả về:
+    data = transformData(data);
+
+  const sixMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 6));
+  dataProduct.forEach((item, index) => {
+    const month = String(sixMonthAgo.getMonth() + 1 + index).padStart(2, '0');
+    const year = sixMonthAgo.getFullYear();
+    const date = `${month} - ${year}`;
+    //Xử lý thêm dữ liệu vào mảng dataProduct
+    //name là yearMonth và dữ liệu là key _ value ==> productName _ profit
+    const found = data.find(data => data.yearMonth == date);
+
+    if (found) {
+      console.log(found)
+      dataProduct[index] = { ...item, yearMonth: date }
+    } else {
+      dataProduct[index] = { ...item, yearMonth: date, profit: 0 };
+    }
+
+  })
+    console.log(dataProduct)
+  }
+
+  //Làm đẹp dữ liệu trả về từ API
+  const transformData = (data) => {
+    const transformedData = {};
+  
+    data.forEach((item) => {
+      if (!transformedData[item.yearMonth]) {
+        transformedData[item.yearMonth] = {};
+      }
+      transformedData[item.yearMonth][item.productName] = item.productProfit;
+    });
+  
+    // Chuyển đổi đối tượng thành mảng
+    return Object.keys(transformedData).map(yearMonth => {
+      return {
+        yearMonth,
+        ...transformedData[yearMonth]
+      };
+    });
+  };
   return (
     <div className="flex">
       <div className="flex-grow w-[60%] flex flex-col">
@@ -199,15 +268,19 @@ const DashBoard = () => {
           </Card>
         </div>
         <div className="mt-3 w-full h-full flex-grow">
-          <Card className="h-full" title="Revenue Chart">
+          <Card className="h-full" title="Product Chart">
             <ResponsiveContainer width="100%" height={500}>
-              <LineChart data={dataRevenue} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <LineChart data={dataProduct} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="yearMonth" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+                <Line type="monotone" dataKey="Đồ uống 1" label="sản phẩm 1" stroke="#8884d8" />
+                <Line type="monotone" dataKey="Đồ uống 2" stroke="#8884d8" />
+                <Line type="monotone" dataKey="Đồ ăn 1" stroke="#8884d8" />
+                <Line type="monotone" dataKey="Đồ ăn 2" stroke="#8884d8" />
+                <Line type="monotone" dataKey="Combo mùa hè" stroke="#8884d8" />
               </LineChart>
             </ResponsiveContainer>
           </Card>
