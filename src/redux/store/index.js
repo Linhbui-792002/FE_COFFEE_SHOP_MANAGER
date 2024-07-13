@@ -12,6 +12,7 @@ import { generalApi } from '../endPoint/general'
 import { productCategoryApi } from '../endPoint/productCategory'
 import { menuInfoApi } from '../endPoint/menuInfo'
 import orderSlice from '../slices/orderSlice'
+import { menuApi } from '../endPoint/menu'
 import { orderApi } from '../endPoint/order'
 import { productApi } from '../endPoint/product'
 
@@ -49,6 +50,7 @@ const makeStore = () => {
     [menuInfoApi.reducerPath]: menuInfoApi.reducer,
     [salaryApi.reducerPath]: salaryApi.reducer,
     [productCategoryApi.reducerPath]: productCategoryApi.reducer,
+    [menuApi.reducerPath]: menuApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [productApi.reducerPath]: productApi.reducer
   })
@@ -66,6 +68,7 @@ const makeStore = () => {
         generalApi.middleware,
         menuInfoApi.middleware,
         salaryApi.middleware,
+        menuApi.middleware,
         orderApi.middleware,
         productApi.middleware
       ])
