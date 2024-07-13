@@ -15,7 +15,7 @@ import orderSlice from '../slices/orderSlice'
 import { menuApi } from '../endPoint/menu'
 import { orderApi } from '../endPoint/order'
 import { productApi } from '../endPoint/product'
-
+import { voucherApi } from '../endPoint/voucher'
 const createNoopStorage = () => {
   return {
     getItem(_key) {
@@ -52,7 +52,8 @@ const makeStore = () => {
     [productCategoryApi.reducerPath]: productCategoryApi.reducer,
     [menuApi.reducerPath]: menuApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
-    [productApi.reducerPath]: productApi.reducer
+    [productApi.reducerPath]: productApi.reducer,
+    [voucherApi.reducerPath]:voucherApi.reducer
   })
 
   const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -70,7 +71,8 @@ const makeStore = () => {
         salaryApi.middleware,
         menuApi.middleware,
         orderApi.middleware,
-        productApi.middleware
+        productApi.middleware,
+        voucherApi.middleware
       ])
   })
 
