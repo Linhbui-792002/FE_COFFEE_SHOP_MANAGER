@@ -23,3 +23,13 @@ export const STATUS_EMPLOYEE = [
     value: false
   }
 ]
+
+export const STATUS_PRODUCT = [
+  { label: 'Public', value: true },
+  { label: 'Draft', value: false }
+]
+
+export const COMBO_PRODUCT = [
+  { label: 'Combo', value: true },
+  { label: 'Product', value: false }
+]

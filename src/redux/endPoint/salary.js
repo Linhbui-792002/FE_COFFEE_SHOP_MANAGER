@@ -17,7 +17,7 @@ export const salaryApi = api.injectEndpoints({
       transformResponse: res => res?.metadata,
       providesTags: ['SalariesTag']
     }),
-    getAllEmployee: builder.query({
+    getAllEmployeeFix: builder.query({
       query: () => ({
         url: '/salary/list/employee'
       }),
@@ -56,5 +56,5 @@ export const {
   useGetAllSalariesQuery,
   useGetInfoSalaryQuery,
   useEditSalaryMutation,
-  useGetAllEmployeeQuery
+  useGetAllEmployeeQueryFix
 } = salaryApi

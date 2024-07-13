@@ -111,7 +111,7 @@ const MenuInfoForm = ({ label, menuInfoId, title, type, useSubComponent, getMenu
             form={form}
           >
             <Form.Item
-              label="Name menu info"
+              label="Name menu infoasdas"
               name="name"
               rules={[
                 {

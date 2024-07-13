@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Tabs } from 'antd'
-import OrderList from './orderList'
+import OrderItem from './order-item'
 import { useDispatch, useSelector } from 'react-redux'
 import { addOrder, removeOrder, setKeyOrderActive } from '@src/redux/slices/orderSlice'
 
@@ -8,13 +8,11 @@ const OrderRight = ({ className }) => {
   const initialItems = useSelector(state => state.order.listOrder)
   const activeKey = useSelector(state => state.order.keyOrderActive)
   const dispatch = useDispatch()
-  const keyOrderActive = useSelector(state => state.order.keyOrderActive)
   const [items, setItems] = useState([])
-
   useEffect(() => {
     if (initialItems.length !== 0) {
-      let order = initialItems.find(order => order.key === keyOrderActive)
-      order = { ...order, children: <OrderList /> }
+      let order = initialItems.find(order => order.key === activeKey)
+      order = { ...order, children: <OrderItem /> }
       const listOrder = initialItems.filter(item => item.key !== order.key)
       const index = initialItems.findIndex(item => item?.key == order.key)
       listOrder.splice(index, 0, order)
@@ -22,14 +20,15 @@ const OrderRight = ({ className }) => {
     } else {
       setItems([])
     }
-  }, [keyOrderActive, initialItems])
+  }, [activeKey, initialItems])
 
   const onChange = newActiveKey => {
     dispatch(setKeyOrderActive(newActiveKey))
   }
 
   const add = () => {
-    const newKey = initialItems.length == 0 ? 1 : initialItems[initialItems.length - 1]?.key + 1
+    const findKey = initialItems.length == 0 ? false : initialItems.find(item => item.key === 1)
+    const newKey = initialItems.length == 0 && !findKey ? 1 : initialItems[initialItems.length - 1]?.key + 1
 
     const newActiveKey = `Order-${newKey}`
     dispatch(
