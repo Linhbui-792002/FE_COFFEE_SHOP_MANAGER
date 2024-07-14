@@ -85,7 +85,7 @@ const OrderDetailModal = ({ orderId }) => {
                       <div className="w-full grid grid-cols-12 gap-2 font-medium mt-2">
                         <div className="col-span-3">Discount</div>
                         <div className="col-span-5"></div>
-                        <div className="col-span-2 text-end font-medium">{order.voucherUsed[0].voucherPercent}%</div>
+                        <div className="col-span-2 text-end font-medium">{order?.voucherUsed[0]?.voucherPercent}%</div>
                         <div className="col-span-2 text-end font-medium">
                           {(
                             (order.price * order.quantity * order.voucherUsed[0].voucherPercent) /

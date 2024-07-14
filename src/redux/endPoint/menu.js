@@ -1,12 +1,24 @@
+import { objectToUrlParams } from '@src/utils'
 import { api } from '../api'
 export const menuApi = api.injectEndpoints({
   endpoints: builder => ({
     getAllMenu: builder.query({
-      query: () => ({
-        url: '/menu',
-        method: 'GET'
-      }),
-      transformResponse: res => res.metadata
+      query: query => {
+        const strQuery = objectToUrlParams(query)
+        return { url: `/menu${strQuery && '?' + strQuery}` }
+      },
+      transformResponse: res => {
+        return { metadata: res?.metadata, options: res?.options }
+      },
+    }),
+    getAllMenuPublicForEmployee: builder.query({
+      query: query => {
+        const strQuery = objectToUrlParams(query)
+        return { url: `/menu/getMenu/forEmployee${strQuery && '?' + strQuery}` }
+      },
+      transformResponse: res => {
+        return { metadata: res?.metadata, options: res?.options }
+      },
     }),
     getOneMenu: builder.query({
       query: menuId => ({
@@ -31,4 +43,4 @@ export const menuApi = api.injectEndpoints({
   })
 })
 
-export const { useCreateMenuMutation, useGetAllMenuQuery, useGetOneMenuQuery, useUpdateMenuMutation } = menuApi
+export const { useCreateMenuMutation, useGetAllMenuQuery, useGetOneMenuQuery, useUpdateMenuMutation, useGetAllMenuPublicForEmployeeQuery } = menuApi

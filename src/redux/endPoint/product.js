@@ -19,7 +19,7 @@ export const productApi = api.injectEndpoints({
     }),
     searchProductByEmployee: builder.query({
       query: query => {
-        return { url: `/product/search/${query}` }
+        return { url: query ?`/product/search/${query}`:"" }
       },
       transformResponse: res => {
         return res?.metadata

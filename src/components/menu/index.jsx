@@ -100,7 +100,7 @@ const Menu = () => {
           <Table
             pagination={{ ...pagination }}
             columns={columns}
-            dataSource={listMenu}
+            dataSource={listMenu?.metadata}
             rowKey="_id"
             onChange={handleTableChange}
           />
