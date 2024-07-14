@@ -92,7 +92,7 @@ const orderSlice = createSlice({
         }
       } else if (payload.status == 'change') {
         let updatedOrderList = state.orderDetail.listOrder.map(item =>
-          item.id === payload.orderDetail.id ? { ...item, quantity: payload.quantity } : item
+          item.id === payload.orderDetail.id ? { ...item, quantity: payload.quantity,voucherUsed:payload.voucherUsed?payload.voucherUsed:item.voucherUsed,price:payload.price || item.price } : item
         )
         state.orderDetail = {
           key: payload?.key,

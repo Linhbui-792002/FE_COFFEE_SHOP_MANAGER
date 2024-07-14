@@ -64,8 +64,28 @@ const OrderItem = () => {
                 />
               </div>
               <div className="w-full flex gap-2 justify-around font-medium">
-                <div className="underline whitespace-nowrap">{order.price.toLocaleString()}</div>
-                <div className="whitespace-nowrap">{(order.price * order.quantity).toLocaleString()}</div>
+                <div className="flex flex-col">
+                  <div className=" whitespace-nowrap">
+                    <span className="line-through">{order.oldPrice.toLocaleString()} </span>
+                   {order.voucherUsed?.[0]?.voucherPercent && <span className="bg-b-green w-max text-t-white px-1 rounded-md">
+                  {(order.voucherUsed?.[0]?.voucherPercent || 0) + "%"}
+                  </span>}
+                  </div>
+                  <div className="underline whitespace-nowrap">
+                  {order.price.toLocaleString()}
+                  </div>
+                </div>
+                <div className="whitespace-nowrap">
+                <div className="flex flex-col">
+                  <div className="line-through whitespace-nowrap">
+                  {(order.oldPrice * order.quantity).toLocaleString()}
+                  </div>
+                  <div className="underline whitespace-nowrap">
+                  {(order.price * order.quantity).toLocaleString()}
+                  </div>
+                </div>
+                
+                </div>
               </div>
             </div>
             <Divider className="!my-1" />
