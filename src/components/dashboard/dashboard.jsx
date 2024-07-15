@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Card, Divider, Input, InputNumber, Radio, Select, Space, Spin, Table } from 'antd'
+import React, { useEffect, useState, useMemo } from 'react'
+import { Card, Divider, InputNumber, Radio, Select, Space, Spin, Table } from 'antd'
 import {
   CartesianGrid,
   Legend,
@@ -16,8 +16,7 @@ import { useGetAllOrdersQuery } from '@src/redux/endPoint/order'
 import { convertDateWithTime, currencyFormatter } from '@src/utils'
 import OrderDetailModal from '../orderHistory/order-detail'
 import TooltipCustom from '../common/tooltip'
-import { useGetProductStatisticQuery } from '@src/redux/endPoint/statistic'
-import { set } from 'react-hook-form'
+import { useGetOrderAnalysticQuery, useGetProductStatisticQuery, useGetRevenueStatisticQuery } from '@src/redux/endPoint/statistic'
 
 const dataRevenue = [
   { name: '12 - 2023', revenue: 8000, profit: 0 },
@@ -106,48 +105,44 @@ const columns = [
 const DashBoard = () => {
   const now = new Date()
   const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString()
-  const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString()
+  const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString();
+  const startMonth = new Date(now.getFullYear(), 0, 1);
+  const endMonth = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
   const filterOrderStatistic = { fromDate, toDate, limit: 10, page: 1 }
 
   const [dataProduct, setDataProduct] = useState([]);
   const [listProduct, setListProduct] = useState([]);
-  const [filterProductStatistic, setFilterProductStatistic] = useState({fromDate, toDate, limit: 10, page: 1});
+  const [filterProductStatistic, setFilterProductStatistic] = useState({ startMonth, endMonth });
   const [filterTimeMode, setFilterTimeMode] = useState(0);
+  const [isFillDataSuccess, setIsFillDataSuccess] = useState(false);
 
   const [orderStatistic, setOrderStatistic] = useState(dataOrder)
 
-  const dataOrderStatistic = { fromDate, toDate, limit: 10, page: 1 }
 
   //handle call API:
   const { //product chart
     data: dataProductStatistic,
-    isLoading: isLoadingOrderStatistic,
+    isLoading: isLoadingProductStatistic,
     refetch: refetchProductStatistic
   } = useGetProductStatisticQuery(filterProductStatistic)
+
+  const { //order analistic
+    data: orderStatisticData,
+    isLoading: isLoadingOrderStatistic,
+    refetch,
+  } = useGetOrderAnalysticQuery({}, { pollingInterval: 10000 });
+
+  const { //revenue chart
+    data: dataRevenueStatistic,
+    isLoading: isLoadingRevenueStatistic,
+    refetch: refetchRevenueStatistic
+  } = useGetRevenueStatisticQuery();
 
   const { //list order recent
     data: listOrdersRecent,
     isLoading: isLoadingOrderRecent,
     refetch: refetchListOrdersRecent
   } = useGetAllOrdersQuery(filterOrderStatistic, { pollingInterval: 10000 })
-
-  const { //order analistic chart
-    data: orderAnalistic,
-    isLoading: isLoadingOrderAnalistic,
-    refetch: refetchOrderAnalistic
-  } = useGetAllOrdersQuery({}, { pollingInterval: 10000 })
-
-  const { //order analistic chart
-    data: revenueAnalistic,
-    isLoading: isLoadingRevenueAnalistic,
-    refetch: refetchRevenueAnalistic
-  } = useGetAllOrdersQuery({}, { pollingInterval: 10000 })
-
-  //hanlde data return:
-  useEffect(() => {
-    const dataReturn = dataProductStatistic;
-    fillProductData(transformData(dataReturn));
-  }, [dataProductStatistic])
 
   const renderStatisticCard = (title, value) => (
     <>
@@ -174,35 +169,38 @@ const DashBoard = () => {
     })
   }
 
+  const updateOrderStatistic = results => {
+    const updatedOrderStatistic = dataOrder.map(item => {
+      const found = results.find(data => data._id == item.name.split(':')[0])
+      return found ? { ...item, order: found.count } : item
+    })
+    setOrderStatistic(updatedOrderStatistic)
+  }
+
   const handleChangeTimeProductChart = value => {
     setFilterTimeMode(value);
-    // refetchProductStatistic();
   }
 
   //helper function:
   const transformData = (data) => {
-
     if (!Array.isArray(data)) return [];
 
     const setProduct = new Set();
-
-    const ressult = {};
+    const result = {};
 
     data.forEach(item => {
       const { yearMonth, productName, productProfit } = item;
 
-      if (ressult[yearMonth]) {
-        ressult[yearMonth][productName] = productProfit;
+      if (result[yearMonth]) {
+        result[yearMonth][productName] = productProfit;
       } else {
-        ressult[yearMonth] = { yearMonth, [productName]: productProfit };
+        result[yearMonth] = { yearMonth, [productName]: productProfit };
       }
-      
-      setProduct.add(item.productName)
-    })
+      setProduct.add(item.productName);
+    });
 
     setListProduct(Array.from(setProduct));
-
-    return Object.values(ressult);
+    return Object.values(result);
   }
 
   const getRandomColor = () => {
@@ -214,97 +212,179 @@ const DashBoard = () => {
     return color;
   };
 
-  const fillProductData = (data) => {
-    let agrs = [1, 12, data];
-  
-    switch (filterTimeMode) {
-      case 1:
-        agrs = [1, 3, data];
-        break;
-      case 2:
-        agrs = [4, 6, data];
-        break;
-      case 3:
-        agrs = [7, 9, data];
-        break;
-      case 4:
-        agrs = [10, 12, data];
-        break;
-      case 5:
-        agrs = [1, 6, data];
-        break;
-      case 6:
-        agrs = [7, 12, data];
-        break;
-      }
-
-      setDataProduct(createData(...agrs));
-  }
-
-  const createData = (startMonth, endMonth, dataBeatyfy) => {
+  const createData = (startMonth, endMonth, dataBeautified) => {
     const data = [];
     const year = new Date().getFullYear();
 
     for (let i = startMonth; i <= endMonth; i++) {
       const tmpMonth = i < 10 ? '0' + i : i;
-      
-      const tmpObj = {
-        yearMonth: tmpMonth + ' - ' + year,
-      }
+      const tmpObj = { yearMonth: `${tmpMonth} - ${year}` };
+
       listProduct.forEach(product => {
         tmpObj[product] = 0;
-      })
+      });
       data.push(tmpObj);
     }
-    data.forEach(item => {
-      const found = dataBeatyfy.find(data => data.yearMonth == item.yearMonth);
-      if (found) {
-        item = Object.assign(item, found);
-      }
-    })
 
+    data.forEach(item => {
+      const found = dataBeautified.find(data => data.yearMonth === item.yearMonth);
+      if (found) {
+        Object.keys(found).forEach(key => {
+          if (key !== 'yearMonth') {
+            item[key] = found[key]; // Cập nhật giá trị nếu có dữ liệu từ API
+          }
+        });
+      }
+    });
+
+    setIsFillDataSuccess(true);
     return data;
   }
+
+  const createFillter = () => {
+
+    let startFilter = new Date(now.getFullYear(), 0, 1);
+    let endFilter = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999)
+
+    switch (filterTimeMode) {
+      case '1':
+        startFilter = new Date(now.getFullYear(), 0, 1);
+        endFilter = new Date(now.getFullYear(), 3, 0, 23, 59, 59, 999)
+        break;
+      case '2':
+        startFilter = new Date(now.getFullYear(), 3, 1);
+        endFilter = new Date(now.getFullYear(), 6, 0, 23, 59, 59, 999)
+        break;
+      case '3':
+        startFilter = new Date(now.getFullYear(), 6, 1);
+        endFilter = new Date(now.getFullYear(), 9, 0, 23, 59, 59, 999)
+        break;
+      case '4':
+        startFilter = new Date(now.getFullYear(), 9, 1);
+        endFilter = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999)
+        break;
+      case '5':
+        startFilter = new Date(now.getFullYear(), 0, 1);
+        endFilter = new Date(now.getFullYear(), 6, 0, 23, 59, 59, 999)
+        break;
+      case '6':
+        startFilter = new Date(now.getFullYear(), 6, 1);
+        endFilter = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999)
+        break;
+    }
+    return { startFilter, endFilter };
+  }
+
+  const fillProductData = (data) => {
+    let args = [1, 12, data];
+    switch (filterTimeMode) {
+      case '1':
+        args = [1, 3, data];
+        break;
+      case '2':
+        args = [4, 6, data];
+        break;
+      case '3':
+        args = [7, 9, data];
+        break;
+      case '4':
+        args = [10, 12, data];
+        break;
+      case '5':
+        args = [1, 6, data];
+        break;
+      case '6':
+        args = [7, 12, data];
+        break;
+    }
+    const createdData = createData(...args);
+    setDataProduct(createdData);
+  }
+
+  // Memoize transformed data
+  const transformedData = useMemo(() => {
+    if (dataProductStatistic) {
+      return transformData(dataProductStatistic);
+    }
+    return [];
+  }, [dataProductStatistic]);
+
+  // Update listProduct when transformedData changes
+  useEffect(() => {
+    if (transformedData.length > 0) {
+      const products = transformedData.map(item => Object.keys(item).filter(key => key !== 'yearMonth')).flat();
+      setListProduct(products);
+    }
+  }, [transformedData]);
+
+  // Update dataProduct when listProduct or filterTimeMode changes
+  useEffect(() => {
+    if (listProduct.length > 0) {
+      fillProductData(transformedData);
+    }
+  }, [listProduct, filterTimeMode, transformedData]);
+
+  useEffect(() => {
+    const filterReturn = createFillter()
+    setFilterProductStatistic(filterReturn);
+  }, [filterTimeMode]);
+
+  useEffect(() => {
+    refetchProductStatistic();
+  }, [filterProductStatistic]);
+
+  useEffect(() => {
+    if (Array.isArray(orderStatisticData?.results))
+      updateOrderStatistic(orderStatisticData?.results)
+  }, [orderStatisticData]);
+
+  useEffect(() => {
+    if (dataRevenueStatistic) {
+      updateRevenueChart(dataRevenueStatistic);
+    }
+  }, [dataRevenueStatistic]);
 
   return (
     <div className="flex">
       <div className="flex-grow w-[60%] flex flex-col">
         <div className="flex h-[310px]">
           <Card className="h-full grow-0" title="Total Per Day" style={{ width: '35%' }}>
-            {renderStatisticCard('Orders (orders):', dataOrderStatistic?.orderAnalistic?.totalOrder || 0)}
+            {renderStatisticCard('Orders (orders):', orderStatisticData?.totalOrder || 0)}
             {renderStatisticCard(
               'Revenue (VND):',
-              currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalRevenue || 0, '')
+              currencyFormatter(orderStatisticData?.totalRevenue || 0, '')
             )}
             {renderStatisticCard(
               'Profit (VND):',
-              currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalProfit || 0, '')
+              currencyFormatter(orderStatisticData?.totalProfit || 0, '')
             )}
           </Card>
           <Card className="h-full grow min-h-fit ml-3 w-[65%]" title="Revenue Chart">
-            <ResponsiveContainer width="100%" height={220} style={{ zIndex: 9 }}>
-              <LineChart data={dataRevenue} margin={{ top: 5, right: 5, left: 15, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis cursor={1} />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#8884d8"
-                  strokeWidth={2}
-                  dot={{ stroke: '#8884d8', strokeWidth: 2, r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="profit"
-                  stroke="#82ca9d"
-                  strokeWidth={2}
-                  dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <Spin spinning={isLoadingRevenueStatistic}>
+              <ResponsiveContainer width="100%" height={220} style={{ zIndex: 9 }}>
+                <LineChart data={dataRevenue} margin={{ top: 5, right: 5, left: 15, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis cursor={1} />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#8884d8"
+                    strokeWidth={2}
+                    dot={{ stroke: '#8884d8', strokeWidth: 2, r: 4 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="profit"
+                    stroke="#82ca9d"
+                    strokeWidth={2}
+                    dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </Spin>
           </Card>
         </div>
         <div className="mt-1 mb-3.5 w-full h-full flex-grow">
@@ -322,39 +402,32 @@ const DashBoard = () => {
                   ></Select>
                 </Space>
               </div>
-              {/* view mode */}
-              <div className="w-20 grow justify-self-end">
-                <Radio.Group defaultValue="1" options={viewMode} buttonStyle="solid" optionType='button' />
-              </div>
-              {/* number of product */}
-              <div className="w-20 grow justify-self-end">
-                <span>Number product:</span>
-                <InputNumber className='ml-4 w-36' />
-              </div>
             </div>
-            <ResponsiveContainer width="100%" height={500}>
-              <LineChart data={dataProduct} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="yearMonth" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {listProduct.map((product, index) => {
-                  const randomColor = getRandomColor();
-                  return (
-                    <Line
-                      key={index}
-                      type="monotone"
-                      dataKey={product}
-                      stroke={randomColor}
-                      strokeWidth={2}
-                      dot={{ stroke: randomColor, strokeWidth: 2, r: 4 }}
-                    />
-                  )
-                })
-                }
-              </LineChart>
-            </ResponsiveContainer>
+            <Spin spinning={isLoadingProductStatistic || !isFillDataSuccess} className="mx-auto">
+              {listProduct.length === 0 && <div className="text-center">No Product Found</div>}
+              <ResponsiveContainer width="100%" height={500}>
+                <LineChart data={dataProduct} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="yearMonth" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  {listProduct.map((product, index) => {
+                    // const color = colors[product]; // Use memoized color
+                    return (
+                      <Line
+                        key={index}
+                        type="monotone"
+                        dataKey={product}
+                        stroke={"#8884d8"}
+                        strokeWidth={2}
+                        dot={{ stroke: "#8884d8", strokeWidth: 2, r: 4 }}
+                      />
+                    )
+                  })}
+                </LineChart>
+              </ResponsiveContainer>
+            </Spin>
           </Card>
         </div>
       </div>
