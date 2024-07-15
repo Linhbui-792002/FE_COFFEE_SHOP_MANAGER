@@ -285,4 +285,16 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
   )
 }
 
+// PORT=3055
+// NODE_ENV=dev
+// DEV_APP_PORT=3000
+// DEV_DB_HOST=127.0.0.1
+// DEV_DB_PORT=27017
+// DEV_DB_NAME=DB_Coffee_Shop_Dev
+
+
+// # CORS_ENV
+// CORS_WHITELIST_1 = http://localhost:3000
+// CORS_WHITELIST_2 = http://localhost:3001
+
 export default SalaryForm
