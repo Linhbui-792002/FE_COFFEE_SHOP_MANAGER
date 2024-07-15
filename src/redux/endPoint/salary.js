@@ -54,7 +54,7 @@ export const salaryApi = api.injectEndpoints({
 export const {
   useAddSalaryMutation,
   useGetAllSalariesQuery,
+  useGetAllEmployeeFixQuery,
   useGetInfoSalaryQuery,
   useEditSalaryMutation,
-  useGetAllEmployeeQueryFix
 } = salaryApi

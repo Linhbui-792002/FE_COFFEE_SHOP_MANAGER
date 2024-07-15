@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Divider, Space, Spin, Table } from 'antd'
+import { Card, Divider, Input, InputNumber, Radio, Select, Space, Spin, Table } from 'antd'
 import {
   CartesianGrid,
   Legend,
@@ -16,8 +16,8 @@ import { useGetAllOrdersQuery } from '@src/redux/endPoint/order'
 import { convertDateWithTime, currencyFormatter } from '@src/utils'
 import OrderDetailModal from '../orderHistory/order-detail'
 import TooltipCustom from '../common/tooltip'
-import { useGetStatisticQuery } from '@src/redux/endPoint/statistic'
-import { useDebounce } from '@src/hooks'
+import { useGetProductStatisticQuery } from '@src/redux/endPoint/statistic'
+import { set } from 'react-hook-form'
 
 const dataRevenue = [
   { name: '12 - 2023', revenue: 8000, profit: 0 },
@@ -55,14 +55,19 @@ const dataOrder = [
   { name: '24:00', order: 0 }
 ]
 
-const dataProduct = [
-  { yearMonth: '12 - 2023', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
-  { yearMonth: '01 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
-  { yearMonth: '02 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
-  { yearMonth: '03 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
-  { yearMonth: '04 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
-  { yearMonth: '05 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 0},
-  { yearMonth: '06 - 2024', "Đồ ăn 1": 0, "Đồ ăn 2": 0, "Đồ uống 1": 0, "Đồ uống 2": 15000, "Combo mùa hè": 18000 },
+const filterTime = [
+  { value: '0', label: 'The whole year' },
+  { value: '1', label: 'The first quarter' },
+  { value: '2', label: 'The second quarter' },
+  { value: '3', label: 'The third quarter' },
+  { value: '4', label: 'The fourth quarter' },
+  { value: '5', label: 'The first half of the year' },
+  { value: '6', label: 'The second half of the year' }
+];
+
+const viewMode = [
+  { value: '1', label: 'Highest revenue' },
+  { value: '-1', label: 'Lowest revenue' }
 ]
 
 const columns = [
@@ -102,54 +107,47 @@ const DashBoard = () => {
   const now = new Date()
   const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString()
   const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString()
-  const filter = { fromDate, toDate, limit: 10, page: 1 }
+  const filterOrderStatistic = { fromDate, toDate, limit: 10, page: 1 }
 
-  const debounced = useDebounce({}, 500);
-
-  const {
-    data: listOrdersRecent,
-    isLoading: isLoadingOrderRecent,
-    refetch: refetchListOrdersRecent
-  } = useGetAllOrdersQuery(filter)
-
-  const {
-    data: dataOrderStatistic,
-    isLoading: isLoadingOrderStatistic,
-    refetch: refetchOrderStatistic
-  } = useGetStatisticQuery(debounced, {pollingInterval : 10000})
+  const [dataProduct, setDataProduct] = useState([]);
+  const [listProduct, setListProduct] = useState([]);
+  const [filterProductStatistic, setFilterProductStatistic] = useState({fromDate, toDate, limit: 10, page: 1});
+  const [filterTimeMode, setFilterTimeMode] = useState(0);
 
   const [orderStatistic, setOrderStatistic] = useState(dataOrder)
 
+  const dataOrderStatistic = { fromDate, toDate, limit: 10, page: 1 }
+
+  //handle call API:
+  const { //product chart
+    data: dataProductStatistic,
+    isLoading: isLoadingOrderStatistic,
+    refetch: refetchProductStatistic
+  } = useGetProductStatisticQuery(filterProductStatistic)
+
+  const { //list order recent
+    data: listOrdersRecent,
+    isLoading: isLoadingOrderRecent,
+    refetch: refetchListOrdersRecent
+  } = useGetAllOrdersQuery(filterOrderStatistic, { pollingInterval: 10000 })
+
+  const { //order analistic chart
+    data: orderAnalistic,
+    isLoading: isLoadingOrderAnalistic,
+    refetch: refetchOrderAnalistic
+  } = useGetAllOrdersQuery({}, { pollingInterval: 10000 })
+
+  const { //order analistic chart
+    data: revenueAnalistic,
+    isLoading: isLoadingRevenueAnalistic,
+    refetch: refetchRevenueAnalistic
+  } = useGetAllOrdersQuery({}, { pollingInterval: 10000 })
+
+  //hanlde data return:
   useEffect(() => {
-    if (dataOrderStatistic?.orderAnalistic?.results?.length > 0) {
-      updateOrderStatistic(dataOrderStatistic.orderAnalistic.results)
-    }
-    //update revenue chart
-    if (dataOrderStatistic?.revenueAnalistic?.revenueData?.length) {
-      updateRevenueChart(dataOrderStatistic.revenueAnalistic)
-    }
-    //update product chart
-    if (dataOrderStatistic?.productStatistic?.productData?.length) {
-      // updateProductChart(dataOrderStatistic.productStatistic.productData)
-    }
-  }, [dataOrderStatistic])
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     refetchOrderStatistic()
-  //     refetchListOrdersRecent()
-  //   }, 10000)
-
-  //   return () => clearInterval(interval)
-  // }, [refetchOrderStatistic, refetchListOrdersRecent])
-
-  const updateOrderStatistic = results => {
-    const updatedOrderStatistic = dataOrder.map(item => {
-      const found = results.find(data => data._id == item.name.split(':')[0])
-      return found ? { ...item, order: found.count } : item
-    })
-    setOrderStatistic(updatedOrderStatistic)
-  }
+    const dataReturn = dataProductStatistic;
+    fillProductData(transformData(dataReturn));
+  }, [dataProductStatistic])
 
   const renderStatisticCard = (title, value) => (
     <>
@@ -159,93 +157,136 @@ const DashBoard = () => {
     </>
   )
 
-  const updateRevenueChart = (data) => {
+  const updateRevenueChart = data => {
     //Set lại thời gian cho dữ liệu mẫu và nếu có dữ liệu thực thì update dự liệu thực
     const sixMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 6));
+
     dataRevenue.forEach((item, index) => {
-      const month = String(sixMonthAgo.getMonth() + 1 + index).padStart(2, '0');
-      const year = sixMonthAgo.getFullYear();
-      const date = `${month} - ${year}`;
-      const found = data.revenueData.find(data => data.month == date);
+      const month = String(sixMonthAgo.getMonth() + 1 + index).padStart(2, '0')
+      const year = sixMonthAgo.getFullYear()
+      const date = `${month} - ${year}`
+      const found = data.revenueData.find(data => data.month == date)
       if (found) {
         dataRevenue[index] = { found, name: date, revenue: found.revenue, profit: found.profit }
       } else {
-        dataRevenue[index] = { ...item, name: date, revenue: 0, profit: 0 };
+        dataRevenue[index] = { ...item, name: date, revenue: 0, profit: 0 }
+      }
+    })
+  }
+
+  const handleChangeTimeProductChart = value => {
+    setFilterTimeMode(value);
+    // refetchProductStatistic();
+  }
+
+  //helper function:
+  const transformData = (data) => {
+
+    if (!Array.isArray(data)) return [];
+
+    const setProduct = new Set();
+
+    const ressult = {};
+
+    data.forEach(item => {
+      const { yearMonth, productName, productProfit } = item;
+
+      if (ressult[yearMonth]) {
+        ressult[yearMonth][productName] = productProfit;
+      } else {
+        ressult[yearMonth] = { yearMonth, [productName]: productProfit };
+      }
+      
+      setProduct.add(item.productName)
+    })
+
+    setListProduct(Array.from(setProduct));
+
+    return Object.values(ressult);
+  }
+
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const fillProductData = (data) => {
+    let agrs = [1, 12, data];
+  
+    switch (filterTimeMode) {
+      case 1:
+        agrs = [1, 3, data];
+        break;
+      case 2:
+        agrs = [4, 6, data];
+        break;
+      case 3:
+        agrs = [7, 9, data];
+        break;
+      case 4:
+        agrs = [10, 12, data];
+        break;
+      case 5:
+        agrs = [1, 6, data];
+        break;
+      case 6:
+        agrs = [7, 12, data];
+        break;
+      }
+
+      setDataProduct(createData(...agrs));
+  }
+
+  const createData = (startMonth, endMonth, dataBeatyfy) => {
+    const data = [];
+    const year = new Date().getFullYear();
+
+    for (let i = startMonth; i <= endMonth; i++) {
+      const tmpMonth = i < 10 ? '0' + i : i;
+      
+      const tmpObj = {
+        yearMonth: tmpMonth + ' - ' + year,
+      }
+      listProduct.forEach(product => {
+        tmpObj[product] = 0;
+      })
+      data.push(tmpObj);
+    }
+    data.forEach(item => {
+      const found = dataBeatyfy.find(data => data.yearMonth == item.yearMonth);
+      if (found) {
+        item = Object.assign(item, found);
       }
     })
 
+    return data;
   }
 
-  const updateProductChart = (data) => {
-    //Tạo set các sản phẩm được trả về
-    const setProduct = new Set(data.map(item => item.productName));
-
-    //Tạo mảng dữ liệu mới:
-    const productExist = Array
-      .from(setProduct)
-      .map(item => ({
-        productName: item,
-        productProfit: 0, 
-        yearMonth: ""
-      }));
-
-    //Xử lý dữ liệu API trả về:
-    data = transformData(data);
-
-  const sixMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 6));
-  dataProduct.forEach((item, index) => {
-    const month = String(sixMonthAgo.getMonth() + 1 + index).padStart(2, '0');
-    const year = sixMonthAgo.getFullYear();
-    const date = `${month} - ${year}`;
-    //Xử lý thêm dữ liệu vào mảng dataProduct
-    //name là yearMonth và dữ liệu là key _ value ==> productName _ profit
-    const found = data.find(data => data.yearMonth == date);
-
-    if (found) {
-      console.log(found)
-      dataProduct[index] = { ...item, yearMonth: date }
-    } else {
-      dataProduct[index] = { ...item, yearMonth: date, profit: 0 };
-    }
-
-  })
-    console.log(dataProduct)
-  }
-
-  //Làm đẹp dữ liệu trả về từ API
-  const transformData = (data) => {
-    const transformedData = {};
-  
-    data.forEach((item) => {
-      if (!transformedData[item.yearMonth]) {
-        transformedData[item.yearMonth] = {};
-      }
-      transformedData[item.yearMonth][item.productName] = item.productProfit;
-    });
-  
-    // Chuyển đổi đối tượng thành mảng
-    return Object.keys(transformedData).map(yearMonth => {
-      return {
-        yearMonth,
-        ...transformedData[yearMonth]
-      };
-    });
-  };
   return (
     <div className="flex">
       <div className="flex-grow w-[60%] flex flex-col">
         <div className="flex h-[310px]">
           <Card className="h-full grow-0" title="Total Per Day" style={{ width: '35%' }}>
             {renderStatisticCard('Orders (orders):', dataOrderStatistic?.orderAnalistic?.totalOrder || 0)}
-            {renderStatisticCard('Revenue (VND):', currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalRevenue || 0, ''))}
-            {renderStatisticCard('Profit (VND):', currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalProfit || 0, ''))}
+            {renderStatisticCard(
+              'Revenue (VND):',
+              currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalRevenue || 0, '')
+            )}
+            {renderStatisticCard(
+              'Profit (VND):',
+              currencyFormatter(dataOrderStatistic?.orderAnalistic?.totalProfit || 0, '')
+            )}
           </Card>
           <Card className="h-full grow min-h-fit ml-3 w-[65%]" title="Revenue Chart">
             <ResponsiveContainer width="100%" height={220} style={{ zIndex: 9 }}>
               <LineChart data={dataRevenue} margin={{ top: 5, right: 5, left: 15, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
+                <YAxis cursor={1} />
                 <Tooltip />
                 <Legend />
                 <Line
@@ -262,13 +303,35 @@ const DashBoard = () => {
                   strokeWidth={2}
                   dot={{ stroke: '#82ca9d', strokeWidth: 2, r: 4 }}
                 />
-
               </LineChart>
             </ResponsiveContainer>
           </Card>
         </div>
-        <div className="mt-3 w-full h-full flex-grow">
+        <div className="mt-1 mb-3.5 w-full h-full flex-grow">
           <Card className="h-full" title="Product Chart">
+            {/* filter for chart */}
+            <div className="w-full flex">
+              <div className="w-32 grow">
+                <Space wrap>
+                  <span>Select Time:</span>
+                  <Select
+                    defaultValue="0"
+                    onChange={handleChangeTimeProductChart}
+                    style={{ width: 220 }}
+                    options={[...filterTime]}
+                  ></Select>
+                </Space>
+              </div>
+              {/* view mode */}
+              <div className="w-20 grow justify-self-end">
+                <Radio.Group defaultValue="1" options={viewMode} buttonStyle="solid" optionType='button' />
+              </div>
+              {/* number of product */}
+              <div className="w-20 grow justify-self-end">
+                <span>Number product:</span>
+                <InputNumber className='ml-4 w-36' />
+              </div>
+            </div>
             <ResponsiveContainer width="100%" height={500}>
               <LineChart data={dataProduct} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -276,11 +339,20 @@ const DashBoard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="Đồ uống 1" label="sản phẩm 1" stroke="#8884d8" />
-                <Line type="monotone" dataKey="Đồ uống 2" stroke="#8884d8" />
-                <Line type="monotone" dataKey="Đồ ăn 1" stroke="#8884d8" />
-                <Line type="monotone" dataKey="Đồ ăn 2" stroke="#8884d8" />
-                <Line type="monotone" dataKey="Combo mùa hè" stroke="#8884d8" />
+                {listProduct.map((product, index) => {
+                  const randomColor = getRandomColor();
+                  return (
+                    <Line
+                      key={index}
+                      type="monotone"
+                      dataKey={product}
+                      stroke={randomColor}
+                      strokeWidth={2}
+                      dot={{ stroke: randomColor, strokeWidth: 2, r: 4 }}
+                    />
+                  )
+                })
+                }
               </LineChart>
             </ResponsiveContainer>
           </Card>
