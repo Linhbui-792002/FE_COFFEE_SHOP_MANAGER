@@ -4,7 +4,7 @@ import { Breadcrumb, Spin, Table, Space, Tag } from 'antd'
 import TooltipCustom from '../common/tooltip'
 import Link from 'next/link'
 import { Home, Ticket } from 'lucide-react'
-import {  convertDateWithTime } from '@src/utils'
+import { convertDateWithTime } from '@src/utils'
 import VoucherForm from './voucher-form'
 import { useGetAllVoucherQuery } from '@src/redux/endPoint/voucher'
 
@@ -30,21 +30,26 @@ const Voucher = () => {
     },
     {
       title: 'Voucher code',
-      dataIndex: 'code',
+      dataIndex: 'code'
     },
     {
       title: 'Voucher percent',
       dataIndex: 'voucherPercent',
-      render: (_, { voucherPercent }) =>
-        <Tag color="gold-inverse" className="w-max !m-0">{voucherPercent + "%"}</Tag> 
-   
+      render: (_, { voucherPercent }) => (
+        <Tag color="gold-inverse" className="w-max !m-0">
+          {voucherPercent + '%'}
+        </Tag>
+      )
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (_, { type }) =>
-        <Tag color={type?"gold":"purple"} className="w-max !m-0">{type?"Product": "Cart"}</Tag> 
+      render: (_, { type }) => (
+        <Tag color={type ? 'gold' : 'purple'} className="w-max !m-0">
+          {type ? 'Product' : 'Cart'}
+        </Tag>
+      )
     },
     {
       title: 'Status',

@@ -53,7 +53,7 @@ const makeStore = () => {
     [menuApi.reducerPath]: menuApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [productApi.reducerPath]: productApi.reducer,
-    [voucherApi.reducerPath]:voucherApi.reducer
+    [voucherApi.reducerPath]: voucherApi.reducer
   })
 
   const persistedReducer = persistReducer(persistConfig, rootReducer)

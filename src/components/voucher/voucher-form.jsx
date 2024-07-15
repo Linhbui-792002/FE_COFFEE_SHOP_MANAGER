@@ -73,13 +73,14 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
   const formRef = useRef(null)
   const [form] = Form.useForm()
   useEffect(() => {
-    dataVoucher && form.setFieldsValue({ ...dataVoucher, dateRange: [dayjs(dataVoucher.startDate),dayjs(dataVoucher.endDate)] })
-    
+    dataVoucher &&
+      form.setFieldsValue({ ...dataVoucher, dateRange: [dayjs(dataVoucher.startDate), dayjs(dataVoucher.endDate)] })
+
     setTargetKeys(dataVoucher?.productId)
   }, [dataVoucher])
 
   const typeVoucher = Form.useWatch('type', form)
-  const dateRange = Form.useWatch('dateRange', form);
+  const dateRange = Form.useWatch('dateRange', form)
 
   const filteredMenuInfo = useMemo(() => {
     return dataMenuInfo?.filter(menu => menu?.name?.toLowerCase().includes(searchMenuInfo?.toLowerCase()))
@@ -144,9 +145,9 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
   }
 
   const onFinish = values => {
-    const startDate = values?.dateRange[0]?.format('YYYY-MM-DD HH:mm:ss');
-    const endDate = values?.dateRange[1]?.format('YYYY-MM-DD HH:mm:ss');
-    const body = {...values,startDate,endDate}
+    const startDate = values?.dateRange[0]?.format('YYYY-MM-DD HH:mm:ss')
+    const endDate = values?.dateRange[1]?.format('YYYY-MM-DD HH:mm:ss')
+    const body = { ...values, startDate, endDate }
     if (voucherId) {
       handleEditVoucher(body)
     } else {
@@ -222,7 +223,7 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
             form={form}
           >
             <div className="w-full grid grid-cols-12 gap-3">
-              <div className='col-span-6'>
+              <div className="col-span-6">
                 <Form.Item
                   label="Name voucher"
                   name="name"
@@ -272,7 +273,7 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                   <InputNumber className="w-full" suffix="%" />
                 </Form.Item>
               </div>
-              <div className='col-span-6'>
+              <div className="col-span-6">
                 <Form.Item
                   name="dateRange"
                   label="Date Range"
@@ -280,15 +281,17 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                     {
                       type: 'array',
                       required: true,
-                      message: 'Please select date range!',
-                    },
+                      message: 'Please select date range!'
+                    }
                   ]}
                 >
-                  <DatePicker.RangePicker showTime
+                  <DatePicker.RangePicker
+                    showTime
                     format={{
                       format: 'YYYY-MM-DD HH:mm:ss',
-                      type: 'mask',
-                    }} />
+                      type: 'mask'
+                    }}
+                  />
                 </Form.Item>
                 <Form.Item
                   label="Max discount"
@@ -323,33 +326,39 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                   </Form.Item>
                 </div>
               </div>
-
             </div>
 
-            <Form.Item className="col-span-3" label="Type voucher use (Product: On, Cart: Off)" name="type" initialValue={true}>
+            <Form.Item
+              className="col-span-3"
+              label="Type voucher use (Product: On, Cart: Off)"
+              name="type"
+              initialValue={true}
+            >
               <Switch defaultValue={true} />
             </Form.Item>
-            {typeVoucher && <Form.Item
-              label="Choose Product"
-              name="productId"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please choose at least one product!'
-                }
-              ]}
-            >
-              <TableTransfer
-                dataSource={dataListProduct}
-                targetKeys={targetKeys}
-                showSearch
-                showSelectAll={false}
-                onChange={onChangeProductId}
-                filterOption={(inputValue, item) => item.name.indexOf(inputValue) !== -1}
-                leftColumns={columns}
-                rightColumns={columns}
-              />
-            </Form.Item>}
+            {typeVoucher && (
+              <Form.Item
+                label="Choose Product"
+                name="productId"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please choose at least one product!'
+                  }
+                ]}
+              >
+                <TableTransfer
+                  dataSource={dataListProduct}
+                  targetKeys={targetKeys}
+                  showSearch
+                  showSelectAll={false}
+                  onChange={onChangeProductId}
+                  filterOption={(inputValue, item) => item.name.indexOf(inputValue) !== -1}
+                  leftColumns={columns}
+                  rightColumns={columns}
+                />
+              </Form.Item>
+            )}
             <Form.Item hidden>
               <Button type="primary" htmlType="submit" />
             </Form.Item>

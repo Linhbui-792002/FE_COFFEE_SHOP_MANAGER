@@ -110,7 +110,7 @@ const OrderDetailModal = ({ orderId }) => {
                 </div>
                 <div className="grid grid-cols-12 gap-2">
                   <div className="col-span-9 text-end font-bold">Discount:</div>
-                  <div className="col-span-3 font-bold text-end">0 VND</div>
+                  <div className="col-span-3 font-bold text-end">{(orderDetails?.totalMoney/(100-orderDetails?.voucherUsed?.[0]?.voucherPercent) )*(orderDetails?.voucherUsed?.[0]?.voucherPercent)}</div>
                 </div>
                 <div className="grid grid-cols-12 gap-2">
                   <div className="col-span-9 text-end font-bold">Customer Payment:</div>

@@ -56,40 +56,41 @@ export const objectToUrlParams = obj => {
   return params.join('&')
 }
 
-
-export  const getUniqueMenuInfo = (menus) => {
-  const uniqueMenuInfo = [{
-    _id: "",
-    name: "Get all"
-  }];
-  const seenMenuInfoIds = new Set();
+export const getUniqueMenuInfo = menus => {
+  const uniqueMenuInfo = [
+    {
+      _id: '',
+      name: 'Get all'
+    }
+  ]
+  const seenMenuInfoIds = new Set()
 
   if (Array.isArray(menus)) {
     menus.forEach(menu => {
-      const menuInfo = menu.menuInfoId;
+      const menuInfo = menu.menuInfoId
       if (menuInfo && !seenMenuInfoIds.has(menuInfo._id)) {
-        uniqueMenuInfo.push(menuInfo);
-        seenMenuInfoIds.add(menuInfo._id);
+        uniqueMenuInfo.push(menuInfo)
+        seenMenuInfoIds.add(menuInfo._id)
       }
-    });
+    })
   }
 
-  return uniqueMenuInfo;
-};
-
-export const getUniqueProducts = (menus) => {
-  const uniqueProducts = [];
-  const seenProductIds = new Set();
-  if (Array.isArray(menus)) {
-  menus.forEach(menu => {
-      menu.productId?.forEach(product => {
-          if (product && !seenProductIds.has(product._id)) {
-              uniqueProducts.push(product);
-              seenProductIds.add(product._id);
-          }
-      });
-  });
+  return uniqueMenuInfo
 }
 
-  return uniqueProducts;
-};
+export const getUniqueProducts = menus => {
+  const uniqueProducts = []
+  const seenProductIds = new Set()
+  if (Array.isArray(menus)) {
+    menus.forEach(menu => {
+      menu.productId?.forEach(product => {
+        if (product && !seenProductIds.has(product._id)) {
+          uniqueProducts.push(product)
+          seenProductIds.add(product._id)
+        }
+      })
+    })
+  }
+
+  return uniqueProducts
+}
