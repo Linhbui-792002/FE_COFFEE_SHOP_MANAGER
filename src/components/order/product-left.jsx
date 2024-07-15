@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Tabs, Input, Empty ,List} from 'antd'
+import { Tabs, Input, Empty, List } from 'antd'
 import ProductList from './product-list'
 import ProductItem from './product-item'
 import { useSearchProductByEmployeeQuery } from '@src/redux/endPoint/product'
@@ -20,9 +20,12 @@ const ProductLeft = ({ className }) => {
   const [openModalSearch, setOpenModalSearch] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const debounce = useDebounce(searchTerm, 300)
-  const { data, isLoading } = useSearchProductByEmployeeQuery(debounce, { skip: !debounce,refetchOnMountOrArgChange:true })
+  const { data, isLoading } = useSearchProductByEmployeeQuery(debounce, {
+    skip: !debounce,
+    refetchOnMountOrArgChange: true
+  })
 
-  console.log(data,'data');
+  console.log(data, 'data')
   const containerRef = useRef(null)
 
   const onSearchChange = e => {
@@ -82,15 +85,20 @@ const ProductLeft = ({ className }) => {
               <div className="flex flex-col gap-3 flex-wrap">
                 {data?.length !== 0 ? (
                   <List
-                  itemLayout="horizontal"
-                  
-                  dataSource={data}
-                  renderItem={(product, index) => (
-                 <ProductItem key={product._id} className="col-span-3" product={product} loading={isLoading} isList={true} />
-                  )}/>
-
+                    itemLayout="horizontal"
+                    dataSource={data}
+                    renderItem={(product, index) => (
+                      <ProductItem
+                        key={product._id}
+                        className="col-span-3"
+                        product={product}
+                        loading={isLoading}
+                        isList={true}
+                      />
+                    )}
+                  />
                 ) : (
-                  <Empty /> 
+                  <Empty />
                 )}
               </div>
             </div>

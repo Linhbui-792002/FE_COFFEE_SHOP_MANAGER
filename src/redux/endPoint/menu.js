@@ -9,7 +9,7 @@ export const menuApi = api.injectEndpoints({
       },
       transformResponse: res => {
         return { metadata: res?.metadata, options: res?.options }
-      },
+      }
     }),
     getAllMenuPublicForEmployee: builder.query({
       query: query => {
@@ -18,7 +18,7 @@ export const menuApi = api.injectEndpoints({
       },
       transformResponse: res => {
         return { metadata: res?.metadata, options: res?.options }
-      },
+      }
     }),
     getOneMenu: builder.query({
       query: menuId => ({
@@ -43,4 +43,10 @@ export const menuApi = api.injectEndpoints({
   })
 })
 
-export const { useCreateMenuMutation, useGetAllMenuQuery, useGetOneMenuQuery, useUpdateMenuMutation, useGetAllMenuPublicForEmployeeQuery } = menuApi
+export const {
+  useCreateMenuMutation,
+  useGetAllMenuQuery,
+  useGetOneMenuQuery,
+  useUpdateMenuMutation,
+  useGetAllMenuPublicForEmployeeQuery
+} = menuApi

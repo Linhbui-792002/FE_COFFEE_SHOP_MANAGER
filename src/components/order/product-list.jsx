@@ -7,24 +7,21 @@ import { useGetAllMenuPublicForEmployeeQuery } from '@src/redux/endPoint/menu'
 import { getUniqueMenuInfo, getUniqueProducts } from '@src/utils'
 import { useDebounce } from '@src/hooks'
 
-
-
 const ProductList = () => {
-  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState('')
   const [param, setParam] = useState({
-    menuInfoId: '',
+    menuInfoId: ''
   })
   const debouncedParamData = useDebounce(param, 500)
-  const {data:listMenu, isLoading:isLoadingMenu} = useGetAllMenuPublicForEmployeeQuery(debouncedParamData)
-  const {data:listMenuInfo, isLoading:isLoadingMenuInfo} = useGetAllMenuPublicForEmployeeQuery()
-  console.log(listMenu,"listMenu")
-  const menuInfos = useMemo(() => listMenuInfo?.metadata && getUniqueMenuInfo(listMenuInfo.metadata), [listMenuInfo]);
-  const products = useMemo(() => listMenu?.metadata && getUniqueProducts(listMenu.metadata), [listMenu]);
-
+  const { data: listMenu, isLoading: isLoadingMenu } = useGetAllMenuPublicForEmployeeQuery(debouncedParamData)
+  const { data: listMenuInfo, isLoading: isLoadingMenuInfo } = useGetAllMenuPublicForEmployeeQuery()
+  console.log(listMenu, 'listMenu')
+  const menuInfos = useMemo(() => listMenuInfo?.metadata && getUniqueMenuInfo(listMenuInfo.metadata), [listMenuInfo])
+  const products = useMemo(() => listMenu?.metadata && getUniqueProducts(listMenu.metadata), [listMenu])
 
   const handleCategorySelect = categoryId => {
     setSelectedCategory(categoryId)
-    setParam({...param,menuInfoId:categoryId})
+    setParam({ ...param, menuInfoId: categoryId })
   }
 
   return (
@@ -45,12 +42,12 @@ const ProductList = () => {
         ))}
       </div>
       <Spin spinning={isLoadingMenu}>
-      <div className="grid grid-cols-12 gap-1 min-h-[65vh] max-h-[65vh] h-full overflow-y-auto px-1 py-3">
-        {products &&
-          products.map(product => (
-            <ProductItem key={product._id} className="col-span-3" product={product} isLoadingMenu={isLoadingMenu} />
-          ))}
-      </div>
+        <div className="grid grid-cols-12 gap-1 min-h-[65vh] max-h-[65vh] h-full overflow-y-auto px-1 py-3">
+          {products &&
+            products.map(product => (
+              <ProductItem key={product._id} className="col-span-3" product={product} isLoadingMenu={isLoadingMenu} />
+            ))}
+        </div>
       </Spin>
     </Spin>
   )
