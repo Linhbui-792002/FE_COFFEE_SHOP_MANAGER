@@ -1,11 +1,14 @@
-import React, { useRef, useState } from 'react'
-import { SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Space, Table } from 'antd'
-import { Highlighter } from 'lucide-react'
+import React, { useState } from 'react'
+import { Space, Table, Tag } from 'antd'
+import { Check, X } from 'lucide-react'
 import { useColumnSearch } from '../common/column-search-props'
 import TooltipCustom from '../common/tooltip'
 import ProductCategoryForm from './product_category_form'
 import { convertDate } from '@src/utils'
+import { STATUS_PRODUCT_CATEGORY } from '@src/constants'
+import { useUpdateProductCategoryMutation } from '@src/redux/endPoint/productCategory'
+import Confirm from '../common/confirm'
+import Notification from '../common/notification'
 
 const PAGESIZE = 5
 
@@ -14,6 +17,39 @@ const ProductCategoryTable = ({ className, categories }) => {
   const { getColumnSearchProps } = useColumnSearch()
   const handleTableChange = pagination => {
     setCurrentPage(pagination.current)
+  }
+
+  const ChangeStatus = ({ productCategory }) => {
+    const [updateProductCategory] = useUpdateProductCategoryMutation()
+
+    const handleChangeStatus = async () => {
+      try {
+        const body = {
+          productCategoryId: productCategory._id,
+          status: !productCategory.status
+        }
+        await updateProductCategory(body).unwrap()
+        Notification(
+          'success',
+          'Product Category Manager',
+          `${productCategory?.status ? 'Set status Active' : 'Set status Inactive'} successfully`
+        )
+      } catch (error) {
+        Notification('error', 'Account Manager', 'Failed call api')
+      }
+    }
+    return (
+      <Confirm
+        icon={
+          !productCategory?.status ? <X className="m-auto text-t-red" /> : <Check className="m-auto text-t-green" />
+        }
+        title={productCategory?.status ? 'Set status inactive' : 'Set status active'}
+        color={productCategory?.status ? 'red' : 'green'}
+        type="text"
+        message={`Are you sure you want to ${productCategory?.status ? 'set status inactive' : 'set status active'} ${productCategory?.name}?`}
+        onConfirm={handleChangeStatus}
+      />
+    )
   }
   const columns = [
     {
@@ -30,14 +66,31 @@ const ProductCategoryTable = ({ className, categories }) => {
       title: 'Product Category Name',
       dataIndex: 'name',
       key: 'name',
-      width: '40%',
+      width: '30%',
       ...getColumnSearchProps('name'),
       sorter: (a, b) => a.name.length - b.name.length
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      align: 'center',
+      width: '10%',
+      filter: STATUS_PRODUCT_CATEGORY.map(item => ({ text: item.label, value: item.value })),
+      onFilter: (value, record) => {
+        return record?.status == value
+      },
+      render: (_, { status }) => (
+        <Tag color={status ? 'green' : 'red'} key={status}>
+          {status ? 'Active' : 'Inactive'}
+        </Tag>
+      )
     },
     {
       title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      align: 'end',
       width: '20%',
       render: (_, { createdAt }) => convertDate(createdAt)
     },
@@ -46,6 +99,7 @@ const ProductCategoryTable = ({ className, categories }) => {
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       width: '20%',
+      align: 'end',
       render: (_, { updatedAt }) => convertDate(updatedAt)
     },
     {
@@ -54,6 +108,7 @@ const ProductCategoryTable = ({ className, categories }) => {
       align: 'right',
       render: (text, record) => (
         <Space size="middle">
+          <ChangeStatus productCategory={record} />
           <TooltipCustom title="Edit Product Category" key="edit" color="blue">
             <ProductCategoryForm productCategoryId={record?._id} type="text" title="Edit Product Category" />
           </TooltipCustom>

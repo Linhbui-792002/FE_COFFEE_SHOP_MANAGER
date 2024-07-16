@@ -1,7 +1,8 @@
+import Voucher from '@src/components/voucher'
 import React from 'react'
 
-const Voucher = () => {
-  return <div>Voucher</div>
+const VoucherPage = () => {
+  return <Voucher />
 }
 
-export default Voucher
+export default VoucherPage

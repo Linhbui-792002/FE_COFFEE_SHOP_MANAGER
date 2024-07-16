@@ -24,6 +24,28 @@ export const STATUS_EMPLOYEE = [
   }
 ]
 
+export const STATUS_PRODUCT_CATEGORY = [
+  {
+    label: 'Active',
+    value: true
+  },
+  {
+    label: 'Inactive',
+    value: false
+  }
+]
+
+export const STATUS_MENU_INFO = [
+  {
+    label: 'Active',
+    value: true
+  },
+  {
+    label: 'Inactive',
+    value: false
+  }
+]
+
 export const STATUS_PRODUCT = [
   { label: 'Public', value: true },
   { label: 'Draft', value: false }
