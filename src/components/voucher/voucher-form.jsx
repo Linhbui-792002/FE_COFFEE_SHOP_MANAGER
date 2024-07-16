@@ -243,6 +243,10 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                     {
                       required: true,
                       message: 'Please input your code name!'
+                    },
+                    {
+                      pattern: /^[A-Z0-9]+$/,
+                      message: 'Code voucher cannot contain special characters or spaces and must be uppercase!'
                     }
                   ]}
                 >
@@ -258,7 +262,7 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                     }
                   ]}
                 >
-                  <Input />
+                  <Input.TextArea rows={3} />
                 </Form.Item>
                 <Form.Item
                   label="Voucher percent"
@@ -270,7 +274,7 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                     }
                   ]}
                 >
-                  <InputNumber className="w-full" suffix="%" />
+                  <InputNumber min={0} max={100} className="w-full" suffix="%" />
                 </Form.Item>
               </div>
               <div className="col-span-6">
@@ -303,7 +307,7 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                     }
                   ]}
                 >
-                  <InputNumber className="w-full" suffix="VNĐ" />
+                  <InputNumber min={0} className="w-full" suffix="VNĐ" />
                 </Form.Item>
                 <Form.Item
                   label="Number voucher"
@@ -315,15 +319,15 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
                     }
                   ]}
                 >
-                  <InputNumber className="w-full" />
+                  <InputNumber min={0} className="w-full" />
                 </Form.Item>
                 <div className="w-full flex gap-3">
                   <Form.Item className="col-span-3" label="Status" name="status" initialValue={true}>
                     <Switch defaultValue={true} />
                   </Form.Item>
-                  <Form.Item className="col-span-3" label="Auto use" name="autoUse" initialValue={true}>
+                  {/* <Form.Item className="col-span-3" label="Auto use" name="autoUse" initialValue={true}>
                     <Switch defaultValue={false} />
-                  </Form.Item>
+                  </Form.Item> */}
                 </div>
               </div>
             </div>

@@ -25,7 +25,6 @@ const ProductLeft = ({ className }) => {
     refetchOnMountOrArgChange: true
   })
 
-  console.log(data, 'data')
   const containerRef = useRef(null)
 
   const onSearchChange = e => {

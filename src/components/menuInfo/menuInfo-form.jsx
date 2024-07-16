@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, Spin } from 'antd'
+import { Button, Form, Input, Modal, Spin, Switch } from 'antd'
 import { Pencil, UserRoundPlus } from 'lucide-react'
 import React, { useRef, useState, useEffect } from 'react'
 import Notification from '../common/notification'
@@ -111,7 +111,7 @@ const MenuInfoForm = ({ label, menuInfoId, title, type, useSubComponent, getMenu
             form={form}
           >
             <Form.Item
-              label="Name menu infoasdas"
+              label="Name menu info"
               name="name"
               rules={[
                 {
@@ -121,6 +121,9 @@ const MenuInfoForm = ({ label, menuInfoId, title, type, useSubComponent, getMenu
               ]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item className="col-span-3" label="Status" name="status" initialValue={true}>
+              <Switch defaultValue={true} />
             </Form.Item>
             <Form.Item hidden>
               <Button type="primary" htmlType="submit" />

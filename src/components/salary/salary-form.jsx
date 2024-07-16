@@ -3,12 +3,12 @@ import { Pencil, UserRoundPlus } from 'lucide-react'
 import React, { useRef, useState, useEffect } from 'react'
 import Notification from '../common/notification'
 import { useAddSalaryMutation, useEditSalaryMutation, useGetInfoSalaryQuery } from '@src/redux/endPoint/salary'
-import { useGetAllEmployeeQueryFix } from '@src/redux/endPoint/employee'
+import { useGetAllEmployeeQuery, useGetAllEmployeeQueryFix } from '@src/redux/endPoint/employee'
 
 const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryInfoIdFn }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeQueryFix()
+  const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeQuery()
 
   const { data: dataSalaryInfo, isLoading: isLoadingSalaryInfo } = useGetInfoSalaryQuery(salaryId, {
     skip: !salaryId || !isModalOpen
@@ -252,7 +252,7 @@ const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryIn
                 }
               ]}
             >
-              <InputNumber className="w-full" min={0} addonAfter="%" />
+              <InputNumber className="w-full" min={0} max={200} addonAfter="%" />
             </Form.Item>
 
             <Form.Item label="Bonus" name="bonus">

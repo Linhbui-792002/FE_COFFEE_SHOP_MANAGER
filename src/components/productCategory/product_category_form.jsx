@@ -130,6 +130,9 @@ const ProductCategoryForm = ({ label, productCategoryId, title, type, useSubComp
                 >
                   <Input />
                 </Form.Item>
+                <Form.Item label="Status" name="status">
+                  <Switch defaultValue={false} />
+                </Form.Item>
               </div>
             </div>
             <Form.Item hidden>

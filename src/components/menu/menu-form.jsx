@@ -224,7 +224,7 @@ const MenuForm = ({ label, menuId, title, type, successCallback }) => {
               <Input />
             </Form.Item>
             <Form.Item
-              className="w-full"
+              className="w-1/3"
               label="Choose menu info"
               name="menuInfoId"
               rules={[

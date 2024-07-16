@@ -42,7 +42,6 @@ const ChangeStatusProduct = ({ product }) => {
   )
 }
 const ProductItem = ({ isLoading, className, item }) => {
-  console.log(item)
   return (
     <Card
       loading={isLoading}

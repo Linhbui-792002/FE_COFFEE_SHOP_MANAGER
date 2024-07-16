@@ -9,19 +9,27 @@ import { useGetAllMenuQuery } from '@src/redux/endPoint/menu'
 import MenuForm from './menu-form'
 
 const Menu = () => {
-  const { data: listMenu, isLoading: isLoadingListMenu, refetch } = useGetAllMenuQuery()
   const { getColumnSearchProps } = useColumnSearch()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
-
+  const [pagination, setPagination] = useState({ page:1, limit: 10 })
+  
+  const { data: listMenu, isLoading: isLoadingListMenu, refetch } = useGetAllMenuQuery(pagination)
+  
+  const handleChange = (name, value) => {
+    setFormFilterData({
+      ...formFilterData,
+      [name]: value ?? '',
+      page: name != 'page' ? 1 : value
+    })
+  }
   const handleTableChange = pagination => {
-    setPagination(pagination)
+    setPagination({page:pagination?.current,limit:pagination?.pageSize})
   }
 
   const columns = [
     {
       title: 'Index',
       key: 'index',
-      render: (_, __, index) => (pagination.current - 1) * pagination.pageSize + index + 1
+      render: (_, __, index) => (pagination.page - 1) * pagination.limit + index + 1
     },
     {
       title: 'Menu name',
@@ -98,7 +106,12 @@ const Menu = () => {
         </div>
         <div className="px-4 py-5 mt-12">
           <Table
-            pagination={{ ...pagination }}
+            pagination={{
+              total:listMenu?.options?.totalRecords,
+              defaultCurrent:1,
+              current:listMenu?.options?.pageIndex,
+              pageSize:listMenu?.options?.pageSize
+            }}
             columns={columns}
             dataSource={listMenu?.metadata}
             rowKey="_id"

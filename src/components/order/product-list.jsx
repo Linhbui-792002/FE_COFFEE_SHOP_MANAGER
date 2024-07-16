@@ -15,7 +15,6 @@ const ProductList = () => {
   const debouncedParamData = useDebounce(param, 500)
   const { data: listMenu, isLoading: isLoadingMenu } = useGetAllMenuPublicForEmployeeQuery(debouncedParamData)
   const { data: listMenuInfo, isLoading: isLoadingMenuInfo } = useGetAllMenuPublicForEmployeeQuery()
-  console.log(listMenu, 'listMenu')
   const menuInfos = useMemo(() => listMenuInfo?.metadata && getUniqueMenuInfo(listMenuInfo.metadata), [listMenuInfo])
   const products = useMemo(() => listMenu?.metadata && getUniqueProducts(listMenu.metadata), [listMenu])
 

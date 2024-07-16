@@ -27,7 +27,6 @@ const OrderHistory = () => {
     }
   }
 
-  console.log(formFilterData, 'formFilterData')
 
   const debouncedFormFilterData = useDebounce(formFilterData, 500)
   const { data: listOrders, isLoading: isLoadingListOrders } = useGetAllOrdersQuery(debouncedFormFilterData)

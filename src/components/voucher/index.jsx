@@ -9,19 +9,19 @@ import VoucherForm from './voucher-form'
 import { useGetAllVoucherQuery } from '@src/redux/endPoint/voucher'
 
 const Voucher = () => {
-  const { data: listVoucher, isLoading: isLoadingListVoucher, refetch } = useGetAllVoucherQuery()
   const { getColumnSearchProps } = useColumnSearch()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+  const [pagination, setPagination] = useState({ page:1, limit: 10 })
+  const { data: listVoucher, isLoading: isLoadingListVoucher, refetch } = useGetAllVoucherQuery(pagination)
 
   const handleTableChange = pagination => {
-    setPagination(pagination)
+    setPagination({page:pagination?.current,limit:pagination?.pageSize})
   }
 
   const columns = [
     {
       title: 'No',
       key: 'index',
-      render: (_, __, index) => (pagination.current - 1) * pagination.pageSize + index + 1
+      render: (_, __, index) => (pagination.page - 1) * pagination.limit + index + 1
     },
     {
       title: 'Voucher name',
@@ -111,7 +111,12 @@ const Voucher = () => {
         </div>
         <div className="px-4 py-5 mt-12">
           <Table
-            pagination={{ ...pagination }}
+        pagination={{
+          total:listVoucher?.options?.totalRecords,
+          defaultCurrent:1,
+          current:listVoucher?.options?.pageIndex,
+          pageSize:listVoucher?.options?.pageSize
+        }}
             columns={columns}
             dataSource={listVoucher}
             rowKey="_id"

@@ -318,11 +318,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
                       receivedMoney - TotalMoneyWithDiscount < 0 ? 'text-red-500' : ''
                     }`}
                     onChange={handleInputChange}
-                    value={
-                      receivedMoney - TotalMoneyWithDiscount < 0
-                        ? receivedMoney
-                        : TotalMoneyWithDiscount
-                    }
+                    value={receivedMoney - TotalMoneyWithDiscount < 0 ? receivedMoney : TotalMoneyWithDiscount}
                   />
                 </div>
                 <div className="flex justify-between">
