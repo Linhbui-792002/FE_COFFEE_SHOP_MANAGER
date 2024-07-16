@@ -29,7 +29,8 @@ const ProductForm = ({ productId, title, type, label }) => {
   })
 
   const { data: productInfo, isLoading: isLoadingProductInfo } = useGetProductInfoQuery(productId, {
-    skip: !isModalOpen || !productId
+    skip: !productId,
+    refetchOnMountOrArgChange:true,
   })
   const [addNewProduct, { isLoading: isLoadingAddProduct }] = useAddProductMutation()
   const [updateProduct, { isLoading: isLoadingUpdateProduct }] = useUpdateProductMutation()
@@ -40,10 +41,10 @@ const ProductForm = ({ productId, title, type, label }) => {
         productId: { value: item?.productId?._id, label: item?.productId?.name },
         quantity: item.quantity
       }))
-      form.setFieldsValue(productInfo)
+      form.setFieldsValue({...productInfo})
       form.setFieldValue('productCombo', productCombo)
     }
-  }, [productInfo, isLoadingProductInfo])
+  }, [productInfo])
 
   useEffect(() => {
     if (!isCombo) {
