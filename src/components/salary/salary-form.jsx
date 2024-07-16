@@ -2,13 +2,12 @@ import { Button, DatePicker, Form, Input, InputNumber, Modal, Select, Spin } fro
 import { Pencil, UserRoundPlus } from 'lucide-react'
 import React, { useRef, useState, useEffect } from 'react'
 import Notification from '../common/notification'
-import { useAddSalaryMutation, useEditSalaryMutation, useGetInfoSalaryQuery } from '@src/redux/endPoint/salary'
-import { useGetAllEmployeeQueryFix } from '@src/redux/endPoint/employee'
+import { useAddSalaryMutation, useEditSalaryMutation, useGetAllEmployeeFixQuery, useGetInfoSalaryQuery } from '@src/redux/endPoint/salary'
 
 const SalaryForm = ({ label, salaryId, title, type, useSubComponent, getSalaryInfoIdFn }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeQueryFix()
+  const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetAllEmployeeFixQuery()
 
   const { data: dataSalaryInfo, isLoading: isLoadingSalaryInfo } = useGetInfoSalaryQuery(salaryId, {
     skip: !salaryId || !isModalOpen

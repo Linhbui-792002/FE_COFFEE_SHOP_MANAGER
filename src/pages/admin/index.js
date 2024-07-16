@@ -1,7 +1,8 @@
+import DashBoard from '@src/components/dashboard/dashboard'
 import React from 'react'
 
 const AdminPage = () => {
-  return <div>AdminPage</div>
+  return <DashBoard />
 }
 
 export default AdminPage
