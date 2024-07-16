@@ -288,8 +288,8 @@ const ProductForm = ({ productId, title, type, label }) => {
                     rules={[
                       {
                         validator: async (_, names) => {
-                          if (!names || names.length < 2) {
-                            return Promise.reject(new Error('At least 2 product'))
+                          if (!names || names.length < 1) {
+                            return Promise.reject(new Error('At least 1 product'))
                           }
                         }
                       }
