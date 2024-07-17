@@ -30,7 +30,7 @@ const ProductForm = ({ productId, title, type, label }) => {
 
   const { data: productInfo, isLoading: isLoadingProductInfo } = useGetProductInfoQuery(productId, {
     skip: !productId,
-    refetchOnMountOrArgChange:true,
+    refetchOnMountOrArgChange: true
   })
   const [addNewProduct, { isLoading: isLoadingAddProduct }] = useAddProductMutation()
   const [updateProduct, { isLoading: isLoadingUpdateProduct }] = useUpdateProductMutation()
@@ -41,7 +41,7 @@ const ProductForm = ({ productId, title, type, label }) => {
         productId: { value: item?.productId?._id, label: item?.productId?.name },
         quantity: item.quantity
       }))
-      form.setFieldsValue({...productInfo})
+      form.setFieldsValue({ ...productInfo })
       form.setFieldValue('productCombo', productCombo)
     }
   }, [productInfo])
@@ -234,7 +234,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                     }
                   ]}
                 >
-                  <InputNumber min={0} className="w-full"/>
+                  <InputNumber min={0} className="w-full" />
                 </Form.Item>
 
                 <Form.Item className="col-span-3" label="Status" name="status" initialValue={true}>
@@ -256,7 +256,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                     }
                   ]}
                 >
-                  <InputNumber min={0}  className="w-full" readOnly={isCombo} />
+                  <InputNumber min={0} className="w-full" readOnly={isCombo} />
                 </Form.Item>
 
                 <Form.Item

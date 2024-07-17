@@ -16,7 +16,7 @@ export const statisticApi = api.injectEndpoints({
     }),
     getOrderAnalystic: builder.query({
       query: query => {
-        return { url: `/statistic/statisticInDay`}
+        return { url: `/statistic/statisticInDay` }
       },
       transformResponse: res => {
         return res?.metadata
@@ -31,7 +31,7 @@ export const statisticApi = api.injectEndpoints({
         return res?.metadata
       },
       providesTags: ['StatisticsTag']
-    }),
+    })
   })
 })
 
