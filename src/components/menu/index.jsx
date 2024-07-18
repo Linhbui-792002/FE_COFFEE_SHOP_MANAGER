@@ -10,10 +10,10 @@ import MenuForm from './menu-form'
 
 const Menu = () => {
   const { getColumnSearchProps } = useColumnSearch()
-  const [pagination, setPagination] = useState({ page:1, limit: 10 })
-  
+  const [pagination, setPagination] = useState({ page: 1, limit: 10 })
+
   const { data: listMenu, isLoading: isLoadingListMenu, refetch } = useGetAllMenuQuery(pagination)
-  
+
   const handleChange = (name, value) => {
     setFormFilterData({
       ...formFilterData,
@@ -22,7 +22,7 @@ const Menu = () => {
     })
   }
   const handleTableChange = pagination => {
-    setPagination({page:pagination?.current,limit:pagination?.pageSize})
+    setPagination({ page: pagination?.current, limit: pagination?.pageSize })
   }
 
   const columns = [
@@ -107,10 +107,10 @@ const Menu = () => {
         <div className="px-4 py-5 mt-12">
           <Table
             pagination={{
-              total:listMenu?.options?.totalRecords,
-              defaultCurrent:1,
-              current:listMenu?.options?.pageIndex,
-              pageSize:listMenu?.options?.pageSize
+              total: listMenu?.options?.totalRecords,
+              defaultCurrent: 1,
+              current: listMenu?.options?.pageIndex,
+              pageSize: listMenu?.options?.pageSize
             }}
             columns={columns}
             dataSource={listMenu?.metadata}

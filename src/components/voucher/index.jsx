@@ -10,11 +10,11 @@ import { useGetAllVoucherQuery } from '@src/redux/endPoint/voucher'
 
 const Voucher = () => {
   const { getColumnSearchProps } = useColumnSearch()
-  const [pagination, setPagination] = useState({ page:1, limit: 10 })
+  const [pagination, setPagination] = useState({ page: 1, limit: 10 })
   const { data: listVoucher, isLoading: isLoadingListVoucher, refetch } = useGetAllVoucherQuery(pagination)
 
   const handleTableChange = pagination => {
-    setPagination({page:pagination?.current,limit:pagination?.pageSize})
+    setPagination({ page: pagination?.current, limit: pagination?.pageSize })
   }
 
   const columns = [
@@ -111,12 +111,12 @@ const Voucher = () => {
         </div>
         <div className="px-4 py-5 mt-12">
           <Table
-        pagination={{
-          total:listVoucher?.options?.totalRecords,
-          defaultCurrent:1,
-          current:listVoucher?.options?.pageIndex,
-          pageSize:listVoucher?.options?.pageSize
-        }}
+            pagination={{
+              total: listVoucher?.options?.totalRecords,
+              defaultCurrent: 1,
+              current: listVoucher?.options?.pageIndex,
+              pageSize: listVoucher?.options?.pageSize
+            }}
             columns={columns}
             dataSource={listVoucher}
             rowKey="_id"

@@ -16,7 +16,11 @@ import { useGetAllOrdersQuery } from '@src/redux/endPoint/order'
 import { convertDateWithTime, currencyFormatter } from '@src/utils'
 import OrderDetailModal from '../orderHistory/order-detail'
 import TooltipCustom from '../common/tooltip'
-import { useGetOrderAnalysticQuery, useGetProductStatisticQuery, useGetRevenueStatisticQuery } from '@src/redux/endPoint/statistic'
+import {
+  useGetOrderAnalysticQuery,
+  useGetProductStatisticQuery,
+  useGetRevenueStatisticQuery
+} from '@src/redux/endPoint/statistic'
 
 const dataRevenue = [
   { name: '12 - 2023', revenue: 8000, profit: 0 },
@@ -62,7 +66,7 @@ const filterTime = [
   { value: '4', label: 'The fourth quarter' },
   { value: '5', label: 'The first half of the year' },
   { value: '6', label: 'The second half of the year' }
-];
+]
 
 const viewMode = [
   { value: '1', label: 'Highest revenue' },
@@ -105,40 +109,43 @@ const columns = [
 const DashBoard = () => {
   const now = new Date()
   const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString()
-  const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString();
-  const startMonth = new Date(now.getFullYear(), 0, 1);
-  const endMonth = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+  const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString()
+  const startMonth = new Date(now.getFullYear(), 0, 1)
+  const endMonth = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999)
   const filterOrderStatistic = { fromDate, toDate, limit: 10, page: 1 }
 
-  const [dataProduct, setDataProduct] = useState([]);
-  const [listProduct, setListProduct] = useState([]);
-  const [filterProductStatistic, setFilterProductStatistic] = useState({ startMonth, endMonth });
-  const [filterTimeMode, setFilterTimeMode] = useState(0);
-  const [isFillDataSuccess, setIsFillDataSuccess] = useState(false);
+  const [dataProduct, setDataProduct] = useState([])
+  const [listProduct, setListProduct] = useState([])
+  const [filterProductStatistic, setFilterProductStatistic] = useState({ startMonth, endMonth })
+  const [filterTimeMode, setFilterTimeMode] = useState(0)
+  const [isFillDataSuccess, setIsFillDataSuccess] = useState(false)
 
   const [orderStatistic, setOrderStatistic] = useState(dataOrder)
 
-
   //handle call API:
-  const { //product chart
+  const {
+    //product chart
     data: dataProductStatistic,
     isLoading: isLoadingProductStatistic,
     refetch: refetchProductStatistic
   } = useGetProductStatisticQuery(filterProductStatistic)
 
-  const { //order analistic
+  const {
+    //order analistic
     data: orderStatisticData,
     isLoading: isLoadingOrderStatistic,
-    refetch,
-  } = useGetOrderAnalysticQuery({}, { pollingInterval: 10000 });
+    refetch
+  } = useGetOrderAnalysticQuery({}, { pollingInterval: 10000 })
 
-  const { //revenue chart
+  const {
+    //revenue chart
     data: dataRevenueStatistic,
     isLoading: isLoadingRevenueStatistic,
     refetch: refetchRevenueStatistic
-  } = useGetRevenueStatisticQuery();
+  } = useGetRevenueStatisticQuery()
 
-  const { //list order recent
+  const {
+    //list order recent
     data: listOrdersRecent,
     isLoading: isLoadingOrderRecent,
     refetch: refetchListOrdersRecent
@@ -154,7 +161,7 @@ const DashBoard = () => {
 
   const updateRevenueChart = data => {
     //Set lại thời gian cho dữ liệu mẫu và nếu có dữ liệu thực thì update dự liệu thực
-    const sixMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 6));
+    const sixMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 6))
 
     dataRevenue.forEach((item, index) => {
       const month = String(sixMonthAgo.getMonth() + 1 + index).padStart(2, '0')
@@ -178,171 +185,169 @@ const DashBoard = () => {
   }
 
   const handleChangeTimeProductChart = value => {
-    setFilterTimeMode(value);
+    setFilterTimeMode(value)
   }
 
   //helper function:
-  const transformData = (data) => {
-    if (!Array.isArray(data)) return [];
+  const transformData = data => {
+    if (!Array.isArray(data)) return []
 
-    const setProduct = new Set();
-    const result = {};
+    const setProduct = new Set()
+    const result = {}
 
     data.forEach(item => {
-      const { yearMonth, productName, productProfit } = item;
+      const { yearMonth, productName, productProfit } = item
 
       if (result[yearMonth]) {
-        result[yearMonth][productName] = productProfit;
+        result[yearMonth][productName] = productProfit
       } else {
-        result[yearMonth] = { yearMonth, [productName]: productProfit };
+        result[yearMonth] = { yearMonth, [productName]: productProfit }
       }
-      setProduct.add(item.productName);
-    });
+      setProduct.add(item.productName)
+    })
 
-    setListProduct(Array.from(setProduct));
-    return Object.values(result);
+    setListProduct(Array.from(setProduct))
+    return Object.values(result)
   }
 
   const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
+    const letters = '0123456789ABCDEF'
+    let color = '#'
     for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+      color += letters[Math.floor(Math.random() * 16)]
     }
-    return color;
-  };
+    return color
+  }
 
   const createData = (startMonth, endMonth, dataBeautified) => {
-    const data = [];
-    const year = new Date().getFullYear();
+    const data = []
+    const year = new Date().getFullYear()
 
     for (let i = startMonth; i <= endMonth; i++) {
-      const tmpMonth = i < 10 ? '0' + i : i;
-      const tmpObj = { yearMonth: `${tmpMonth} - ${year}` };
+      const tmpMonth = i < 10 ? '0' + i : i
+      const tmpObj = { yearMonth: `${tmpMonth} - ${year}` }
 
       listProduct.forEach(product => {
-        tmpObj[product] = 0;
-      });
-      data.push(tmpObj);
+        tmpObj[product] = 0
+      })
+      data.push(tmpObj)
     }
 
     data.forEach(item => {
-      const found = dataBeautified.find(data => data.yearMonth === item.yearMonth);
+      const found = dataBeautified.find(data => data.yearMonth === item.yearMonth)
       if (found) {
         Object.keys(found).forEach(key => {
           if (key !== 'yearMonth') {
-            item[key] = found[key]; // Cập nhật giá trị nếu có dữ liệu từ API
+            item[key] = found[key] // Cập nhật giá trị nếu có dữ liệu từ API
           }
-        });
+        })
       }
-    });
+    })
 
-    setIsFillDataSuccess(true);
-    return data;
+    setIsFillDataSuccess(true)
+    return data
   }
 
   const createFillter = () => {
-
-    let startFilter = new Date(now.getFullYear(), 0, 1);
+    let startFilter = new Date(now.getFullYear(), 0, 1)
     let endFilter = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999)
 
     switch (filterTimeMode) {
       case '1':
-        startFilter = new Date(now.getFullYear(), 0, 1);
+        startFilter = new Date(now.getFullYear(), 0, 1)
         endFilter = new Date(now.getFullYear(), 3, 0, 23, 59, 59, 999)
-        break;
+        break
       case '2':
-        startFilter = new Date(now.getFullYear(), 3, 1);
+        startFilter = new Date(now.getFullYear(), 3, 1)
         endFilter = new Date(now.getFullYear(), 6, 0, 23, 59, 59, 999)
-        break;
+        break
       case '3':
-        startFilter = new Date(now.getFullYear(), 6, 1);
+        startFilter = new Date(now.getFullYear(), 6, 1)
         endFilter = new Date(now.getFullYear(), 9, 0, 23, 59, 59, 999)
-        break;
+        break
       case '4':
-        startFilter = new Date(now.getFullYear(), 9, 1);
+        startFilter = new Date(now.getFullYear(), 9, 1)
         endFilter = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999)
-        break;
+        break
       case '5':
-        startFilter = new Date(now.getFullYear(), 0, 1);
+        startFilter = new Date(now.getFullYear(), 0, 1)
         endFilter = new Date(now.getFullYear(), 6, 0, 23, 59, 59, 999)
-        break;
+        break
       case '6':
-        startFilter = new Date(now.getFullYear(), 6, 1);
+        startFilter = new Date(now.getFullYear(), 6, 1)
         endFilter = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999)
-        break;
+        break
     }
-    return { startFilter, endFilter };
+    return { startFilter, endFilter }
   }
 
-  const fillProductData = (data) => {
-    let args = [1, 12, data];
+  const fillProductData = data => {
+    let args = [1, 12, data]
     switch (filterTimeMode) {
       case '1':
-        args = [1, 3, data];
-        break;
+        args = [1, 3, data]
+        break
       case '2':
-        args = [4, 6, data];
-        break;
+        args = [4, 6, data]
+        break
       case '3':
-        args = [7, 9, data];
-        break;
+        args = [7, 9, data]
+        break
       case '4':
-        args = [10, 12, data];
-        break;
+        args = [10, 12, data]
+        break
       case '5':
-        args = [1, 6, data];
-        break;
+        args = [1, 6, data]
+        break
       case '6':
-        args = [7, 12, data];
-        break;
+        args = [7, 12, data]
+        break
     }
-    const createdData = createData(...args);
-    setDataProduct(createdData);
+    const createdData = createData(...args)
+    setDataProduct(createdData)
   }
 
   // Memoize transformed data
   const transformedData = useMemo(() => {
     if (dataProductStatistic) {
-      return transformData(dataProductStatistic);
+      return transformData(dataProductStatistic)
     }
-    return [];
-  }, [dataProductStatistic]);
+    return []
+  }, [dataProductStatistic])
 
   // Update listProduct when transformedData changes
   useEffect(() => {
     if (transformedData.length > 0) {
-      const products = transformedData.map(item => Object.keys(item).filter(key => key !== 'yearMonth')).flat();
-      setListProduct(products);
+      const products = transformedData.map(item => Object.keys(item).filter(key => key !== 'yearMonth')).flat()
+      setListProduct(products)
     }
-  }, [transformedData]);
+  }, [transformedData])
 
   // Update dataProduct when listProduct or filterTimeMode changes
   useEffect(() => {
     if (listProduct.length > 0) {
-      fillProductData(transformedData);
+      fillProductData(transformedData)
     }
-  }, [listProduct, filterTimeMode, transformedData]);
+  }, [listProduct, filterTimeMode, transformedData])
 
   useEffect(() => {
     const filterReturn = createFillter()
-    setFilterProductStatistic(filterReturn);
-  }, [filterTimeMode]);
+    setFilterProductStatistic(filterReturn)
+  }, [filterTimeMode])
 
   useEffect(() => {
-    refetchProductStatistic();
-  }, [filterProductStatistic]);
+    refetchProductStatistic()
+  }, [filterProductStatistic])
 
   useEffect(() => {
-    if (Array.isArray(orderStatisticData?.results))
-      updateOrderStatistic(orderStatisticData?.results)
-  }, [orderStatisticData]);
+    if (Array.isArray(orderStatisticData?.results)) updateOrderStatistic(orderStatisticData?.results)
+  }, [orderStatisticData])
 
   useEffect(() => {
     if (dataRevenueStatistic) {
-      updateRevenueChart(dataRevenueStatistic);
+      updateRevenueChart(dataRevenueStatistic)
     }
-  }, [dataRevenueStatistic]);
+  }, [dataRevenueStatistic])
 
   return (
     <div className="flex">
@@ -350,14 +355,8 @@ const DashBoard = () => {
         <div className="flex h-[310px]">
           <Card className="h-full grow-0" title="Total Per Day" style={{ width: '35%' }}>
             {renderStatisticCard('Orders (orders):', orderStatisticData?.totalOrder || 0)}
-            {renderStatisticCard(
-              'Revenue (VND):',
-              currencyFormatter(orderStatisticData?.totalRevenue || 0, '')
-            )}
-            {renderStatisticCard(
-              'Profit (VND):',
-              currencyFormatter(orderStatisticData?.totalProfit || 0, '')
-            )}
+            {renderStatisticCard('Revenue (VND):', currencyFormatter(orderStatisticData?.totalRevenue || 0, ''))}
+            {renderStatisticCard('Profit (VND):', currencyFormatter(orderStatisticData?.totalProfit || 0, ''))}
           </Card>
           <Card className="h-full grow min-h-fit ml-3 w-[65%]" title="Revenue Chart">
             <Spin spinning={isLoadingRevenueStatistic}>
@@ -419,9 +418,9 @@ const DashBoard = () => {
                         key={index}
                         type="monotone"
                         dataKey={product}
-                        stroke={"#8884d8"}
+                        stroke={'#8884d8'}
                         strokeWidth={2}
-                        dot={{ stroke: "#8884d8", strokeWidth: 2, r: 4 }}
+                        dot={{ stroke: '#8884d8', strokeWidth: 2, r: 4 }}
                       />
                     )
                   })}

@@ -6,7 +6,7 @@ import { Receipt } from 'lucide-react'
 const SalaryEmployee = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { data, isLoading, isError, error } = useGetEmployeeSalaryQuery("/",{})
+  const { data, isLoading, isError, error } = useGetEmployeeSalaryQuery('/', {})
 
   //create workTermSet:
   const workTermSet = new Set()
@@ -85,19 +85,19 @@ const SalaryEmployee = () => {
   return (
     <Spin spinning={false}>
       <p onClick={showModal}> Salary info</p>
-    <Modal
-      title="Salary information"
-      width={960}
-      open={isModalOpen}
-      onCancel={handleCancel}
-      footer={null}
-      keyboard={true}
-      closable={true}
-    >
-      <Spin spinning={isLoading}>
-        <Table className="mt-2" pagination={{ pageSize: 5 }} dataSource={data} columns={columns}></Table>
-      </Spin>
-    </Modal>
+      <Modal
+        title="Salary information"
+        width={960}
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+        keyboard={true}
+        closable={true}
+      >
+        <Spin spinning={isLoading}>
+          <Table className="mt-2" pagination={{ pageSize: 5 }} dataSource={data} columns={columns}></Table>
+        </Spin>
+      </Modal>
     </Spin>
   )
 }
