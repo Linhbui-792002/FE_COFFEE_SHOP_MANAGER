@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .bg-gradient-sidebar {
+    @apply bg-gradient-to-br from-b-primary-to via-b-primary-mid to-b-primary-from;
+  }
+  .bg-gradient-navbar {
+    @apply bg-gradient-to-br from-b-second-to to-b-second-from;
+  }
+  .bg-gradient {
+    @apply bg-gradient-to-br from-b-second-to to-b-second-from;
+  }
+
+  /*Card custom*/
+  .card-statistic {
+    @apply relative;
+  }
+  .card-statistic::before {
+    content: '';
+    @apply block absolute top-0 left-0 w-1 h-full;
+  }
+
+  .status {
+    @apply relative pl-4;
+  }
+  .status::before {
+    content: '';
+    @apply block absolute top-1/2 left-0 w-3 h-3 rounded-full transform -translate-y-1/2;
+  }
+}
