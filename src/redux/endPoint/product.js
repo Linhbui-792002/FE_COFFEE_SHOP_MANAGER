@@ -6,7 +6,7 @@ export const productApi = api.injectEndpoints({
     getAllProduct: builder.query({
       query: query => {
         const strQuery = objectToUrlParams(query)
-        return { url: `/product${strQuery && "?"+strQuery}` }
+        return { url: `/product${strQuery && '?' + strQuery}` }
       },
       transformResponse: res => {
         return { metadata: res?.metadata, options: res?.options }
@@ -19,7 +19,7 @@ export const productApi = api.injectEndpoints({
     }),
     searchProductByEmployee: builder.query({
       query: query => {
-        return { url: `/product/search/${query}` }
+        return { url: query ? `/product/search/${query}` : '' }
       },
       transformResponse: res => {
         return res?.metadata

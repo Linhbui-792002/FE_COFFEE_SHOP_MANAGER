@@ -231,7 +231,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
                     }
                   ]}
                 >
-                  <InputNumber className="w-full" suffix="VNĐ" />
+                  <InputNumber min={0} className="w-full" suffix="VNĐ" />
                 </Form.Item>
               </div>
               <div className="col-span-6">

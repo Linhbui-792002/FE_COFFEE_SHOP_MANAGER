@@ -42,7 +42,6 @@ const ChangeStatusProduct = ({ product }) => {
   )
 }
 const ProductItem = ({ isLoading, className, item }) => {
-  console.log(item)
   return (
     <Card
       loading={isLoading}
@@ -70,7 +69,7 @@ const ProductItem = ({ isLoading, className, item }) => {
         <TooltipCustom title="Edit product" key="edit" color="blue">
           <ProductForm productId={item?._id} type="text" title="Edit product" />
         </TooltipCustom>,
-        <ChangeStatusProduct product={item} key="changeStatus" />,
+        <ChangeStatusProduct product={item} key="changeStatus" />
       ]}
       hoverable
     >

@@ -17,13 +17,12 @@ export const salaryApi = api.injectEndpoints({
       transformResponse: res => res?.metadata,
       providesTags: ['SalariesTag']
     }),
-    getAllEmployeeFix: builder.query({
-      query: () => ({
-        url: '/salary/list/employee'
+    getEmployeeSalary: builder.query({
+      query: salaryId => ({
+        url: '/salary/employee'
       }),
       transformResponse: res => res?.metadata,
-      providesTags: (result, error, arg) =>
-        result ? [...result.map(({ _id }) => ({ type: 'EmployeesTag', _id })), 'EmployeesTag'] : ['EmployeesTag']
+      providesTags: ['SalariesTag']
     }),
     addSalary: builder.mutation({
       query: body => ({
@@ -54,7 +53,7 @@ export const salaryApi = api.injectEndpoints({
 export const {
   useAddSalaryMutation,
   useGetAllSalariesQuery,
+  useGetEmployeeSalaryQuery,
   useGetInfoSalaryQuery,
-  useEditSalaryMutation,
-  useGetAllEmployeeQueryFix
+  useEditSalaryMutation
 } = salaryApi

@@ -6,6 +6,11 @@ import { useRouter } from 'next/router'
 import { useLogoutMutation } from '@src/redux/endPoint/auth'
 import { useSelector } from 'react-redux'
 import Notification from '@src/components/common/notification'
+import CustomImage from '@src/components/common/custom-image'
+import Logo from '~public/images/logo.png'
+import ChangePassword from '@src/components/common/change-password-form'
+import SalaryEmployee from '@src/components/salary_employee'
+
 const { Header } = Layout
 
 const Navbar = () => {
@@ -26,9 +31,17 @@ const Navbar = () => {
     }
   }
   const MENU_ITEMS = [
+    // {
+    //   key: '1',
+    //   label: <Link href="/">Info</Link>
+    // },
     {
-      key: '1',
-      label: <Link href="/">Info</Link>
+      key: '4',
+      label: <SalaryEmployee />
+    },
+    {
+      key: '3',
+      label: <ChangePassword />
     },
     {
       key: '2',
@@ -40,8 +53,14 @@ const Navbar = () => {
     }
   ]
   return (
-    <Header className="p-0 !bg-b-primary-from flex justify-between  items-center px-4">
-      <div>Logo </div>
+    <Header className="p-0 !bg-gradient flex justify-between items-center px-4">
+      <CustomImage
+        alt="logo"
+        className="w-[170px] h-max object-contain aspect-[16/8] px-1"
+        src={Logo.src}
+        width={150}
+        height={50}
+      />
       <Dropdown
         menu={{
           items: MENU_ITEMS

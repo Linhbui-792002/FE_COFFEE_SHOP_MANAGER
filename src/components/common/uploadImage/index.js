@@ -74,7 +74,7 @@ const UploadImage = ({ setData, getDataFn, onChange, value }) => {
   return (
     <>
       <Upload
-        action={'http://localhost:3055/v1/api/upload'}
+        action={`${process.env.NEXT_PUBLIC_API_BASE_URL + 'upload'}`}
         listType="picture-card"
         fileList={fileList}
         onPreview={handlePreview}

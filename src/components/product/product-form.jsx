@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, Modal, Select, Spin, Switch, Tag } from 'antd'
+import { Button, Card, Form, Input, InputNumber, Modal, Select, Spin, Switch, Tag } from 'antd'
 import { ClipboardPlus, Pencil, SquareX } from 'lucide-react'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import UploadImage from '../common/uploadImage'
@@ -29,7 +29,8 @@ const ProductForm = ({ productId, title, type, label }) => {
   })
 
   const { data: productInfo, isLoading: isLoadingProductInfo } = useGetProductInfoQuery(productId, {
-    skip: !isModalOpen || !productId
+    skip: !productId,
+    refetchOnMountOrArgChange: true
   })
   const [addNewProduct, { isLoading: isLoadingAddProduct }] = useAddProductMutation()
   const [updateProduct, { isLoading: isLoadingUpdateProduct }] = useUpdateProductMutation()
@@ -40,11 +41,10 @@ const ProductForm = ({ productId, title, type, label }) => {
         productId: { value: item?.productId?._id, label: item?.productId?.name },
         quantity: item.quantity
       }))
-      console.log(productCombo, 'productCombo123å')
-      form.setFieldsValue(productInfo)
+      form.setFieldsValue({ ...productInfo })
       form.setFieldValue('productCombo', productCombo)
     }
-  }, [productInfo, isLoadingProductInfo])
+  }, [productInfo])
 
   useEffect(() => {
     if (!isCombo) {
@@ -52,10 +52,8 @@ const ProductForm = ({ productId, title, type, label }) => {
     }
     getCostPrice()
   }, [isCombo, productCombo])
-  console.log(productInfo?.productCombo, 'productCombo')
   const optionsProductPublic = useMemo(() => {
     const selectedProductIds = productCombo?.map(item => item?.productId?.value)
-    console.log(selectedProductIds, 'selectedProductIds')
     return dataProductPublic?.filter(
       item => item.name.toLowerCase().includes(searchProduct.toLowerCase()) && !selectedProductIds?.includes(item._id)
     )
@@ -236,7 +234,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                     }
                   ]}
                 >
-                  <Input />
+                  <InputNumber min={0} className="w-full" />
                 </Form.Item>
 
                 <Form.Item className="col-span-3" label="Status" name="status" initialValue={true}>
@@ -258,7 +256,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                     }
                   ]}
                 >
-                  <Input readOnly={isCombo} />
+                  <InputNumber min={0} className="w-full" readOnly={isCombo} />
                 </Form.Item>
 
                 <Form.Item
@@ -269,10 +267,18 @@ const ProductForm = ({ productId, title, type, label }) => {
                     {
                       required: true,
                       message: 'Please input price!'
-                    }
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('costPrice') < value) {
+                          return Promise.resolve()
+                        }
+                        return Promise.reject(new Error('Price cannot be less than Cost price!'))
+                      }
+                    })
                   ]}
                 >
-                  <Input />
+                  <InputNumber min={0} className="w-full" />
                 </Form.Item>
               </div>
               {isCombo && (
@@ -282,8 +288,8 @@ const ProductForm = ({ productId, title, type, label }) => {
                     rules={[
                       {
                         validator: async (_, names) => {
-                          if (!names || names.length < 2) {
-                            return Promise.reject(new Error('At least 2 product'))
+                          if (!names || names.length < 1) {
+                            return Promise.reject(new Error('At least 1 product'))
                           }
                         }
                       }
@@ -348,7 +354,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                                     }
                                   ]}
                                 >
-                                  <Input />
+                                  <InputNumber min={1} className="w-full" />
                                 </Form.Item>
                               </Form.Item>
                             </Card>

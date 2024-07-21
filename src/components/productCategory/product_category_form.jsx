@@ -3,13 +3,6 @@ import { Button, Form, Input, Modal, Spin, Select, Switch, DatePicker, Radio, In
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import Notification from '../common/notification'
 import { Pencil, UserRoundPlus } from 'lucide-react'
-import TooltipCustom from '../common/tooltip'
-import AccountForm from '../account/account-form'
-import {
-  useAddEmployeeMutation,
-  useUpdateEmployeeMutation,
-  useGetInfoEmployeeQuery
-} from '@src/redux/endPoint/employee'
 import dayjs from 'dayjs'
 import {
   useAddProductCategoryMutation,
@@ -136,6 +129,9 @@ const ProductCategoryForm = ({ label, productCategoryId, title, type, useSubComp
                   ]}
                 >
                   <Input />
+                </Form.Item>
+                <Form.Item label="Status" name="status">
+                  <Switch defaultValue={false} />
                 </Form.Item>
               </div>
             </div>
