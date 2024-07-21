@@ -72,8 +72,8 @@ export const api = createApi({
   baseQuery: baseQueryWithInterceptor,
   reducerPath: 'api',
   tagTypes: [
-    'FAVORITE',
-    'STATUS',
+    // 'FAVORITE',
+    // 'STATUS',
     'EmployeesTag',
     'AccountsTag',
     'AccountOptionsTag',

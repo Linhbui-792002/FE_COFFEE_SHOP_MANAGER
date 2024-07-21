@@ -51,7 +51,7 @@ const orderSlice = createSlice({
         state.keyOrderActive =
           state.listOrder.length === 1
             ? state.listOrder[0]?.key
-            : state.listOrder[index - 1]?.key ?? state.listOrder[index + 1]?.key ?? null
+            : (state.listOrder[index - 1]?.key ?? state.listOrder[index + 1]?.key ?? null)
       }
 
       // load orderDetail if keyOrderActive !null
