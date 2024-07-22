@@ -59,7 +59,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
       voucherUsed: voucherCart.voucherPercent
         ? [
             {
-              voucherId: listVoucherCart.find(voucher => voucher._id === voucherCart._id),
+              voucherId: voucherCart.voucherId?.value,
               voucherPercent: voucherCart.voucherPercent
             }
           ]
@@ -79,7 +79,13 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
       Notification('success', 'Order Created', 'Order created successfully')
       onClose()
     } catch (error) {
-      Notification('error', 'Order Creation Failed', 'Failed to create order')
+      switch (error?.status) {
+        case 400:
+          return Notification('error', 'Order Creation Failed', error?.data?.message)
+        default:
+          return Notification('error', 'Order Creation Failed', 'Failed to create order')
+
+      }
     }
   }
 
@@ -148,12 +154,13 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
     return searchVoucher
       ? listVoucherCart.filter(voucher => voucher.code.toLowerCase().includes(searchVoucher.toLowerCase()))
       : listVoucherCart
-  }, [searchVoucher, listVoucherCart])
+  }, [searchVoucher, listVoucherCart, isLoadingVoucherCart,isModalVoucherOpen])
+
   const vouchersProduct = useMemo(() => {
     return searchVoucherProduct
       ? listVoucherProduct.filter(voucher => voucher.code.toLowerCase().includes(searchVoucher.toLowerCase()))
       : listVoucherProduct
-  }, [searchVoucherProduct, listVoucherProduct])
+  }, [searchVoucherProduct, listVoucherProduct,isLoadingVoucherProduct,isModalVoucherProductOpen])
 
   useEffect(() => {
     const total = orderDetails.reduce((acc, cur) => {
@@ -424,7 +431,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
           labelInValue
           showSearch
           allowClear
-          loading={isLoadingVoucherCart}
+          loading={!isModalVoucherOpen|| isLoadingVoucherCart}
           filterOption={false}
           onChange={(value, option) =>
             setVoucherCart({
@@ -433,7 +440,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
               maxDiscount: option?.maxDiscount ?? 0
             })
           }
-          onSearch={setSearchVoucherProduct}
+          onSearch={setSearchVoucher}
           options={vouchersCart?.map(voucher => ({
             label:
               voucher.name +
@@ -470,7 +477,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
           loading={isLoadingVoucherProduct}
           filterOption={false}
           onChange={(value, option) => handleOnChangeVoucherProduct(value, option)}
-          onSearch={setSearchVoucher}
+          onSearch={setSearchVoucherProduct}
           options={vouchersProduct?.map(voucher => ({
             label:
               voucher.name +

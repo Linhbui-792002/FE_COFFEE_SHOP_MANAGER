@@ -21,7 +21,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
     isLoading: isLoadingListAccount,
     refetch: refetchListAccount
   } = useGetListAccountNotEmployeeQuery(employeeId, {
-    skip: !employeeId || !isModalOpen,
+    skip:!isModalOpen,
     refetchOnMountOrArgChange: true
   })
 

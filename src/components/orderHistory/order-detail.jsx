@@ -112,8 +112,8 @@ const OrderDetailModal = ({ orderId }) => {
                   <div className="col-span-9 text-end font-bold">Discount:</div>
                   <div className="col-span-3 font-bold text-end">
                     {orderDetails?.voucherUsed?.[0]?.voucherPercent
-                      ? (orderDetails?.totalMoney / (100 - orderDetails?.voucherUsed?.[0]?.voucherPercent)) *
-                        orderDetails?.voucherUsed?.[0]?.voucherPercent
+                      ? currencyFormatter((orderDetails?.totalMoney / (100 - orderDetails?.voucherUsed?.[0]?.voucherPercent)) *
+                        orderDetails?.voucherUsed?.[0]?.voucherPercent,"")
                       : 0}
                   </div>
                 </div>
