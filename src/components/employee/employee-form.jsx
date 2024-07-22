@@ -12,16 +12,18 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
   const [searchAccount, setSearchAccount] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [accountIdAddNew, setAccountIdAddNew] = useState()
-  const {
-    data: employeeData,
-    isLoading: isLoadingEmployeeData,
-    refetch
-  } = useGetInfoEmployeeQuery(employeeId, { skip: !employeeId || !isModalOpen })
+  const { data: employeeData, isLoading: isLoadingEmployeeData } = useGetInfoEmployeeQuery(employeeId, {
+    skip: !employeeId || !isModalOpen,
+    refetchOnMountOrArgChange: true
+  })
   const {
     data: listAccount,
     isLoading: isLoadingListAccount,
     refetch: refetchListAccount
-  } = useGetListAccountNotEmployeeQuery(employeeId, { skip: !employeeId || !isModalOpen })
+  } = useGetListAccountNotEmployeeQuery(employeeId, {
+    skip: !employeeId || !isModalOpen,
+    refetchOnMountOrArgChange: true
+  })
 
   const [addEmployee, { isLoading }] = useAddEmployeeMutation()
   const [editEmployee, { isLoading: isLoadingUpdate }] = useEditEmployeeMutation()
@@ -34,13 +36,13 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
     const accountId =
       listAccount?.length != 0 && listAccount?.find(account => account?.employeeId === employeeData?._id)?._id
     form.setFieldsValue({ ...employeeData, dob: dayjs(employeeData?.dob), accountId: accountId })
-  }, [employeeData, listAccount])
+  }, [employeeData, listAccount, isLoadingEmployeeData])
 
   useEffect(() => {
     if (accountIdAddNew) {
       form.setFieldValue('accountId', accountIdAddNew)
     }
-  }, [accountIdAddNew, listAccount])
+  }, [accountIdAddNew, listAccount, employeeId])
 
   const filteredAccount = useMemo(() => {
     return listAccount?.filter(account => account?.username?.toLowerCase().includes(searchAccount?.toLowerCase()))
@@ -59,13 +61,16 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
   }
 
   const getAccountIdAddNew = accountId => {
+    console.log(accountId, 'acconsole.log(accountId')
     setAccountIdAddNew(accountId)
   }
 
   const handleEditAccount = async body => {
     try {
-      await editAccount(body).unwrap()
-      successCallback?.()
+      if (body) {
+        await editAccount(body).unwrap()
+        successCallback?.()
+      }
     } catch (error) {
       switch (error?.status) {
         case 409:
@@ -110,8 +115,13 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
       }
       const accountId =
         listAccount.length != 0 && listAccount.find(account => account?.employeeId === employeeData?._id)?._id
-      if (!body?.accountId || (accountId && accountId != body?.accountId)) {
+      console.log(accountId, 'accountId', body?.accountId)
+
+      if (accountId && body?.accountId == undefined) {
         await handleEditAccount({ accountId, employeeId: null })
+      } else if (accountId && accountId != body?.accountId) {
+        await handleEditAccount({ accountId, employeeId: null })
+        await handleEditAccount(payloadUpdateAccount)
       } else if (body?.accountId) {
         await handleEditAccount(payloadUpdateAccount)
       }
@@ -119,6 +129,7 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
       setAccountIdAddNew('')
       Notification('success', 'Account Manager', 'Edit account successfully')
       handleCancel()
+      successCallback?.()
     } catch (error) {
       switch (error?.status) {
         case 400:
@@ -279,7 +290,11 @@ const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmpl
                             <div className="flex items-center justify-between gap-2">
                               Add new account
                               <TooltipCustom title="Add new account" color="blue">
-                                <AccountForm getAccountIdFn={getAccountIdAddNew} useSubComponent={true} />
+                                <AccountForm
+                                  getAccountIdFn={getAccountIdAddNew}
+                                  useSubComponent={true}
+                                  successCallback={refetchListAccount}
+                                />
                               </TooltipCustom>
                             </div>
                             <Divider

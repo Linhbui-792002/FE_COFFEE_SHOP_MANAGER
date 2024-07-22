@@ -83,34 +83,32 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
     }
   }
 
-
   const getArrCalculate5ReceivedMoney = minReceivedMoney => {
-    const denominations = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000];
-    
+    const denominations = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000]
+
     const generateSuggestions = (minAmount, denomList) => {
-      const suggestions = new Set();
-      
-      suggestions.add(minAmount);
-  
-      let incrementAmount = denomList[denomList.length - 1]; // Start with the highest denomination
-      let currentAmount = minAmount;
-  
+      const suggestions = new Set()
+
+      suggestions.add(minAmount)
+
+      let incrementAmount = denomList[denomList.length - 1] // Start with the highest denomination
+      let currentAmount = minAmount
+
       while (suggestions.size < 5) {
-        currentAmount += incrementAmount;
-        
+        currentAmount += incrementAmount
+
         if (currentAmount >= minAmount) {
-          suggestions.add(currentAmount);
+          suggestions.add(currentAmount)
         }
       }
-  
-      return Array.from(suggestions).sort((a, b) => a - b);
-    };
-  
-    const suggestions = generateSuggestions(minReceivedMoney, denominations);
-  
+
+      return Array.from(suggestions).sort((a, b) => a - b)
+    }
+
+    const suggestions = generateSuggestions(minReceivedMoney, denominations)
+
     setArrCalculate5ReceivedMoney(suggestions)
-  };
-  
+  }
 
   // const getArrCalculate5ReceivedMoney = minReceivedMoney => {
   //   const suggestions = [minReceivedMoney, minReceivedMoney + 1000]
@@ -261,7 +259,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
     }
     return 0
   }, [voucherCart, totalMoney])
- 
+
   return (
     <>
       <div style={{ display: 'none' }}>
