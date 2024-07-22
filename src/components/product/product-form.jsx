@@ -43,7 +43,7 @@ const ProductForm = ({ productId, title, type, label, successCallback }) => {
       form.setFieldsValue({ ...productInfo })
       form.setFieldValue('productCombo', productCombo)
     }
-  }, [productInfo])
+  }, [productInfo,isLoadingProductInfo,isModalOpen])
 
   useEffect(() => {
     if (!isCombo) {

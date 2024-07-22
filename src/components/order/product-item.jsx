@@ -85,16 +85,16 @@ const ProductItem = ({ className, product, loading, isList }) => {
       cover={
         <CustomImage
           // onLoad={isLoading}
-          height={400}
-          width={400}
+          height={200}
+          width={200}
           src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${product?.image}`}
           alt={product.name}
-          className="w-20 h-40 object-cover"
+         className="w-full h-auto object-center"
         />
       }
       className={
         className +
-        ' min-h-[18rem] max-h-[18rem] shadow-lg rounded-lg overflow-hidden transition-transform transform scale-95 hover:scale-100'
+        ' min-h-[18rem] h-max shadow-lg rounded-lg overflow-hidden transition-transform transform scale-95 hover:scale-100'
       }
       loading={loading}
       onClick={handleChooseProduct}
@@ -103,7 +103,7 @@ const ProductItem = ({ className, product, loading, isList }) => {
         <Card.Meta
           title={product.name}
           description={
-            <div className="flex flex-col gap-1">
+            <div className="w-full flex flex-col gap-1 ">
               <div className="flex justify-between">
                 <span>Price:</span>
                 <span className="text-t-black font-medium underline">{currencyFormatter(product?.price)}</span>
@@ -116,7 +116,7 @@ const ProductItem = ({ className, product, loading, isList }) => {
               </div>
             </div>
           }
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
+          className="!flex flex-col"
         />
       </Skeleton>
     </Card>

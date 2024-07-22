@@ -61,7 +61,7 @@ const ProductItem = ({ isLoading, className, item, successCallback }) => {
           onLoad={isLoading}
           height={400}
           width={400}
-          src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${item?.image}`}
+          src={`${item?.image && process.env.PUBLIC_IMAGE_API_BASE_URL}/${item.image}`}
           alt="Image product"
           className="bg-b-gray w-[10rem] h-[10rem]"
         />

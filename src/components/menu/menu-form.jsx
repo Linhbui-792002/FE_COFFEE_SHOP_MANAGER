@@ -64,7 +64,8 @@ const MenuForm = ({ label, menuId, title, type, successCallback }) => {
   })
 
   const { data: dataListProduct, isLoading: isLoadingListProduct } = useGetAllProductPublicQuery('/', {
-    skip: !isModalOpen
+    skip: !isModalOpen,
+    refetchOnMountOrArgChange: true
   })
   const [createNewMenu, { isLoading: isLoadingCreateMenu }] = useCreateMenuMutation()
   const [updateNewMenu, { isLoading: isLoadingUpdateMenu }] = useUpdateMenuMutation()
