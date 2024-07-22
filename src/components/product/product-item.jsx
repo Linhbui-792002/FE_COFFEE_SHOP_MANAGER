@@ -9,7 +9,7 @@ import { LockKeyhole, LockKeyholeOpen } from 'lucide-react'
 import ProductForm from './product-form'
 import { useChangeStatusProductMutation } from '@src/redux/endPoint/product'
 
-const ChangeStatusProduct = ({ product,successCallback }) => {
+const ChangeStatusProduct = ({ product, successCallback }) => {
   const [changeStatusProduct] = useChangeStatusProductMutation()
 
   const handleChangeStatus = async () => {
@@ -42,7 +42,7 @@ const ChangeStatusProduct = ({ product,successCallback }) => {
     />
   )
 }
-const ProductItem = ({ isLoading, className, item ,successCallback}) => {
+const ProductItem = ({ isLoading, className, item, successCallback }) => {
   return (
     <Card
       loading={isLoading}
@@ -68,9 +68,9 @@ const ProductItem = ({ isLoading, className, item ,successCallback}) => {
       }
       actions={[
         <TooltipCustom title="Edit product" key="edit" color="blue">
-          <ProductForm productId={item?._id} type="text" title="Edit product" successCallback={successCallback}/>
+          <ProductForm productId={item?._id} type="text" title="Edit product" successCallback={successCallback} />
         </TooltipCustom>,
-        <ChangeStatusProduct product={item} key="changeStatus" successCallback={successCallback}/>
+        <ChangeStatusProduct product={item} key="changeStatus" successCallback={successCallback} />
       ]}
       hoverable
     >

@@ -12,7 +12,7 @@ import { useColumnSearch } from '&common/column-search-props'
 import { useEditEmployeeMutation } from '@src/redux/endPoint/employee'
 import Notification from '../common/notification'
 
-const ChangeStatusEmployee = ({ employee ,successCallback}) => {
+const ChangeStatusEmployee = ({ employee, successCallback }) => {
   // const [changeStatus] = useBlockAccountMutation()
   const [editEmployee, { isLoading: isLoadingUpdate }] = useEditEmployeeMutation()
 
@@ -52,7 +52,7 @@ const ChangeStatusEmployee = ({ employee ,successCallback}) => {
 }
 
 const Employee = () => {
-  const { data: listEmployee, isLoading,refetch:refetchListEmployee } = useGetAllEmployeeQuery()
+  const { data: listEmployee, isLoading, refetch: refetchListEmployee } = useGetAllEmployeeQuery()
   const { getColumnSearchProps } = useColumnSearch()
   const columns = [
     {
@@ -118,9 +118,14 @@ const Employee = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <ChangeStatusEmployee employee={record} successCallback={refetchListEmployee}/>
+          <ChangeStatusEmployee employee={record} successCallback={refetchListEmployee} />
           <TooltipCustom title="Edit employee" key="edit" color="blue">
-            <EmployeeForm employeeId={record?._id} type="text" title="Edit employee" successCallback={refetchListEmployee}/>
+            <EmployeeForm
+              employeeId={record?._id}
+              type="text"
+              title="Edit employee"
+              successCallback={refetchListEmployee}
+            />
           </TooltipCustom>
         </Space>
       )
@@ -151,7 +156,7 @@ const Employee = () => {
       <div className="bg-b-white rounded-md mt-4">
         <div className="flex justify-between items-center py-4 px-4">
           <h1 className="text-2xl font-normal">Employee Manager</h1>
-          <EmployeeForm title="Add new employee" label="New Employee" successCallback={refetchListEmployee}/>
+          <EmployeeForm title="Add new employee" label="New Employee" successCallback={refetchListEmployee} />
         </div>
         <div className="px-4 py-5 mt-12">
           <Table pagination={{ pageSize: 5 }} dataSource={listEmployee} columns={columns} />

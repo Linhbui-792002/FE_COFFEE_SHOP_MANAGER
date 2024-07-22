@@ -8,7 +8,7 @@ export const employeeApi = api.injectEndpoints({
       }),
       transformResponse: res => {
         return { metadata: res?.metadata, options: res?.options }
-      },
+      }
       // providesTags: (result, error, arg) => {
       //   return result
       //     ? [...result.metadata.map(({ _id }) => ({ type: 'AccountsTag', _id })), 'AccountsTag']
@@ -19,14 +19,14 @@ export const employeeApi = api.injectEndpoints({
       query: employeeId => ({
         url: `/account/list/accountNotExistEmployee/${employeeId && employeeId}`
       }),
-      transformResponse: res => res?.metadata,
+      transformResponse: res => res?.metadata
       // providesTags: ['AccountsTag']
     }),
     getInfoAccount: builder.query({
       query: accountId => ({
         url: `/account/${accountId}`
       }),
-      transformResponse: res => res.metadata,
+      transformResponse: res => res.metadata
       // providesTags: ['AccountsTag']
     }),
     addAccount: builder.mutation({
@@ -34,7 +34,7 @@ export const employeeApi = api.injectEndpoints({
         url: '/account',
         method: 'POST',
         body
-      }),
+      })
       // invalidatesTags: ['AccountsTag']
     }),
     editAccount: builder.mutation({
@@ -42,7 +42,7 @@ export const employeeApi = api.injectEndpoints({
         url: '/account',
         method: 'PATCH',
         body
-      }),
+      })
       // invalidatesTags: ['AccountsTag']
     }),
     resetPassword: builder.mutation({
@@ -50,7 +50,7 @@ export const employeeApi = api.injectEndpoints({
         url: '/account/resetPassword',
         method: 'PATCH',
         body
-      }),
+      })
       // invalidatesTags: ['AccountsTag']
     }),
     blockAccount: builder.mutation({
@@ -58,7 +58,7 @@ export const employeeApi = api.injectEndpoints({
         url: '/account/blockAccount',
         method: 'PATCH',
         body
-      }),
+      })
       // invalidatesTags: ['AccountsTag']
     })
   })

@@ -32,7 +32,7 @@ const ResetPassword = ({ account, successCallback }) => {
   )
 }
 
-const ChangeStatusAccount = ({ account ,successCallback}) => {
+const ChangeStatusAccount = ({ account, successCallback }) => {
   const [changeStatus] = useBlockAccountMutation()
 
   const handleChangeStatus = async () => {
@@ -66,7 +66,7 @@ const ChangeStatusAccount = ({ account ,successCallback}) => {
   )
 }
 
-const AccountItem = ({ className, isLoading, item ,successCallback}) => {
+const AccountItem = ({ className, isLoading, item, successCallback }) => {
   return (
     <Card
       loading={isLoading}
@@ -84,10 +84,10 @@ const AccountItem = ({ className, isLoading, item ,successCallback}) => {
       cover={<Avatar className="!flex items-center mt-6 bg-b-gray" size={80} icon={<User size={50} />} />}
       actions={[
         <TooltipCustom title="Edit account" key="edit" color="blue">
-          <AccountForm accountId={item?._id} type="text" title="Edit account" successCallback={successCallback}/>
+          <AccountForm accountId={item?._id} type="text" title="Edit account" successCallback={successCallback} />
         </TooltipCustom>,
-        <ChangeStatusAccount account={item} key="changeStatus" successCallback={successCallback}/>,
-        <ResetPassword account={item} key="resetPassword" successCallback={successCallback}/>
+        <ChangeStatusAccount account={item} key="changeStatus" successCallback={successCallback} />,
+        <ResetPassword account={item} key="resetPassword" successCallback={successCallback} />
       ]}
     >
       <Card.Meta

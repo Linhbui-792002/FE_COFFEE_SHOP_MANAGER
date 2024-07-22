@@ -8,7 +8,7 @@ import Notification from '../common/notification'
 import TooltipCustom from '../common/tooltip'
 import EmployeeForm from '../employee/employee-form'
 
-const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccountIdFn , successCallback}) => {
+const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccountIdFn, successCallback }) => {
   const [searchEmployee, setSearchEmployee] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [employeeIdAddNew, setEmployeeIdAddNew] = useState('')

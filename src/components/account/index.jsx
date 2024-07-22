@@ -174,7 +174,7 @@ const Account = () => {
         </div>
 
         <div className="col-span-3 bg-b-white rounded-md flex flex-col items-end gap-4 p-6">
-          <AccountForm label="New account" title="Create account" successCallback={refetchListAccount}/>
+          <AccountForm label="New account" title="Create account" successCallback={refetchListAccount} />
           <div className="flex flex-col gap-3 !w-full">
             <Card
               bordered={false}

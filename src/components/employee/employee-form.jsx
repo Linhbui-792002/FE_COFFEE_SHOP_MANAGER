@@ -8,7 +8,7 @@ import AccountForm from '../account/account-form'
 import { useAddEmployeeMutation, useEditEmployeeMutation, useGetInfoEmployeeQuery } from '@src/redux/endPoint/employee'
 import dayjs from 'dayjs'
 
-const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmployeeIdFn ,successCallback}) => {
+const EmployeeForm = ({ label, employeeId, title, type, useSubComponent, getEmployeeIdFn, successCallback }) => {
   const [searchAccount, setSearchAccount] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [accountIdAddNew, setAccountIdAddNew] = useState()

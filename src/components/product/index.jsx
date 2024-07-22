@@ -143,7 +143,7 @@ const Product = () => {
         </div>
         <div className="col-span-3 bg-b-white rounded-md flex flex-col items-end gap-4 p-6">
           <ProductForm label="New product" title="Create product" successCallback={refetchListProduct} />
-            <div className="flex flex-col gap-3 !w-full"></div>
+          <div className="flex flex-col gap-3 !w-full"></div>
         </div>
       </div>
     </Spin>

@@ -6,7 +6,7 @@ export const employeeApi = api.injectEndpoints({
       query: () => ({
         url: '/employee'
       }),
-      transformResponse: res => res?.metadata,
+      transformResponse: res => res?.metadata
       // providesTags: (result, error, arg) =>
       //   result ? [...result.map(({ _id }) => ({ type: 'EmployeesTag', _id })), 'EmployeesTag'] : ['EmployeesTag']
     }),
@@ -14,7 +14,7 @@ export const employeeApi = api.injectEndpoints({
       query: () => ({
         url: '/employee/list/employeeDoing'
       }),
-      transformResponse: res => res?.metadata,
+      transformResponse: res => res?.metadata
       // providesTags: (result, error, arg) =>
       //   result ? [...result.map(({ _id }) => ({ type: 'EmployeesTag', _id })), 'EmployeesTag'] : ['EmployeesTag']
     }),
@@ -22,7 +22,7 @@ export const employeeApi = api.injectEndpoints({
       query: accountId => ({
         url: `/employee/list/employeeHasNotAccount/${accountId && accountId}`
       }),
-      transformResponse: res => res?.metadata,
+      transformResponse: res => res?.metadata
       // providesTags: ['EmployeesTag']
     }),
 
@@ -30,7 +30,7 @@ export const employeeApi = api.injectEndpoints({
       query: employeeId => ({
         url: `/employee/${employeeId}`
       }),
-      transformResponse: res => res?.metadata,
+      transformResponse: res => res?.metadata
       // providesTags: ['EmployeesTag']
     }),
     addEmployee: builder.mutation({
@@ -38,7 +38,7 @@ export const employeeApi = api.injectEndpoints({
         url: `/employee`,
         method: 'POST',
         body
-      }),
+      })
       // invalidatesTags: ['EmployeesTag']
     }),
     editEmployee: builder.mutation({
@@ -46,7 +46,7 @@ export const employeeApi = api.injectEndpoints({
         url: '/employee',
         method: 'PATCH',
         body
-      }),
+      })
       // invalidatesTags: ['EmployeesTag']
     })
   })
