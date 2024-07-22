@@ -20,7 +20,11 @@ const Product = () => {
 
   const debouncedFormFilterData = useDebounce(formFilterData, 500)
 
-  const { data: dataProduct, isLoading: isLoadingProduct } = useGetAllProductQuery(debouncedFormFilterData)
+  const {
+    data: dataProduct,
+    isLoading: isLoadingProduct,
+    refetch: refetchListProduct
+  } = useGetAllProductQuery(debouncedFormFilterData)
   const { data: dataProductCate, isLoading: isLoadingProductCate } = useGetAllProductCategoryQuery()
 
   const handleChange = (name, value) => {
@@ -114,6 +118,7 @@ const Product = () => {
                     key={product?._id}
                     className="col-span-3 !w-full"
                     item={product}
+                    successCallback={refetchListProduct}
                   />
                 ))
               ) : (
@@ -137,7 +142,7 @@ const Product = () => {
           </div>
         </div>
         <div className="col-span-3 bg-b-white rounded-md flex flex-col items-end gap-4 p-6">
-          <ProductForm label="New product" title="Create product" />
+          <ProductForm label="New product" title="Create product" successCallback={refetchListProduct} />
           <div className="flex flex-col gap-3 !w-full"></div>
         </div>
       </div>

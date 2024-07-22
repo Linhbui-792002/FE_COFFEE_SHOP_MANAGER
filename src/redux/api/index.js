@@ -72,17 +72,17 @@ export const api = createApi({
   baseQuery: baseQueryWithInterceptor,
   reducerPath: 'api',
   tagTypes: [
-    'FAVORITE',
-    'STATUS',
-    'EmployeesTag',
-    'AccountsTag',
-    'AccountOptionsTag',
+    // 'FAVORITE',
+    // 'STATUS',
+    // 'EmployeesTag',
+    // 'AccountsTag',
+    // 'AccountOptionsTag',
     'GeneralsTag',
     'MenuInfosTag',
     'SalariesTag',
     'ProductCategoryTag',
     'OrdersTag',
-    'ProductsTag',
+    // 'ProductsTag',
     'StatisticsTag'
   ],
   extractRehydrationInfo(action, { reducerPath }) {

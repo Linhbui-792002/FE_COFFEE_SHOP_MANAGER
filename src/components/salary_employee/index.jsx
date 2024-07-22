@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Spin, Table } from 'antd'
+import { Button, Modal, Spin, Table } from 'antd'
 import { useGetEmployeeSalaryQuery } from '@src/redux/endPoint/salary'
+import { Receipt } from 'lucide-react'
 
-const SalaryEmployee = ({ isShow, isClose }) => {
-  const [isModalVisible, setIsModalVisible] = useState(isShow)
-  const { data, isLoading, isError, error } = useGetEmployeeSalaryQuery()
-  const closeModel = () => {
-    setIsModalVisible(false)
-    isClose(true)
-  }
+const SalaryEmployee = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const { data, isLoading, isError, error } = useGetEmployeeSalaryQuery('/', {})
 
   //create workTermSet:
   const workTermSet = new Set()
@@ -28,6 +26,13 @@ const SalaryEmployee = ({ isShow, isClose }) => {
     }
   }, [data])
 
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
   const columns = [
     {
       title: 'Work Terms',
@@ -78,19 +83,22 @@ const SalaryEmployee = ({ isShow, isClose }) => {
   ]
 
   return (
-    <Modal
-      title="Salary information"
-      width={960}
-      open={isModalVisible}
-      onCancel={closeModel}
-      footer={null}
-      keyboard={true}
-      closable={true}
-    >
-      <Spin spinning={isLoading}>
-        <Table className="mt-2" pagination={{ pageSize: 5 }} dataSource={data} columns={columns}></Table>
-      </Spin>
-    </Modal>
+    <Spin spinning={false}>
+      <p onClick={showModal}> Salary info</p>
+      <Modal
+        title="Salary information"
+        width={960}
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+        keyboard={true}
+        closable={true}
+      >
+        <Spin spinning={isLoading}>
+          <Table className="mt-2" pagination={{ pageSize: 5 }} dataSource={data} columns={columns}></Table>
+        </Spin>
+      </Modal>
+    </Spin>
   )
 }
 

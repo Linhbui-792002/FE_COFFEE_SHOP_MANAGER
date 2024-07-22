@@ -10,12 +10,12 @@ export const productApi = api.injectEndpoints({
       },
       transformResponse: res => {
         return { metadata: res?.metadata, options: res?.options }
-      },
-      providesTags: (result, error, arg) => {
-        return result
-          ? [...result.metadata.map(({ _id }) => ({ type: 'ProductsTag', _id })), 'ProductsTag']
-          : ['ProductsTag']
       }
+      // providesTags: (result, error, arg) => {
+      //   return result
+      //     ? [...result.metadata.map(({ _id }) => ({ type: 'ProductsTag', _id })), 'ProductsTag']
+      //     : ['ProductsTag']
+      // }
     }),
     searchProductByEmployee: builder.query({
       query: query => {
@@ -23,46 +23,46 @@ export const productApi = api.injectEndpoints({
       },
       transformResponse: res => {
         return res?.metadata
-      },
-      providesTags: ['ProductsTag']
+      }
+      // providesTags: ['ProductsTag']
     }),
     getAllProductPublic: builder.query({
       query: () => {
         return { url: `/product/getProduct/productsPublic` }
       },
-      transformResponse: res => res.metadata,
-      providesTags: ['ProductsTag']
+      transformResponse: res => res.metadata
+      // providesTags: ['ProductsTag']
     }),
     getProductInfo: builder.query({
       query: productId => ({
         url: `/product/${productId}`
       }),
-      transformResponse: res => res.metadata,
-      providesTags: ['ProductsTag']
+      transformResponse: res => res.metadata
+      // providesTags: ['ProductsTag']
     }),
     addProduct: builder.mutation({
       query: body => ({
         url: '/product',
         method: 'POST',
         body
-      }),
-      invalidatesTags: ['ProductsTag']
+      })
+      // invalidatesTags: ['ProductsTag']
     }),
     updateProduct: builder.mutation({
       query: body => ({
         url: '/product',
         method: 'PATCH',
         body
-      }),
-      invalidatesTags: ['ProductsTag']
+      })
+      // invalidatesTags: ['ProductsTag']
     }),
     changeStatusProduct: builder.mutation({
       query: body => ({
         url: '/product/changeStatus',
         method: 'PATCH',
         body
-      }),
-      invalidatesTags: ['ProductsTag']
+      })
+      // invalidatesTags: ['ProductsTag']
     })
   })
 })

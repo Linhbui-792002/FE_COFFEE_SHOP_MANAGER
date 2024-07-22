@@ -8,7 +8,7 @@ import Notification from '../common/notification'
 import TooltipCustom from '../common/tooltip'
 import EmployeeForm from '../employee/employee-form'
 
-const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccountIdFn }) => {
+const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccountIdFn, successCallback }) => {
   const [searchEmployee, setSearchEmployee] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [employeeIdAddNew, setEmployeeIdAddNew] = useState('')
@@ -22,7 +22,7 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
     data: listEmployee,
     isLoading: isLoadingListEmployee,
     refetch: refetchListEmployee
-  } = useGetEmployeesHasNotAccountQuery(accountId, { skip: !accountId || !isModalOpen })
+  } = useGetEmployeesHasNotAccountQuery(accountId, { skip: !isModalOpen, refetchOnMountOrArgChange:true })
   const [addAccount, { isLoading }] = useAddAccountMutation()
   const [editAccount, { isLoading: isEditLoading }] = useEditAccountMutation()
   const formRef = useRef(null)
@@ -39,10 +39,11 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
   }, [accountData])
 
   const filteredEmployee = useMemo(() => {
+    console.log(listEmployee,'listEmployee')
     return listEmployee?.filter(employee =>
       `${employee?.firstName} ${employee?.lastName}`.toLowerCase().includes(searchEmployee.toLowerCase())
     )
-  }, [searchEmployee, listEmployee, isLoadingListEmployee])
+  }, [searchEmployee, listEmployee, isLoadingListEmployee, isModalOpen])
   const showModal = () => {
     setIsModalOpen(true)
   }
@@ -68,6 +69,7 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
       setEmployeeIdAddNew('')
       form.resetFields()
       handleCancel()
+      successCallback?.()
     } catch (error) {
       switch (error?.status) {
         case 409:
@@ -84,6 +86,7 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
       Notification('success', 'Account Manager', 'Edit account successfully')
       setEmployeeIdAddNew('')
       handleCancel()
+      successCallback?.()
     } catch (error) {
       switch (error?.status) {
         case 400:
@@ -141,6 +144,10 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
                 {
                   required: true,
                   message: 'Please input your username!'
+                },
+                {
+                  pattern: /^[a-z][a-z0-9]*$/,
+                  message: 'Username must start with a letter, be in lowercase, and contain no special characters or spaces!'
                 }
               ]}
             >
@@ -155,6 +162,10 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
                     {
                       required: true,
                       message: 'Please input password!'
+                    },
+                    {
+                      pattern: /^[a-z0-9]+$/,
+                      message: 'Password cannot contain special characters or spaces and must be uppercase!'
                     }
                   ]}
                 >
@@ -224,7 +235,7 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
                           <div className="flex items-center justify-between gap-2">
                             Add new employee
                             <TooltipCustom title="Add new employee" color="blue">
-                              <EmployeeForm getEmployeeIdFn={getEmployeeIdAddNew} useSubComponent={true} />
+                              <EmployeeForm getEmployeeIdFn={getEmployeeIdAddNew} useSubComponent={true} successCallback={refetchListEmployee}/>
                             </TooltipCustom>
                           </div>
                           <Divider

@@ -7,7 +7,7 @@ import Notification from '../common/notification'
 import Confirm from '../common/confirm'
 import AccountForm from './account-form'
 
-const ResetPassword = ({ account }) => {
+const ResetPassword = ({ account, successCallback }) => {
   const [resetPassword] = useResetPasswordMutation()
 
   const handleResetPassword = async () => {
@@ -15,6 +15,7 @@ const ResetPassword = ({ account }) => {
       const accountId = account?._id
       await resetPassword({ accountId }).unwrap()
       Notification('success', 'Account Manager', 'Reset password successfully')
+      successCallback?.()
     } catch (error) {
       Notification('error', 'Account Manager', 'Failed call api')
     }
@@ -31,7 +32,7 @@ const ResetPassword = ({ account }) => {
   )
 }
 
-const ChangeStatusAccount = ({ account }) => {
+const ChangeStatusAccount = ({ account, successCallback }) => {
   const [changeStatus] = useBlockAccountMutation()
 
   const handleChangeStatus = async () => {
@@ -42,6 +43,7 @@ const ChangeStatusAccount = ({ account }) => {
       }
       await changeStatus(body).unwrap()
       Notification('success', 'Account Manager', `${account?.status ? 'Unlock' : 'Lock'} successfully`)
+      successCallback?.()
     } catch (error) {
       Notification('error', 'Account Manager', 'Failed call api')
     }
@@ -64,7 +66,7 @@ const ChangeStatusAccount = ({ account }) => {
   )
 }
 
-const AccountItem = ({ className, isLoading, item }) => {
+const AccountItem = ({ className, isLoading, item, successCallback }) => {
   return (
     <Card
       loading={isLoading}
@@ -82,10 +84,10 @@ const AccountItem = ({ className, isLoading, item }) => {
       cover={<Avatar className="!flex items-center mt-6 bg-b-gray" size={80} icon={<User size={50} />} />}
       actions={[
         <TooltipCustom title="Edit account" key="edit" color="blue">
-          <AccountForm accountId={item?._id} type="text" title="Edit account" />
+          <AccountForm accountId={item?._id} type="text" title="Edit account" successCallback={successCallback} />
         </TooltipCustom>,
-        <ChangeStatusAccount account={item} key="changeStatus" />,
-        <ResetPassword account={item} key="resetPassword" />
+        <ChangeStatusAccount account={item} key="changeStatus" successCallback={successCallback} />,
+        <ResetPassword account={item} key="resetPassword" successCallback={successCallback} />
       ]}
     >
       <Card.Meta

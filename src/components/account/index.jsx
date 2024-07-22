@@ -16,7 +16,7 @@ const Account = () => {
     status: '',
     role: ''
   })
-  const { data: metadataAccounts, isLoading: isLoadingAccounts } = useGetAllAccountQuery()
+  const { data: metadataAccounts, isLoading: isLoadingAccounts, refetch: refetchListAccount } = useGetAllAccountQuery()
 
   const handleChange = (name, value) => {
     setCurrentPage(1)
@@ -158,6 +158,7 @@ const Account = () => {
                 isLoading={isLoadingAccounts}
                 className="col-span-3 !w-full"
                 item={account}
+                successCallback={refetchListAccount}
               />
             ))}
           </div>
@@ -173,7 +174,7 @@ const Account = () => {
         </div>
 
         <div className="col-span-3 bg-b-white rounded-md flex flex-col items-end gap-4 p-6">
-          <AccountForm label="New account" title="Create account" />
+          <AccountForm label="New account" title="Create account" successCallback={refetchListAccount} />
           <div className="flex flex-col gap-3 !w-full">
             <Card
               bordered={false}

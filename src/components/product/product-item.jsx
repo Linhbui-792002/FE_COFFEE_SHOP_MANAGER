@@ -9,7 +9,7 @@ import { LockKeyhole, LockKeyholeOpen } from 'lucide-react'
 import ProductForm from './product-form'
 import { useChangeStatusProductMutation } from '@src/redux/endPoint/product'
 
-const ChangeStatusProduct = ({ product }) => {
+const ChangeStatusProduct = ({ product, successCallback }) => {
   const [changeStatusProduct] = useChangeStatusProductMutation()
 
   const handleChangeStatus = async () => {
@@ -19,6 +19,7 @@ const ChangeStatusProduct = ({ product }) => {
         status: !product.status
       }
       await changeStatusProduct(body).unwrap()
+      successCallback?.()
       Notification('success', 'Product Manager', `${product?.status ? 'Public' : 'Draft'} successfully`)
     } catch (error) {
       Notification('error', 'Product Manager', 'Failed call api')
@@ -41,7 +42,7 @@ const ChangeStatusProduct = ({ product }) => {
     />
   )
 }
-const ProductItem = ({ isLoading, className, item }) => {
+const ProductItem = ({ isLoading, className, item, successCallback }) => {
   return (
     <Card
       loading={isLoading}
@@ -60,16 +61,16 @@ const ProductItem = ({ isLoading, className, item }) => {
           onLoad={isLoading}
           height={400}
           width={400}
-          src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${item?.image}`}
+          src={`${item?.image && process.env.PUBLIC_IMAGE_API_BASE_URL}/${item.image}`}
           alt="Image product"
           className="bg-b-gray w-[10rem] h-[10rem]"
         />
       }
       actions={[
         <TooltipCustom title="Edit product" key="edit" color="blue">
-          <ProductForm productId={item?._id} type="text" title="Edit product" />
+          <ProductForm productId={item?._id} type="text" title="Edit product" successCallback={successCallback} />
         </TooltipCustom>,
-        <ChangeStatusProduct product={item} key="changeStatus" />
+        <ChangeStatusProduct product={item} key="changeStatus" successCallback={successCallback} />
       ]}
       hoverable
     >

@@ -12,7 +12,7 @@ import CustomImage from '../common/custom-image'
 import { useGetAllProductCategoryQuery } from '@src/redux/endPoint/productCategory'
 import Notification from '../common/notification'
 
-const ProductForm = ({ productId, title, type, label }) => {
+const ProductForm = ({ productId, title, type, label, successCallback }) => {
   const [searchProduct, setSearchProduct] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const formRef = useRef(null)
@@ -29,12 +29,11 @@ const ProductForm = ({ productId, title, type, label }) => {
   })
 
   const { data: productInfo, isLoading: isLoadingProductInfo } = useGetProductInfoQuery(productId, {
-    skip: !productId,
+    skip: !productId || !isModalOpen,
     refetchOnMountOrArgChange: true
   })
   const [addNewProduct, { isLoading: isLoadingAddProduct }] = useAddProductMutation()
   const [updateProduct, { isLoading: isLoadingUpdateProduct }] = useUpdateProductMutation()
-
   useEffect(() => {
     if (productInfo) {
       const productCombo = productInfo?.productCombo?.map(item => ({
@@ -44,7 +43,7 @@ const ProductForm = ({ productId, title, type, label }) => {
       form.setFieldsValue({ ...productInfo })
       form.setFieldValue('productCombo', productCombo)
     }
-  }, [productInfo])
+  }, [productInfo,isLoadingProductInfo,isModalOpen])
 
   useEffect(() => {
     if (!isCombo) {
@@ -92,6 +91,7 @@ const ProductForm = ({ productId, title, type, label }) => {
       Notification('success', 'Product Manager', 'Create product successfully')
       form.resetFields()
       handleCancel()
+      successCallback?.()
     } catch (error) {
       switch (error?.status) {
         case 409:
@@ -109,6 +109,7 @@ const ProductForm = ({ productId, title, type, label }) => {
       Notification('success', 'Product Manager', 'Update product successfully')
       form.resetFields()
       handleCancel()
+      successCallback?.()
     } catch (error) {
       switch (error?.status) {
         case 409:
@@ -270,7 +271,10 @@ const ProductForm = ({ productId, title, type, label }) => {
                     },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
-                        if (!value || getFieldValue('costPrice') < value) {
+                        if (isCombo) {
+                          return Promise.resolve();
+                        }
+                        if (!value || getFieldValue('costPrice') < value  ) {
                           return Promise.resolve()
                         }
                         return Promise.reject(new Error('Price cannot be less than Cost price!'))
@@ -288,8 +292,8 @@ const ProductForm = ({ productId, title, type, label }) => {
                     rules={[
                       {
                         validator: async (_, names) => {
-                          if (!names || names.length < 2) {
-                            return Promise.reject(new Error('At least 2 product'))
+                          if (!names || names.length < 1) {
+                            return Promise.reject(new Error('At least 1 product'))
                           }
                         }
                       }
@@ -354,7 +358,7 @@ const ProductForm = ({ productId, title, type, label }) => {
                                     }
                                   ]}
                                 >
-                                  <Input />
+                                  <InputNumber min={1} className="w-full" />
                                 </Form.Item>
                               </Form.Item>
                             </Card>

@@ -66,11 +66,13 @@ const OrderItem = () => {
               <div className="w-full flex gap-2 justify-around font-medium">
                 <div className="flex flex-col">
                   <div className=" whitespace-nowrap">
-                    <span className="line-through">{order.oldPrice.toLocaleString()} </span>
                     {order.voucherUsed?.[0]?.voucherPercent && (
-                      <span className="bg-b-green w-max text-t-white px-1 rounded-md">
-                        {(order.voucherUsed?.[0]?.voucherPercent || 0) + '%'}
-                      </span>
+                      <>
+                        <span className="line-through">{order.oldPrice.toLocaleString()} </span>
+                        <span className="bg-b-green w-max text-t-white px-1 rounded-md">
+                          {(order.voucherUsed?.[0]?.voucherPercent || 0) + '%'}
+                        </span>
+                      </>
                     )}
                   </div>
                   <div className="underline whitespace-nowrap">{order.price.toLocaleString()}</div>
@@ -78,9 +80,19 @@ const OrderItem = () => {
                 <div className="whitespace-nowrap">
                   <div className="flex flex-col">
                     <div className="line-through whitespace-nowrap">
-                      {(order.oldPrice * order.quantity).toLocaleString()}
+                      {order.voucherUsed?.[0]?.voucherPercent && (order.oldPrice * order.quantity).toLocaleString()}
                     </div>
-                    <div className="underline whitespace-nowrap">{(order.price * order.quantity).toLocaleString()}</div>
+                    <div className="underline whitespace-nowrap">
+                      {' '}
+                      {currencyFormatter(
+                        order.voucherUsed &&
+                          ((order.oldPrice * (order.voucherUsed?.[0]?.voucherPercent || 0)) / 100) * order.quantity >
+                            order.voucherUsed?.[0]?.maxDiscount
+                          ? order.oldPrice * order.quantity - order.voucherUsed?.[0]?.maxDiscount
+                          : order.price * order.quantity,
+                        ''
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

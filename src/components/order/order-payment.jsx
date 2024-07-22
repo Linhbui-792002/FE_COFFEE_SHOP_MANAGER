@@ -46,7 +46,12 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
   const [createOrder, { isLoading: isLoadingCreateOrder }] = useCreateOrderMutation()
 
   const handlePayment = async () => {
-    const discountedTotal = totalMoney * (1 - voucherCart.voucherPercent / 100)
+    const discountAmount = voucherCart.voucherId
+      ? Math.min(totalMoney * (voucherCart.voucherPercent / 100), voucherCart.maxDiscount)
+      : 0
+
+    const discountedTotal = totalMoney - discountAmount
+
     const orderData = {
       totalMoney: discountedTotal,
       receivedMoney: receivedMoney > discountedTotal ? receivedMoney : discountedTotal,
@@ -54,7 +59,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
       voucherUsed: voucherCart.voucherPercent
         ? [
             {
-              voucherId: listVoucherCart.find(voucher => voucher._id === voucherCart),
+              voucherId: voucherCart.voucherId?.value,
               voucherPercent: voucherCart.voucherPercent
             }
           ]
@@ -67,7 +72,6 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
         voucherUsed: order.voucherUsed ?? []
       }))
     }
-
     try {
       await createOrder(orderData).unwrap()
       dispatch(removeOrder(activeKey))
@@ -75,23 +79,56 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
       Notification('success', 'Order Created', 'Order created successfully')
       onClose()
     } catch (error) {
-      Notification('error', 'Order Creation Failed', 'Failed to create order')
+      switch (error?.status) {
+        case 400:
+          return Notification('error', 'Order Creation Failed', error?.data?.message)
+        default:
+          return Notification('error', 'Order Creation Failed', 'Failed to create order')
+
+      }
     }
   }
 
   const getArrCalculate5ReceivedMoney = minReceivedMoney => {
-    const suggestions = [minReceivedMoney, minReceivedMoney + 1000]
-    const next5000 = Math.ceil(minReceivedMoney / 5000) * 5000
-    if (!suggestions.includes(next5000)) suggestions.push(next5000)
-    if (!suggestions.includes(60000)) suggestions.push(60000)
-    if (!suggestions.includes(100000)) suggestions.push(100000)
-    if (!suggestions.includes(200000)) suggestions.push(200000)
+    const denominations = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000]
+
+    const generateSuggestions = (minAmount, denomList) => {
+      const suggestions = new Set()
+
+      suggestions.add(minAmount)
+
+      let incrementAmount = denomList[denomList.length - 1] // Start with the highest denomination
+      let currentAmount = minAmount
+
+      while (suggestions.size < 5) {
+        currentAmount += incrementAmount
+
+        if (currentAmount >= minAmount) {
+          suggestions.add(currentAmount)
+        }
+      }
+
+      return Array.from(suggestions).sort((a, b) => a - b)
+    }
+
+    const suggestions = generateSuggestions(minReceivedMoney, denominations)
+
     setArrCalculate5ReceivedMoney(suggestions)
   }
 
+  // const getArrCalculate5ReceivedMoney = minReceivedMoney => {
+  //   const suggestions = [minReceivedMoney, minReceivedMoney + 1000]
+  //   const next5000 = Math.ceil(minReceivedMoney / 5000) * 5000
+  //   if (!suggestions.includes(next5000)) suggestions.push(next5000)
+  //   if (!suggestions.includes(60000)) suggestions.push(60000)
+  //   if (!suggestions.includes(100000)) suggestions.push(100000)
+  //   if (!suggestions.includes(200000)) suggestions.push(200000)
+  //   setArrCalculate5ReceivedMoney(suggestions)
+  // }
+
   const handleInputChange = e => {
     const value = +e.target.value
-    setReceivedMoney(!isNaN(value) ? value : totalMoney)
+    setReceivedMoney(value ? value : totalMoney)
   }
 
   const handleCloseVoucherModal = () => setIsModalVoucherOpen(false)
@@ -117,15 +154,28 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
     return searchVoucher
       ? listVoucherCart.filter(voucher => voucher.code.toLowerCase().includes(searchVoucher.toLowerCase()))
       : listVoucherCart
-  }, [searchVoucher, listVoucherCart])
+  }, [searchVoucher, listVoucherCart, isLoadingVoucherCart,isModalVoucherOpen])
+
   const vouchersProduct = useMemo(() => {
     return searchVoucherProduct
       ? listVoucherProduct.filter(voucher => voucher.code.toLowerCase().includes(searchVoucher.toLowerCase()))
       : listVoucherProduct
-  }, [searchVoucherProduct, listVoucherProduct])
+  }, [searchVoucherProduct, listVoucherProduct,isLoadingVoucherProduct,isModalVoucherProductOpen])
 
   useEffect(() => {
-    const total = orderDetails.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+    const total = orderDetails.reduce((acc, cur) => {
+      let itemTotal = cur.oldPrice * cur.quantity
+      if (cur.voucherUsed.length > 0) {
+        let voucher = cur.voucherUsed[0]
+        let discount = ((cur.oldPrice * voucher.voucherPercent) / 100) * cur.quantity
+        if (discount > voucher.maxDiscount) {
+          itemTotal -= voucher.maxDiscount
+        } else {
+          itemTotal -= discount
+        }
+      }
+      return acc + itemTotal
+    }, 0)
     const quantity = orderDetails.reduce((acc, cur) => acc + cur.quantity, 0)
     setTotalQuantityOrder(quantity)
     setTotalMoney(total)
@@ -157,7 +207,13 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
           quantity: orderItem?.quantity,
           note: '',
           voucherUsed: voucherProduct
-            ? [{ voucherId: voucherProduct.voucherId, voucherPercent: voucherProduct.voucherPercent }]
+            ? [
+                {
+                  voucherId: voucherProduct.voucherId,
+                  voucherPercent: voucherProduct.voucherPercent,
+                  maxDiscount: voucherProduct.maxDiscount
+                }
+              ]
             : []
         })
       )
@@ -191,14 +247,24 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
     setVoucherProduct({
       voucherId: value?.value ?? '',
       voucherPercent: option?.percent ?? 0,
-      product: option?.product ?? []
+      product: option?.product ?? [],
+      maxDiscount: option?.maxDiscount ?? 0
     })
   }
   const TotalMoneyWithDiscount = useMemo(() => {
-    return totalMoney * (1 - voucherCart.voucherPercent / 100)
+    if (voucherCart && voucherCart.voucherPercent && voucherCart.maxDiscount) {
+      const discount = totalMoney * (voucherCart.voucherPercent / 100)
+      return totalMoney - Math.min(discount, voucherCart.maxDiscount)
+    }
+    return totalMoney
   }, [totalMoney, voucherCart])
+
   const discountMoney = useMemo(() => {
-    return voucherCart.voucherId ? totalMoney * (voucherCart.voucherPercent / 100) : 0
+    if (voucherCart && voucherCart.voucherId) {
+      const discount = totalMoney * (voucherCart.voucherPercent / 100)
+      return Math.min(discount, voucherCart.maxDiscount)
+    }
+    return 0
   }, [voucherCart, totalMoney])
 
   return (
@@ -269,7 +335,15 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
                               {currencyFormatter(order.oldPrice * order.quantity, '')}
                             </div>
                             <div className="underline whitespace-nowrap">
-                              {currencyFormatter(order.price * order.quantity, '')}
+                              {currencyFormatter(
+                                order.voucherUsed &&
+                                  ((order.oldPrice * (order.voucherUsed?.[0]?.voucherPercent || 0)) / 100) *
+                                    order.quantity >
+                                    order.voucherUsed?.[0]?.maxDiscount
+                                  ? order.oldPrice * order.quantity - order.voucherUsed?.[0]?.maxDiscount
+                                  : order.price * order.quantity,
+                                ''
+                              )}
                             </div>
                           </div>
                         </div>
@@ -297,12 +371,8 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
                     </span>
                   </div>
                   <Input
-                    className={`!border-none !outline-none !w-max !bg-red text-right pr-0 w-40 font-bold ${
-                      receivedMoney - totalMoney < 0 ? 'text-red-500' : ''
-                    }`}
-                    value={
-                      voucherCart.voucherId ? currencyFormatter(totalMoney * (voucherCart.voucherPercent / 100), '') : 0
-                    }
+                    className={`!border-none !outline-none !w-max !bg-red text-right pr-0 w-40 font-bold `}
+                    value={voucherCart.voucherId ? currencyFormatter(discountMoney, '') : 0}
                     onClick={handleOpenVoucherModal}
                     readOnly
                   />
@@ -318,7 +388,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
                       receivedMoney - TotalMoneyWithDiscount < 0 ? 'text-red-500' : ''
                     }`}
                     onChange={handleInputChange}
-                    value={receivedMoney - TotalMoneyWithDiscount < 0 ? receivedMoney : TotalMoneyWithDiscount}
+                    value={receivedMoney ? receivedMoney : TotalMoneyWithDiscount}
                   />
                 </div>
                 <div className="flex justify-between">
@@ -361,10 +431,16 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
           labelInValue
           showSearch
           allowClear
-          loading={isLoadingVoucherCart}
+          loading={!isModalVoucherOpen|| isLoadingVoucherCart}
           filterOption={false}
-          onChange={(value, option) => setVoucherCart({ voucherId: value, voucherPercent: option?.percent ?? 0 })}
-          onSearch={setSearchVoucherProduct}
+          onChange={(value, option) =>
+            setVoucherCart({
+              voucherId: value,
+              voucherPercent: option?.percent ?? 0,
+              maxDiscount: option?.maxDiscount ?? 0
+            })
+          }
+          onSearch={setSearchVoucher}
           options={vouchersCart?.map(voucher => ({
             label:
               voucher.name +
@@ -373,7 +449,8 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
               ` - ${voucher.voucherPercent}%` +
               ` - ${currencyFormatter(totalMoney * (voucher.voucherPercent / 100))}`,
             value: voucher._id,
-            percent: voucher.voucherPercent ?? 0
+            percent: voucher.voucherPercent ?? 0,
+            maxDiscount: voucher.maxDiscount ?? 0
           }))}
         />
       </Modal>
@@ -400,7 +477,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
           loading={isLoadingVoucherProduct}
           filterOption={false}
           onChange={(value, option) => handleOnChangeVoucherProduct(value, option)}
-          onSearch={setSearchVoucher}
+          onSearch={setSearchVoucherProduct}
           options={vouchersProduct?.map(voucher => ({
             label:
               voucher.name +
@@ -410,7 +487,8 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
               ` - ${currencyFormatter((orderItem.oldPrice || 0) * (voucher.voucherPercent / 100))}`,
             value: voucher._id,
             percent: voucher.voucherPercent ?? 0,
-            product: voucher.productId ?? []
+            product: voucher.productId ?? [],
+            maxDiscount: voucher.maxDiscount ?? 0
           }))}
         />
       </Modal>

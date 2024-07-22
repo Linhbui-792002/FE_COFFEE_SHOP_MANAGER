@@ -22,7 +22,15 @@ const UploadImage = ({ setData, getDataFn, onChange, value }) => {
       getDataFn(setData)
     }
   }, [setData])
-
+  
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  };
   const handlePreview = async file => {
     if (file.url) {
       setPreviewImage(file.url)
