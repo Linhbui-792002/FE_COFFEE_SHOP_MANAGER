@@ -20,7 +20,7 @@ export const employeeApi = api.injectEndpoints({
     }),
     getEmployeesHasNotAccount: builder.query({
       query: accountId => ({
-        url: `/employee/list/employeeHasNotAccount/${accountId ? accountId :""}`
+        url: `/employee/list/employeeHasNotAccount/${accountId ? accountId : ''}`
       }),
       transformResponse: res => res?.metadata
       // providesTags: ['EmployeesTag']

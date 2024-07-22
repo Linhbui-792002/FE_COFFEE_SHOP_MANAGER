@@ -28,7 +28,7 @@ const dataRevenue = [
   { name: '01 - 2024', revenue: 8500, profit: 0 },
   { name: '02 - 2024', revenue: 7500, profit: 0 },
   { name: '03 - 2024', revenue: 8600, profit: 0 },
-  { name: '04 - 2024', revenue: 9000, profit: 9000 },
+  { name: '04 - 2024', revenue: 9000, profit: 0 },
   { name: '05 - 2024', revenue: 8890, profit: 0 }
 ]
 
@@ -355,6 +355,33 @@ const DashBoard = () => {
     }
   }, [dataRevenueStatistic])
 
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const uniquePayload = []
+      const seenNames = new Set()
+
+      payload.forEach(item => {
+        if (!seenNames.has(item.name)) {
+          seenNames.add(item.name)
+          uniquePayload.push(item)
+        }
+      })
+
+      const sortedPayload = uniquePayload.sort((a, b) => b.value - a.value)
+
+      return (
+        <div className="bg-white border border-gray-300 p-2 rounded-lg max-h-[500px] overflow-y-auto">
+          <p className="font-bold">{`Date: ${label}`}</p>
+          {sortedPayload.map((data, index) => (
+            <p key={index} className="text-indigo-500">{`${data.name}: ${data.value}`}</p>
+          ))}
+        </div>
+      )
+    }
+
+    return null
+  }
+
   return (
     <div className="flex">
       <div className="flex-grow w-[60%] flex flex-col">
@@ -415,21 +442,17 @@ const DashBoard = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="yearMonth" />
                   <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  {listProduct.map((product, index) => {
-                    // const color = colors[product]; // Use memoized color
-                    return (
-                      <Line
-                        key={index}
-                        type="monotone"
-                        dataKey={product}
-                        stroke={'#8884d8'}
-                        strokeWidth={2}
-                        dot={{ stroke: '#8884d8', strokeWidth: 2, r: 4 }}
-                      />
-                    )
-                  })}
+                  <Tooltip content={<CustomTooltip />} />
+                  {listProduct.map((product, index) => (
+                    <Line
+                      key={index}
+                      type="monotone"
+                      dataKey={product}
+                      stroke={getRandomColor()}
+                      strokeWidth={2}
+                      dot={{ stroke: getRandomColor(), strokeWidth: 2, r: 4 }}
+                    />
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </Spin>

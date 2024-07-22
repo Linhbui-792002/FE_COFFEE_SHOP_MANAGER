@@ -84,7 +84,6 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
           return Notification('error', 'Order Creation Failed', error?.data?.message)
         default:
           return Notification('error', 'Order Creation Failed', 'Failed to create order')
-
       }
     }
   }
@@ -154,13 +153,13 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
     return searchVoucher
       ? listVoucherCart.filter(voucher => voucher.code.toLowerCase().includes(searchVoucher.toLowerCase()))
       : listVoucherCart
-  }, [searchVoucher, listVoucherCart, isLoadingVoucherCart,isModalVoucherOpen])
+  }, [searchVoucher, listVoucherCart, isLoadingVoucherCart, isModalVoucherOpen])
 
   const vouchersProduct = useMemo(() => {
     return searchVoucherProduct
       ? listVoucherProduct.filter(voucher => voucher.code.toLowerCase().includes(searchVoucher.toLowerCase()))
       : listVoucherProduct
-  }, [searchVoucherProduct, listVoucherProduct,isLoadingVoucherProduct,isModalVoucherProductOpen])
+  }, [searchVoucherProduct, listVoucherProduct, isLoadingVoucherProduct, isModalVoucherProductOpen])
 
   useEffect(() => {
     const total = orderDetails.reduce((acc, cur) => {
@@ -431,7 +430,7 @@ const OrderPaymentModal = ({ isOpen, onClose, orderDetails }) => {
           labelInValue
           showSearch
           allowClear
-          loading={!isModalVoucherOpen|| isLoadingVoucherCart}
+          loading={!isModalVoucherOpen || isLoadingVoucherCart}
           filterOption={false}
           onChange={(value, option) =>
             setVoucherCart({

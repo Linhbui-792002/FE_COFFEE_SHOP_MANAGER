@@ -89,7 +89,7 @@ const ProductItem = ({ className, product, loading, isList }) => {
           width={200}
           src={`${process.env.PUBLIC_IMAGE_API_BASE_URL}/${product?.image}`}
           alt={product.name}
-         className="w-full h-auto object-center"
+          className="w-full h-auto object-center"
         />
       }
       className={

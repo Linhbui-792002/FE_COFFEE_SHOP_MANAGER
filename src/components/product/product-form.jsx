@@ -43,7 +43,7 @@ const ProductForm = ({ productId, title, type, label, successCallback }) => {
       form.setFieldsValue({ ...productInfo })
       form.setFieldValue('productCombo', productCombo)
     }
-  }, [productInfo,isLoadingProductInfo,isModalOpen])
+  }, [productInfo, isLoadingProductInfo, isModalOpen])
 
   useEffect(() => {
     if (!isCombo) {
@@ -272,9 +272,9 @@ const ProductForm = ({ productId, title, type, label, successCallback }) => {
                     ({ getFieldValue }) => ({
                       validator(_, value) {
                         if (isCombo) {
-                          return Promise.resolve();
+                          return Promise.resolve()
                         }
-                        if (!value || getFieldValue('costPrice') < value  ) {
+                        if (!value || getFieldValue('costPrice') < value) {
                           return Promise.resolve()
                         }
                         return Promise.reject(new Error('Price cannot be less than Cost price!'))

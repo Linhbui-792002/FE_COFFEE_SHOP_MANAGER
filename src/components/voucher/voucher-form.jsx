@@ -77,7 +77,7 @@ const VoucherForm = ({ label, voucherId, title, type, successCallback }) => {
       form.setFieldsValue({ ...dataVoucher, dateRange: [dayjs(dataVoucher.startDate), dayjs(dataVoucher.endDate)] })
 
     setTargetKeys(dataVoucher?.productId)
-  }, [dataVoucher,isLoadingVoucher,isModalOpen])
+  }, [dataVoucher, isLoadingVoucher, isModalOpen])
 
   const typeVoucher = Form.useWatch('type', form)
   const dateRange = Form.useWatch('dateRange', form)

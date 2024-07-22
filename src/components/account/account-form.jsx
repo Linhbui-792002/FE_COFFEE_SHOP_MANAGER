@@ -22,7 +22,7 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
     data: listEmployee,
     isLoading: isLoadingListEmployee,
     refetch: refetchListEmployee
-  } = useGetEmployeesHasNotAccountQuery(accountId, { skip: !isModalOpen, refetchOnMountOrArgChange:true })
+  } = useGetEmployeesHasNotAccountQuery(accountId, { skip: !isModalOpen, refetchOnMountOrArgChange: true })
   const [addAccount, { isLoading }] = useAddAccountMutation()
   const [editAccount, { isLoading: isEditLoading }] = useEditAccountMutation()
   const formRef = useRef(null)
@@ -39,7 +39,7 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
   }, [accountData])
 
   const filteredEmployee = useMemo(() => {
-    console.log(listEmployee,'listEmployee')
+    console.log(listEmployee, 'listEmployee')
     return listEmployee?.filter(employee =>
       `${employee?.firstName} ${employee?.lastName}`.toLowerCase().includes(searchEmployee.toLowerCase())
     )
@@ -147,7 +147,8 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
                 },
                 {
                   pattern: /^[a-z][a-z0-9]*$/,
-                  message: 'Username must start with a letter, be in lowercase, and contain no special characters or spaces!'
+                  message:
+                    'Username must start with a letter, be in lowercase, and contain no special characters or spaces!'
                 }
               ]}
             >
@@ -235,7 +236,11 @@ const AccountForm = ({ label, accountId, title, type, useSubComponent, getAccoun
                           <div className="flex items-center justify-between gap-2">
                             Add new employee
                             <TooltipCustom title="Add new employee" color="blue">
-                              <EmployeeForm getEmployeeIdFn={getEmployeeIdAddNew} useSubComponent={true} successCallback={refetchListEmployee}/>
+                              <EmployeeForm
+                                getEmployeeIdFn={getEmployeeIdAddNew}
+                                useSubComponent={true}
+                                successCallback={refetchListEmployee}
+                              />
                             </TooltipCustom>
                           </div>
                           <Divider
