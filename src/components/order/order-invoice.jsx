@@ -29,7 +29,12 @@ const OrderInvoice = React.forwardRef(
                   <div className="col-span-2 text-center">{order.quantity}</div>
                   <div className="col-span-2 whitespace-nowrap text-end">{order.price.toLocaleString()}</div>
                   <div className="col-span-2 whitespace-nowrap text-end">
-                    {(order.price * order.quantity).toLocaleString()}
+                    {(order.voucherUsed &&
+                    ((order.oldPrice * (order.voucherUsed?.[0]?.voucherPercent || 0)) / 100) * order.quantity >
+                      order.voucherUsed?.[0]?.maxDiscount
+                      ? order.oldPrice * order.quantity - order.voucherUsed?.[0]?.maxDiscount
+                      : order.price * order.quantity
+                    ).toLocaleString()}
                   </div>
                 </div>
                 {order?.voucherUsed?.length > 0 && (
@@ -38,7 +43,11 @@ const OrderInvoice = React.forwardRef(
                     <div className="col-span-5"></div>
                     <div className="col-span-2 text-end font-medium">{order.voucherUsed[0].voucherPercent}%</div>
                     <div className="col-span-2 text-end font-medium">
-                      {((order.price * order.quantity * order.voucherUsed[0].voucherPercent) / 100).toLocaleString()}
+                      {order.voucherUsed.length > 0 &&
+                        Math.min(
+                          (order.oldPrice * order.quantity * order.voucherUsed[0].voucherPercent) / 100,
+                          order.voucherUsed[0].maxDiscount
+                        ).toLocaleString()}
                     </div>
                   </div>
                 )}

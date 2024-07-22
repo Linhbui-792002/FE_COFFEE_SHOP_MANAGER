@@ -21,6 +21,7 @@ import {
   useGetProductStatisticQuery,
   useGetRevenueStatisticQuery
 } from '@src/redux/endPoint/statistic'
+import { useRouter } from 'next/router'
 
 const dataRevenue = [
   { name: '12 - 2023', revenue: 8000, profit: 0 },
@@ -107,6 +108,11 @@ const columns = [
 ]
 
 const DashBoard = () => {
+  const router = useRouter()
+  const { asPath, pathname } = router
+  const isEmployee = asPath?.split('/').includes('coffee-shop')
+  const isAdminPage = asPath?.split('/').includes('admin')
+
   const now = new Date()
   const fromDate = new Date(now.setHours(0, 0, 0, 0)).toISOString()
   const toDate = new Date(now.setHours(23, 59, 59, 0)).toISOString()
@@ -135,7 +141,7 @@ const DashBoard = () => {
     data: orderStatisticData,
     isLoading: isLoadingOrderStatistic,
     refetch
-  } = useGetOrderAnalysticQuery({}, { pollingInterval: 10000 })
+  } = useGetOrderAnalysticQuery({}, { pollingInterval: isAdminPage ? 10000 : 0 })
 
   const {
     //revenue chart
@@ -149,7 +155,7 @@ const DashBoard = () => {
     data: listOrdersRecent,
     isLoading: isLoadingOrderRecent,
     refetch: refetchListOrdersRecent
-  } = useGetAllOrdersQuery(filterOrderStatistic, { pollingInterval: 10000 })
+  } = useGetAllOrdersQuery(filterOrderStatistic, { pollingInterval: isAdminPage ? 10000 : 0 })
 
   const renderStatisticCard = (title, value) => (
     <>
