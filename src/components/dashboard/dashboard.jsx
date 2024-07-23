@@ -140,8 +140,8 @@ const DashBoard = () => {
     //order analistic
     data: orderStatisticData,
     isLoading: isLoadingOrderStatistic,
-    refetch,
-  } = useGetOrderAnalysticQuery({}, { pollingInterval: 10000 });
+    refetch
+  } = useGetOrderAnalysticQuery({}, { pollingInterval: 10000 })
 
   const {
     //revenue chart

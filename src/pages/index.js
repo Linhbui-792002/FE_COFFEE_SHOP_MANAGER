@@ -15,10 +15,6 @@ const Homepage = () => {
         <title>CMS-Coffee</title>
         <meta charSet="UTF-8" />
         <link rel="icon" href={'../../public/images/logo.png'} type="image/x-icon" />
-        {/* <link
-				rel="surl"
-				href={metaSlug}
-			></link> */}
       </Head>
       <LoginPage />
     </>
